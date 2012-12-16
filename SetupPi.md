@@ -17,7 +17,12 @@ The aim is to be able to interact with an [Elphel](http://elphel.com) camera and
 - Install git and pull the GlobalDiagnostiX repository into your home folder. This should also take care of the `git` configuration, since we're also pulling `.gitconfig`.
 
 	sudo apt-get install git
-	cd; git clone git@github.com:habi/GlobalDiagnostiX.git
+	cd
+	rm -r * # to remove *EVERYTHING* from your home directory
+	rm -r .* # REALLY, EVERYTHING!
+	git clone https://github.com/habi/GlobalDiagnostiX.git ~ # clone the GitHub repo into your home directory
+	nano SetupPi.md # change something in the file
+	git commit -a;git push # commit the change and push it back to the repo to see if that works
 
 - Copy the lines below from `~/SetupPi.md` to install all the other repositories. This will long, go and have a coffe! You can either do it line by line (below, with explanations) or just copy the line at the bottom which does everything in one go. In the second case you can go and have two coffees...
 
