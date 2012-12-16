@@ -7,6 +7,6 @@
 	prompt = false
 [alias]
 	dt = difftool
-	l = log --graph --pretty=format:'%C(red)%h%Creset%C(green)%d%Creset %C(black)%s%Creset %C(white dim)(by %an %ar)%Creset'
+	l = log --graph --pretty=format:'%C(red)%h%Creset%C(blue)%d%Creset %C(white)%s%Creset %C(white dim)(by %an %ar)%Creset'
 	ll = !git l --all
 
