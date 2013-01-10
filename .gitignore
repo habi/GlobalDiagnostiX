@@ -18,3 +18,6 @@
 .squeak/
 .ssh/
 .xsession-errors
+.gitconfig
+.imagej/
+

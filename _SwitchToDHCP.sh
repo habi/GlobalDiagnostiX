@@ -1,3 +1,4 @@
+# Deprecated, use ~/Switch.py instead
 # Switching the Network configuration back to DHCP, so we can interweb
 
 echo "Setting Network interface to DHCP (back from 192.168.0.1)"

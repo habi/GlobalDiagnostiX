@@ -34,8 +34,11 @@ elif options.Elphel:
 	print 
 	print 'Uplug the PSI Ethernet cable, plug in the Elphel cable and wait a while for the camera to boot'
 
-print
-print 'If you just switched from Elphel to to PSI,'
-print ' then it is probably a good idea to run'
-print 'cd;bash SyncToAFS.cmd'
-print 'to rsync all changes in the home directory to /afs/EssentialMed/Dev/RPI'
+if options.DHCP or options.PSI:
+	print
+	print 'If you just switched from Elphel to to PSI,'
+	print ' then it is probably a good idea to run'
+	print 'cd;bash SyncToAFS.cmd'
+	print 'to rsync all changes in the home directory to /afs/EssentialMed/Dev/RPI'
+	print
+	print 'and maybe also do a "git commit;git push"...'

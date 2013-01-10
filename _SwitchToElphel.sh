@@ -1,3 +1,4 @@
+# Deprecated, use ~/Switch.py instead
 # Switching the Network configuration so we can connect the camera
 
 echo "Setting Network interface to IP 192.168.0.1"
