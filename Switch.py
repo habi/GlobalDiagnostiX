@@ -41,4 +41,4 @@ if options.DHCP or options.PSI:
 	print 'cd;bash SyncToAFS.cmd'
 	print 'to rsync all changes in the home directory to /afs/EssentialMed/Dev/RPI'
 	print
-	print 'and maybe also do a "git commit;git push"...'
+	print 'and maybe also do a "git commit -a;git push"...'
