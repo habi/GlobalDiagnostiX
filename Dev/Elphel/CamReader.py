@@ -37,16 +37,15 @@ if not options.Images and not options.Show and not options.Trigger:
 	parser.print_help()
 	exit()
 
-# Make a subdirectory relative to the current directory
 SubDirName = 'Images'
-try:
-	os.mkdir(os.path.join(os.getcwd(),SubDirName))
-	print 'I just made made the directory',os.path.join(os.getcwd(),SubDirName)
-except:
-	print 'Directory',os.path.join(os.getcwd(),SubDirName),'already exists.'
-
-# Give out some feedback for the user
-if options.Images:
+if options.Images or options.Trigger:
+	# Make a subdirectory relative to the current directory
+	try:
+		os.mkdir(os.path.join(os.getcwd(),SubDirName))
+		print 'I just made made the directory',os.path.join(os.getcwd(),SubDirName)
+	except:
+		print 'Directory',os.path.join(os.getcwd(),SubDirName),'already exists.'
+	# Give out some feedback for the user
 	if options.OutPutDir:
 		SaveDir = os.path.join(os.getcwd(),SubDirName,options.OutPutDir)
 	else:
@@ -58,18 +57,32 @@ if options.Images:
 
 print
 
-ImageURL = 'http://192.168.0.9:8081/img'
+# According to the Imgsrv-page on the elphel-Wiki one should call
+# http://<camera-ip>:8081/towp/save
+# first to set the current pointer and save it
+# and then to repeat for each image
+# http://<camera-ip>:8081/torp/wait/img/next/save 
+# to set the current pointer to the global read pointer and to wait for
+# 3 the image to become available, transfer the image, advance the pointer
+# and save it, so that the same URL can be used over and over each time
+# providing the next acuired image
 
+CamURL = 'http://192.168.0.9:8081/'
+StartURL = CamURL + 'towp/save'
+ImageURL = CamURL + 'torp/wait/img/next/save'
+
+print 'Setting current camera pointer and saving it'
+urllib.urlopen(StartURL)
+
+StartTime = time.time()
 if options.Images:
 	# get options.Images number of images as fast as possible from the camera
 	raw_input('Auf die Plätze, fertig, los [Enter]')
-	StartTime = time.time()
 	if not options.Verbose:
 		print 'Getting',options.Images,'images as fast as possible'
 		print 'Please stand by'
 	for i in range(1,options.Images+1):
-		# FileName = 'img_' + str('%.04d' % i) + '.jpg'
-                FileName = urllib.urlopen('http://192.168.0.9:8081/frame').read(10) + '.jpg'
+		FileName = 'img_' + str('%.04d' % i) + '.jpg'
 		if options.Verbose:
 			print 'writing image ' + str(i) + '/' + str(options.Images),'as',FileName
 		# get the url of the camera which spits out an image (ImageURL, set above)
@@ -82,29 +95,37 @@ elif options.Show:
 	plt.figure()
 	ion() # make matplotlib interactive, so we can just plt.draw() the image into a plt.figure()
 	TMPImageName = 'Snapshot'
-	print 'Saving camera image to ' + os.path.join(os.getcwd(),SubDirName,TMPImageName) + '.jpg and showing it ASAP'
+	print 'Saving camera image to ' + os.path.join(os.getcwd(),SubDirName,TMPImageName) + '.jpg'
+	print 'and showing it in a matplotlib-figure'
+	print
 	print 'rinse, lather, repeat'
+	Counter = 0
 	try:
 		while True:
-			DownScale = 100
-			urllib.urlretrieve(ImageURL,os.path.join(os.getcwd(),SubDirName,TMPImageName + '.jpg'))
+			DownScale = 25
+			urllib.urlretrieve(CamURL + 'img',os.path.join(os.getcwd(),SubDirName,TMPImageName + '.jpg'))
 			plt.imshow(
 				plt.imread(os.path.join(os.getcwd(),SubDirName,TMPImageName + '.jpg'))[::DownScale,::DownScale,:],
 				origin='lower',interpolation='none'
 				)
-			FrameNumber = urllib.urlopen('http://192.168.0.9:8081/frame').read(10)
-			# plt.title(str(os.path.join(os.getcwd(),SubDirName,TMPImageName + '.jpg | ')) + str(time.strftime('%H:%M:%S')))
-			plt.title(os.path.join(os.getcwd(),SubDirName,TMPImageName + '.jpg') + '\nFrame Number ' + FrameNumber + ', Downscaled ' + str(DownScale) + 'x')
+			TimeUsed = time.time() - StartTime
+			ImageTitle = str(os.path.join(os.getcwd(),SubDirName,TMPImageName + '.jpg')) +\
+				'\nImage ' + str(int(Counter)) + ' in ' + str(np.round(TimeUsed),) + 's = (' +\
+				str(np.round(Counter/TimeUsed,decimals=3)) + ' img/s)' +\
+				'\nDownscaled ' + str(DownScale) + 'x'
+			plt.title(ImageTitle)
+			Counter += 1
 			plt.draw()
 	except KeyboardInterrupt:
 		print 'Goodbye'
-		ioff() # swich back to normal matplotlib behaviour
-		sys.exit()
+		ioff() # switch back to normal matplotlib behaviour
+		pass
 elif options.Trigger:
 	# Trigger the camera externally and save one image with the set exposure time
-        print 'As soon as you press the trigger, I will expose the camera with an exposure time of',options.Trigger,'ms'
+	print 'As soon as you press the trigger, I will expose the camera with an exposure time of',options.Trigger,'ms'
+	print 'Waiting for trigger'
 	print 
-	print 'Blitzflashdiblitzblitz'
+	print '			Blitzflashdiblitzblitz'
 	print
 	print 'Info from http://wiki.elphel.com/index.php?title=Trigger'
 	print 'After setting "TRIG=4" in advance, we enable the trigger with'
