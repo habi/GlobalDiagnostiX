@@ -94,6 +94,7 @@ elif options.Show:
 	# Save the current image to disk and display it as fast as possible in a matlotlib-figure
 	plt.figure()
 	ion() # make matplotlib interactive, so we can just plt.draw() the image into a plt.figure()
+	plt.show()
 	TMPImageName = 'Snapshot'
 	print 'Saving camera image to ' + os.path.join(os.getcwd(),SubDirName,TMPImageName) + '.jpg'
 	print 'and showing it in a matplotlib-figure'
@@ -102,11 +103,11 @@ elif options.Show:
 	Counter = 0
 	try:
 		while True:
-			DownScale = 25
+			DownScale = 10
 			urllib.urlretrieve(CamURL + 'img',os.path.join(os.getcwd(),SubDirName,TMPImageName + '.jpg'))
 			plt.imshow(
 				plt.imread(os.path.join(os.getcwd(),SubDirName,TMPImageName + '.jpg'))[::DownScale,::DownScale,:],
-				origin='lower',interpolation='none'
+				origin='lower',interpolation='nearest'
 				)
 			TimeUsed = time.time() - StartTime
 			ImageTitle = str(os.path.join(os.getcwd(),SubDirName,TMPImageName + '.jpg')) +\
