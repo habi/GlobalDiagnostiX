@@ -36,16 +36,48 @@ if not options.Images and not options.Show and not options.Trigger:
 	# Print the OptionParser help if none of the important options are given 
 	parser.print_help()
 	exit()
+	
+def query_yes_no(question, default="yes"):
+	# from http://code.activestate.com/recipes/577058/
+    """Ask a yes/no question via raw_input() and return the answer.
+    
+    "question" is a string that is presented to the user.
+    "default" is the presumed answer if the user just hits <Enter>.
+        It must be "yes" (default), "no" or None (meaning an answer is
+        required by the user).
+
+    The "answer" return value is one of "yes" or "no".
+    """
+    valid = {"yes":"yes", "y":"yes", "ye":"yes", "no":"no", "n":"no"}
+    if default == None:
+        prompt = " [y/n] "
+    elif default == "yes":
+        prompt = " [Y/n] "
+    elif default == "no":
+        prompt = " [y/N] "
+    else:
+        raise ValueError("invalid default answer: '%s'" % default)
+
+    while 1:
+        sys.stdout.write(question + prompt)
+        choice = raw_input().lower()
+        if default is not None and choice == '':
+            return default
+        elif choice in valid.keys():
+            return valid[choice]
+        else:
+            sys.stdout.write("Please respond with 'yes' or 'no' (or 'y' or 'n').\n")
 
 SubDirName = 'Images'
-if options.Images or options.Trigger:
-	# Make a subdirectory relative to the current directory
-	try:
-		os.mkdir(os.path.join(os.getcwd(),SubDirName))
-		print 'I just made made the directory',os.path.join(os.getcwd(),SubDirName)
-	except:
-		print 'Directory',os.path.join(os.getcwd(),SubDirName),'already exists.'
-	# Give out some feedback for the user
+# Make a subdirectory relative to the current directory to save the images
+try:
+	os.mkdir(os.path.join(os.getcwd(),SubDirName))
+except:
+	 pass
+
+if options.Trigger or options.Images:
+	# If we are saving the images in a certain subdirectory, then generate
+	# the names according to what the user requested
 	if options.OutPutDir:
 		SaveDir = os.path.join(os.getcwd(),SubDirName,options.OutPutDir)
 	else:
@@ -54,8 +86,12 @@ if options.Images or options.Trigger:
 		os.mkdir(SaveDir)
 	except:
 		print 'Directory',SaveDir,'already exists.'
-
-print
+		if query_yes_no('Are you sure you want to overwrite the files in ' + SaveDir,default='no')=='no':
+			print
+			print 'Start again with a differen -o parameter'
+			sys.exit(1)
+		else:
+			print 'Ok, you asked for it! Proceeding...'		
 
 # According to the Imgsrv-page on the elphel-Wiki one should call
 # http://<camera-ip>:8081/towp/save
