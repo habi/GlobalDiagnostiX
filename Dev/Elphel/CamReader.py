@@ -107,22 +107,22 @@ CamURL = 'http://192.168.0.9:8081/'
 StartURL = CamURL + 'towp/save'
 ImageURL = CamURL + 'torp/wait/img/next/save'
 
-print 'Setting current camera pointer and saving it'
+# The command below sets and saves the current camera pointer.
 urllib.urlopen(StartURL)
 
-StartTime = time.time()
 if options.Images:
-	# get options.Images number of images as fast as possible from the camera
-	raw_input('Auf die Plätze, fertig, los [Enter]')
+	# Save options.Images number of images as fast as possible
+	raw_input('Press Enter when you are ready to start! [Enter]')
+	StartTime = time.time()
 	if not options.Verbose:
 		print 'Getting',options.Images,'images as fast as possible'
 		print 'Please stand by'
 	for i in range(1,options.Images+1):
 		FileName = 'img_' + str('%.04d' % i) + '.jpg'
 		if options.Verbose:
-			print 'writing image ' + str(i) + '/' + str(options.Images),'as',FileName
+			print 'writing image ' + str(i) + '/' + str(options.Images),'as',os.path.join(SaveDir,FileName)
 		# get the url of the camera which spits out an image (ImageURL, set above)
-		# save the image to 'SaveDir', with the desired name, set above			
+		# and save the image to 'SaveDir' with consecutively numbered images
 		urllib.urlretrieve(ImageURL,os.path.join(SaveDir,FileName))
 	TimeUsed = time.time() - StartTime
 	print 'Saved',options.Images,'images in',np.round(TimeUsed,decimals=3),'seconds (' + str(np.round(options.Images/TimeUsed,decimals=3)) + ' img/s)'
@@ -131,25 +131,28 @@ elif options.Show:
 	plt.figure()
 	ion() # make matplotlib interactive, so we can just plt.draw() the image into a plt.figure()
 	plt.show()
-	TMPImageName = 'Snapshot'
-	print 'Saving camera image to ' + os.path.join(os.getcwd(),SubDirName,TMPImageName) + '.jpg'
+	print 'Saving camera image to ' + os.path.join(os.getcwd(),SubDirName) + 'Snapshot_*.jpg'
 	print 'and showing it in a matplotlib-figure'
 	print
 	print 'rinse, lather, repeat'
 	Counter = 0
+	StartTime = time.time()
 	try:
 		while True:
+			FileName = 'Snapshot_' + str('%.04d' % Counter) + '.jpg'
 			DownScale = 10
-			urllib.urlretrieve(CamURL + 'img',os.path.join(os.getcwd(),SubDirName,TMPImageName + '.jpg'))
+			urllib.urlretrieve(CamURL + 'img',os.path.join(os.getcwd(),SubDirName,FileName))
+			if options.Verbose:
+				print 'I have written image',Counter,'as',os.path.join(os.getcwd(),SubDirName,FileName)	
 			plt.imshow(
-				plt.imread(os.path.join(os.getcwd(),SubDirName,TMPImageName + '.jpg'))[::DownScale,::DownScale,:],
+				plt.imread(os.path.join(os.getcwd(),SubDirName,FileName))[::DownScale,::DownScale,:],
 				origin='lower',interpolation='nearest'
 				)
 			TimeUsed = time.time() - StartTime
-			ImageTitle = str(os.path.join(os.getcwd(),SubDirName,TMPImageName + '.jpg')) +\
-				'\nImage ' + str(int(Counter)) + ' in ' + str(np.round(TimeUsed),) + 's = (' +\
+			ImageTitle = str(FileName) + ' written in ' +\
+				str(int(np.round(TimeUsed))) + ' s = (' +\
 				str(np.round(Counter/TimeUsed,decimals=3)) + ' img/s)' +\
-				'\nDownscaled ' + str(DownScale) + 'x'
+				'\nshown ' + str(DownScale) + 'x downscaled'
 			plt.title(ImageTitle)
 			Counter += 1
 			plt.draw()
@@ -157,18 +160,19 @@ elif options.Show:
 		print 'Goodbye'
 		ioff() # switch back to normal matplotlib behaviour
 		pass
+		print 'It is probably a good idea to delete the Snapshot_*.jpg images from',\
+			os.path.join(os.getcwd(),SubDirName,FileName)
+		print 'You could use "rm',os.path.join(os.getcwd(),SubDirName,'Snapshot*') + '"'
 elif options.Trigger:
 	# Trigger the camera externally and save one image with the set exposure time
-	print 'As soon as you press the trigger, I will expose the camera with an exposure time of',options.Trigger,'ms'
-	print 'Waiting for trigger'
-	print 
+	print 'As soon as you press the trigger, I will expose the camera'
+	print 'with an exposure time of',options.Trigger,'ms (or',np.round(double(options.Trigger)/1000,decimals=3),'s)'
+	raw_input('Simulate a trigger by pressing Enter... [Enter]')
+	# Sending a trigger to the camera, probably with RPI.GPIO
+	print
 	print '			Blitzflashdiblitzblitz'
 	print
-	print 'Info from http://wiki.elphel.com/index.php?title=Trigger'
-	print 'After setting "TRIG=4" in advance, we enable the trigger with'
-	print 'getting http://192.168.0.9:8081/trig/pointers'
-	urllib.urlopen('http://192.168.0.9:8081/trig/pointers')
-        sys.exit()
+	urllib.urlretrieve('http://192.168.0.9:8081/trig/pointers',os.path.join(os.getcwd(),SubDirName,'Triggered.jpg'))
 
 if options.Images:
 	print 'Images have been saved saved to'
