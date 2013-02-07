@@ -3,13 +3,15 @@
 
 # Script to grab images from the Elphel camera
 # Based on the simplest case (wget http://192.168.0.9/img) and complexified from there.
+# Due to using RPi.GPIO the script has to be run with 'sudo' when acquiring a
+# triggered exposure. The script does warn if not.
 
 from optparse import OptionParser
 import os
+import sys
 import urllib
 import time
 from pylab import *
-import RPi.GPIO as GPIO
 
 # Setup the Options
 parser = OptionParser()
@@ -76,7 +78,7 @@ try:
 except:
 	 pass
 
-if options.Trigger or options.Images:
+if options.Images:
 	# If we are saving the images in a certain subdirectory, then generate
 	# the names according to what the user requested
 	if options.OutPutDir:
@@ -84,6 +86,7 @@ if options.Trigger or options.Images:
 	else:
 		SaveDir = os.path.join(os.getcwd(),SubDirName,str(time.time()))
 	try:
+		print SaveDir
 		os.mkdir(SaveDir)
 	except:
 		print 'Directory',SaveDir,'already exists.'
@@ -128,6 +131,9 @@ if options.Images:
 	TimeUsed = time.time() - StartTime
 	print 'Saved',options.Images,'images in',np.round(TimeUsed,decimals=3),'seconds (' + str(np.round(options.Images/TimeUsed,decimals=3)) + ' img/s)'
 elif options.Show:
+	# Remove Snapshots from prior runs
+	removecommand = 'rm ' + os.path.join(os.getcwd(),SubDirName,'Snapshot*')
+	os.system(removecommand)
 	# Save the current image to disk and display it as fast as possible in a matlotlib-figure
 	plt.figure()
 	ion() # make matplotlib interactive, so we can just plt.draw() the image into a plt.figure()
@@ -161,10 +167,15 @@ elif options.Show:
 		print 'Goodbye'
 		ioff() # switch back to normal matplotlib behaviour
 		pass
-		print 'It is probably a good idea to delete the Snapshot_*.jpg images from',\
-			os.path.join(os.getcwd(),SubDirName,FileName)
-		print 'You could use "rm',os.path.join(os.getcwd(),SubDirName,'Snapshot*') + '"'
 elif options.Trigger:
+	# Try to import the GPIO library
+	try:
+		import RPi.GPIO as GPIO
+	except:
+		print 'I cannot import RPI.GPIO, you have to run the script as root'
+		print 'try running it again with'
+		print 'sudo',' '.join(sys.argv) # joining the sys.argv list to a string so we can print it
+		sys.exit(1)	
 	# Trigger the camera externally and save one image with the set exposure time
 	# Set up pins as they physically are on the board
 	GPIO.setmode(GPIO.BOARD)
@@ -174,15 +185,13 @@ elif options.Trigger:
 	print 'with an exposure time of',options.Trigger,'ms (or',np.round(double(options.Trigger)/1000,decimals=3),'s)'
 	raw_input('Simulate a trigger by pressing Enter... [Enter]')
 	# Set the pin to high, sleep for options.Trigger time and set it to low
+	print
 	print 'Blitzflashdiblitzblitz'
-	GPIO.output(Pin, GPIO.HIGH)
+	GPIO.output(26, GPIO.HIGH)
 	time.sleep(options.Trigger/1000)
-	GPIO.output(Pin, GPIO.LOW)
+	GPIO.output(26, GPIO.LOW)
 	# Reset RPi channels after we're done
 	GPIO.cleanup()
-
-	print
-	
 	print
 	urllib.urlretrieve('http://192.168.0.9:8081/trig/pointers',os.path.join(os.getcwd(),SubDirName,'Triggered.jpg'))
 	
@@ -191,7 +200,7 @@ if options.Images:
 	print SaveDir
 elif options.Show:
 	print 'Snapshot images have been saved saved to'
-	print os.path.join(os.getcwd(),SubDirName,FileName)
+	print os.path.join(os.getcwd(),SubDirName,FileName)[:-7] +'***.jpg'
 elif options.Trigger:
 	print 'Triggered image have been saved saved to'
 	print os.path.join(os.getcwd(),SubDirName,'Triggered.jpg')
