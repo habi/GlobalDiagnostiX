@@ -9,6 +9,7 @@ import os
 import urllib
 import time
 from pylab import *
+import RPi.GPIO as GPIO
 
 # Setup the Options
 parser = OptionParser()
@@ -165,15 +166,32 @@ elif options.Show:
 		print 'You could use "rm',os.path.join(os.getcwd(),SubDirName,'Snapshot*') + '"'
 elif options.Trigger:
 	# Trigger the camera externally and save one image with the set exposure time
+	# Set up pins as they physically are on the board
+	GPIO.setmode(GPIO.BOARD)
+	# Set the very last pin on the bottom right. The last one in the row of P1 is 'Ground'
+	GPIO.setup(26, GPIO.OUT)
 	print 'As soon as you press the trigger, I will expose the camera'
 	print 'with an exposure time of',options.Trigger,'ms (or',np.round(double(options.Trigger)/1000,decimals=3),'s)'
 	raw_input('Simulate a trigger by pressing Enter... [Enter]')
-	# Sending a trigger to the camera, probably with RPI.GPIO
+	# Set the pin to high, sleep for options.Trigger time and set it to low
+	print 'Blitzflashdiblitzblitz'
+	GPIO.output(Pin, GPIO.HIGH)
+	time.sleep(options.Trigger/1000)
+	GPIO.output(Pin, GPIO.LOW)
+	# Reset RPi channels after we're done
+	GPIO.cleanup()
+
 	print
-	print '			Blitzflashdiblitzblitz'
+	
 	print
 	urllib.urlretrieve('http://192.168.0.9:8081/trig/pointers',os.path.join(os.getcwd(),SubDirName,'Triggered.jpg'))
-
+	
 if options.Images:
 	print 'Images have been saved saved to'
 	print SaveDir
+elif options.Show:
+	print 'Snapshot images have been saved saved to'
+	print os.path.join(os.getcwd(),SubDirName,FileName)
+elif options.Trigger:
+	print 'Triggered image have been saved saved to'
+	print os.path.join(os.getcwd(),SubDirName,'Triggered.jpg')
