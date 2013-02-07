@@ -16,18 +16,20 @@ GPIO.setmode(GPIO.BOARD) # Named sequentially, as seen on the connector. compare
 # GPIO.setmode(GPIO.BCM) # Named GPIO*, see table http://is.gd/xWDsp7 (e.g. 007 is the last pin)
 
 print 'set up GPIO output channel'
-Pin = 26
+Pin = 3 # BOARD
+#~ Pin = 007 # BMC
 GPIO.setup(Pin, GPIO.OUT)
 
 # set RPi board pin selected above to high for a certain time, wait, set it low
-# lather, rinse, repeat
-sleepytime = 0.1
-for Iteration in range(10):
+# lather, rinse, repeat for 'steps' steps
+sleepytime = 0.5
+steps = 20
+for Iteration in range(20):
 	if is_even(Iteration):
-		print 'setting high for',sleepytime,'s'
+		print str(Iteration +1) + '/' + str(steps),'| Pin',Pin,'high for',sleepytime,'s'
 		GPIO.output(Pin, GPIO.HIGH)
 		time.sleep(sleepytime)
 	else:
-		print 'setting low for',sleepytime,'s'
+		print str(Iteration +1) + '/' + str(steps),'| Pin',Pin,'low for',sleepytime,'s'
 		GPIO.output(Pin, GPIO.LOW)
 		time.sleep(sleepytime)
