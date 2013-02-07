@@ -86,7 +86,6 @@ if options.Images:
 	else:
 		SaveDir = os.path.join(os.getcwd(),SubDirName,str(time.time()))
 	try:
-		print SaveDir
 		os.mkdir(SaveDir)
 	except:
 		print 'Directory',SaveDir,'already exists.'

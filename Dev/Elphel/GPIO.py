@@ -5,8 +5,24 @@
 # Ultimately thought to trigger the Elphel camera
 # Based on http://code.google.com/p/raspberry-gpio-python/
 
-import RPi.GPIO as GPIO
+import sys
 import time
+# Try to import the GPIO library
+try:
+	import RPi.GPIO as GPIO
+except:
+	print 'I cannot import RPI.GPIO, you have to run the script as root'
+	print 'try running it again with'
+	print 'sudo',' '.join(sys.argv) # joining the sys.argv list to a string so we can print it
+	sys.exit(1)
+
+try:
+	sleepytime = float(sys.argv[1])
+	steps = int(sys.argv[2])
+except:	
+	print 'Start the script with two parameters'
+	print sys.argv[0],'Sleeptime Repeats'
+	sys.exit(1)
 
 def is_even(i):
 	return (i % 2) == 0
@@ -22,8 +38,6 @@ GPIO.setup(Pin, GPIO.OUT)
 
 # set RPi board pin selected above to high for a certain time, wait, set it low
 # lather, rinse, repeat for 'steps' steps
-sleepytime = 0.5
-steps = 5
 for Iteration in range(steps):
 	if is_even(Iteration):
 		print str(Iteration +1) + '/' + str(steps),'| Pin',Pin,'high for',sleepytime,'s'
