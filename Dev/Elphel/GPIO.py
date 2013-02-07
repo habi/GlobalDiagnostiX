@@ -24,7 +24,7 @@ GPIO.setup(Pin, GPIO.OUT)
 # lather, rinse, repeat for 'steps' steps
 sleepytime = 0.5
 steps = 5
-for Iteration in range(20):
+for Iteration in range(steps):
 	if is_even(Iteration):
 		print str(Iteration +1) + '/' + str(steps),'| Pin',Pin,'high for',sleepytime,'s'
 		GPIO.output(Pin, GPIO.HIGH)
