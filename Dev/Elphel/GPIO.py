@@ -13,7 +13,9 @@ try:
 except:
 	print 'I cannot import RPI.GPIO, you have to run the script as root'
 	print 'try running it again with'
+	print '---'
 	print 'sudo',' '.join(sys.argv) # joining the sys.argv list to a string so we can print it
+	print '---'
 	sys.exit(1)
 
 try:
@@ -40,11 +42,11 @@ GPIO.setup(Pin, GPIO.OUT)
 # lather, rinse, repeat for 'steps' steps
 for Iteration in range(steps):
 	if is_even(Iteration):
-		print str("%.02d" % (Iteration + 1)) + '/' + str(steps),'| Pin',Pin,'^ for',sleepytime,'s'
+		print str("%.02d" % (Iteration + 1)) + '/' + str("%.02d" % (steps)),'| Pin',Pin,'^ for',sleepytime,'s'
 		GPIO.output(Pin, GPIO.HIGH)
 		time.sleep(sleepytime)
 	else:
-		print str("%.02d" % (Iteration + 1)) + '/' + str(steps),'| Pin',Pin,'v for',sleepytime,'s'
+		print str("%.02d" % (Iteration + 1)) + '/' + str("%.02d" % (steps)),'| Pin',Pin,'v for',sleepytime,'s'
 		GPIO.output(Pin, GPIO.LOW)
 		time.sleep(sleepytime)
 
