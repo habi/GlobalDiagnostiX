@@ -40,11 +40,11 @@ GPIO.setup(Pin, GPIO.OUT)
 # lather, rinse, repeat for 'steps' steps
 for Iteration in range(steps):
 	if is_even(Iteration):
-		print str(Iteration +1) + '/' + str(steps),'| Pin',Pin,'high for',sleepytime,'s'
+		print str("%.02d" % (Iteration + 1)) + '/' + str(steps),'| Pin',Pin,'^ for',sleepytime,'s'
 		GPIO.output(Pin, GPIO.HIGH)
 		time.sleep(sleepytime)
 	else:
-		print str(Iteration +1) + '/' + str(steps),'| Pin',Pin,'low for',sleepytime,'s'
+		print str("%.02d" % (Iteration + 1)) + '/' + str(steps),'| Pin',Pin,'v for',sleepytime,'s'
 		GPIO.output(Pin, GPIO.LOW)
 		time.sleep(sleepytime)
 
