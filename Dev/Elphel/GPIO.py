@@ -40,15 +40,20 @@ GPIO.setup(Pin, GPIO.OUT)
 
 # set RPi board pin selected above to high for a certain time, wait, set it low
 # lather, rinse, repeat for 'steps' steps
-for Iteration in range(steps):
-	if is_even(Iteration):
-		print str("%.02d" % (Iteration + 1)) + '/' + str("%.02d" % (steps)),'| Pin',Pin,'^ for',sleepytime,'s'
-		GPIO.output(Pin, GPIO.HIGH)
-		time.sleep(sleepytime)
-	else:
-		print str("%.02d" % (Iteration + 1)) + '/' + str("%.02d" % (steps)),'| Pin',Pin,'v for',sleepytime,'s'
-		GPIO.output(Pin, GPIO.LOW)
-		time.sleep(sleepytime)
+try:
+	for Iteration in range(steps):
+		if is_even(Iteration):
+			print str("%.02d" % (Iteration + 1)) + '/' + str("%.02d" % (steps)),'| Pin',Pin,'^ for',sleepytime,'s'
+			GPIO.output(Pin, GPIO.HIGH)
+			time.sleep(sleepytime)
+		else:
+			print str("%.02d" % (Iteration + 1)) + '/' + str("%.02d" % (steps)),'| Pin',Pin,'v for',sleepytime,'s'
+			GPIO.output(Pin, GPIO.LOW)
+			time.sleep(sleepytime)
+except KeyboardInterrupt:
+	print
+	print 'User aborted sequence, goodbye'
+	pass
 
 # Reset every channel that has been set up by this program to INPUT with no pullup/pulldown and no event detection.
 GPIO.cleanup()
