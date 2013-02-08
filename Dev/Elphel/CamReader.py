@@ -106,9 +106,9 @@ if options.Images:
 # and save it, so that the same URL can be used over and over each time
 # providing the next acuired image
 
-CamURL = 'http://192.168.0.9:8081/'
-StartURL = CamURL + 'towp/save'
-ImageURL = CamURL + 'torp/wait/img/next/save'
+CamIP = 'http://192.168.0.9:8081/'
+StartURL = CamIP + 'towp/save'
+ImageURL = CamIP + 'torp/wait/img/next/save'
 
 # The command below sets and saves the current camera pointer.
 urllib.urlopen(StartURL)
@@ -147,7 +147,7 @@ elif options.Show:
 		while True:
 			FileName = 'Snapshot_' + str('%.04d' % Counter) + '.jpg'
 			DownScale = 10
-			urllib.urlretrieve(CamURL + 'img',os.path.join(os.getcwd(),SubDirName,FileName))
+			urllib.urlretrieve(CamIP + 'img',os.path.join(os.getcwd(),SubDirName,FileName))
 			if options.Verbose:
 				print 'I have written image',Counter,'as',os.path.join(os.getcwd(),SubDirName,FileName)	
 			plt.imshow(
@@ -167,6 +167,15 @@ elif options.Show:
 		ioff() # switch back to normal matplotlib behaviour
 		pass
 elif options.Trigger:
+	# Set Exposure via PHP call	
+	PHPCommand = 'wget',CamIP + 'parsedit.php?title=Setting+Exposure+Parameters' +\
+		'&EXPOS' +\
+		'&AUTOEXP_ON' +\
+		'&AUTOEXP_EXP_MAX' +\
+		'&AEXP_FRACPIX' +\
+		'&AEXP_LEVEL'
+	os.system(' '.join(PHPCommand))
+	sys.exit()
 	# Try to import the GPIO library
 	try:
 		import RPi.GPIO as GPIO
