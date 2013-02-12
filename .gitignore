@@ -21,6 +21,7 @@ OfflineMedia
 .squeak/
 .ssh/
 .xsession-errors
+.xsession-errors.old
 .gitconfig
 .imagej/
 

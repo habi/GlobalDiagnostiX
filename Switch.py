@@ -30,14 +30,14 @@ Parser.add_option('-p', '--PSI', dest='PSI',
 (Options, Arguments) = Parser.parse_args()
 
 if Options.DHCP or Options.PSI:
-    print ('Setting network interface to "PSI" with'
+    print ('Setting network interface to "PSI" with '
            '"sudo dhclient eth0 > /dev/null"')
     os.system('sudo dhclient eth0 > /dev/null')
     print
-    print ('Unplug the Ethernet cable from the Camera, plug in the PSI'
+    print ('Unplug the Ethernet cable from the Camera, plug in the PSI '
            'Ethernet cable and interweb')
 elif Options.Elphel:
-    print ('Setting network interface to "Elphel" with'
+    print ('Setting network interface to "Elphel" with '
            '"sudo ifconfig eth0 192.168.0.1 > /dev/null"')
     os.system('sudo ifconfig eth0 192.168.0.1 > /dev/null')
     print
