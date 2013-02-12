@@ -106,9 +106,9 @@ if options.Images:
 # and save it, so that the same URL can be used over and over each time
 # providing the next acuired image
 
-CamIP = 'http://192.168.0.9:8081/'
-StartURL = CamIP + 'towp/save'
-ImageURL = CamIP + 'torp/wait/img/next/save'
+CamIP = 'http://192.168.0.9'
+StartURL = CamIP + ':8081/towp/save'
+ImageURL = CamIP + ':8081/torp/wait/img/next/save'
 
 # The command below sets and saves the current camera pointer.
 urllib.urlopen(StartURL)
@@ -168,13 +168,16 @@ elif options.Show:
 		pass
 elif options.Trigger:
 	# Set Exposure via PHP call	
-	CameraCommand = 'wget',CamIP + 'parsedit.php?title=Setting+Exposure+Parameters' +\
-		'&AUTOEXP_ON=0' +\ # turn off auto-exposure, so we can set it below
-		'&EXPOS' + options.Trigger*1000 +\ # set exposure time to 'Exposure time in microseconds'. We input it in ms, so we multiply by 1000
-		'&WB_EN=0' +\ # turn off white balance
-		'&WOI_WIDTH=10000&WOI_HEIGHT=10000'# reset sensor to full size ("Sensor width is 'reduced' to full sensor if set to 10000")
-	print ' '.join(CameraCommand)
-	os.system(' '.join(CameraCommand))
+	CameraCommand = 'wget "' + str(CamIP) + '/parsedit.php?title=Setting+triggered+exposure+parameters'
+	CameraCommand += '&AUTOEXP_ON=0' # turn off auto-exposure
+	CameraCommand += '&EXPOS=' + str(options.Trigger*1000) # set exposure time to 'Exposure time in microseconds'. We input it in ms, so we multiply by 1000
+	CameraCommand += '&WB_EN=0' # turn off white balance
+	CameraCommand += '&WOI_WIDTH=10000&WOI_HEIGHT=10000' # reset sensor to full size ("Sensor width is 'reduced' to full sensor if set to 10000")
+	CameraCommand += '&TRIG=4"' # set camera to be triggered
+	#~ CameraCommand += ' -O CamCommand.xml' # save wget output to a file
+	CameraCommand += ' --delete-after' # delete wget output afterwards
+	print CameraCommand
+	#~ os.system(' '.join(CameraCommand))
 	sys.exit()
 	# Try to import the GPIO library
 	try:
