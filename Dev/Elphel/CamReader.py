@@ -168,13 +168,13 @@ elif options.Show:
 		pass
 elif options.Trigger:
 	# Set Exposure via PHP call	
-	PHPCommand = 'wget',CamIP + 'parsedit.php?title=Setting+Exposure+Parameters' +\
-		'&EXPOS' +\
-		'&AUTOEXP_ON' +\
-		'&AUTOEXP_EXP_MAX' +\
-		'&AEXP_FRACPIX' +\
-		'&AEXP_LEVEL'
-	os.system(' '.join(PHPCommand))
+	CameraCommand = 'wget',CamIP + 'parsedit.php?title=Setting+Exposure+Parameters' +\
+		'&AUTOEXP_ON=0' +\ # turn off auto-exposure, so we can set it below
+		'&EXPOS' + options.Trigger*1000 +\ # set exposure time to 'Exposure time in microseconds'. We input it in ms, so we multiply by 1000
+		'&WB_EN=0' +\ # turn off white balance
+		'&WOI_WIDTH=10000&WOI_HEIGHT=10000'# reset sensor to full size ("Sensor width is 'reduced' to full sensor if set to 10000")
+	print ' '.join(CameraCommand)
+	os.system(' '.join(CameraCommand))
 	sys.exit()
 	# Try to import the GPIO library
 	try:
