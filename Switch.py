@@ -15,17 +15,17 @@ Parser = OptionParser()
 Usage = 'Usage: % prog [Options] arg'
 
 Parser.add_option('-e', '--Elphel', dest='Elphel',
-                  help='(Switch the network interface to work with the Elphel '
-                  'camera (default)',
+                  help='Switch the network interface to work with the '
+                  'Elphel camera (default)s',
                   default=True,
                   action='store_true')
 Parser.add_option('-d', '--DHCP', dest='DHCP',
-                  help='Switch the network interface to *D*HCP, to work '
-                  'with PSI ethernet',
+                  help='Switch the network interface to *D*HCP, to '
+                  'work with PSI ethernet',
                   action='store_true')
 Parser.add_option('-p', '--PSI', dest='PSI',
-                  help='Switch the network interface to DHCP, to work with '
-                  '*P*SI ethernet',
+                  help='Switch the network interface to DHCP, to work '
+                  'with *P*SI ethernet',
                   action='store_true')
 (Options, Arguments) = Parser.parse_args()
 
