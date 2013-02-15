@@ -248,7 +248,7 @@ elif options.Trigger:
     else:
         FileName = 'Triggered_' + str(options.Trigger) + '_' + str(time.time()) + '.jpg'
     print FileName
-    urllib.urlretrieve('http://192.168.0.9:8081/trig/pointers', os.path.join(os.getcwd(), SubDirName, 'Triggered'', FileName))
+    urllib.urlretrieve('http://192.168.0.9:8081/trig/pointers', os.path.join(os.getcwd(), SubDirName, 'Triggered', FileName))
     # Reset RPi channels after we're done
     GPIO.cleanup()
 
