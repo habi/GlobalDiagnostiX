@@ -35,7 +35,7 @@ if Options.DHCP or Options.PSI:
     os.system('sudo dhclient eth0 > /dev/null')
     print
     print ('Unplug the Ethernet cable from the Camera, plug in the PSI '
-           'Ethernet cable and interweb')
+          'Ethernet cable and interweb')
 elif Options.Elphel:
     print ('Setting network interface to "Elphel" with '
            '"sudo ifconfig eth0 192.168.0.1 > /dev/null"')
@@ -45,13 +45,15 @@ elif Options.Elphel:
            'wait a while for the camera to boot')
 
 if Options.DHCP or Options.PSI:
-    print 'If you just switched from Elphel to to PSI,'
-    print ' then it is probably a good idea to run'
-    print 'cd;bash SyncToAFS.cmd'
-    print ('to rsync all changes in the home directory to '
-           '/afs/EssentialMed/Dev/RPI')
-    print 'and maybe also do a "git commit -a" and a "git push"'
+    print ('If you just switched from Elphel to to PSI, then it is probably '
+           'a good idea commit all your changes and push them to the remote '
+           'repository. You can then pull all versioned changes from there.')
     print '---'
-    print 'cd;bash SyncToAFS.cmd;git commit -a;git push'
+    print 'cd;git commit -a;git push'
     print '---'
     print 'would to that all at once...'
+    print
+    print 'Or you can copy all the non-versioned stuff to AFS with'
+    print '---'
+    print 'cd;bash SyncToAFS.cmd'
+    print '---'
