@@ -122,15 +122,17 @@ if options.Trigger:
     except:
         print 'Directory', os.path.join(os.getcwd(), SubDirName, 'Triggered'), 'already exists.'
 
-# According to the Imgsrv-page on the elphel-Wiki one should call
-# http://<camera-ip>:8081/towp/save
-# first to set the current pointer and save it
-# and then to repeat for each image
-# http://<camera-ip>:8081/torp/wait/img/next/save
-# to set the current pointer to the global read pointer and to wait for
-# 3 the image to become available, transfer the image, advance the pointer
-# and save it, so that the same URL can be used over and over each time
-# providing the next acuired image
+'''
+According to http://wiki.elphel.com/index.php?title=Imgsrv#imgsrv_usage one
+call 'http://<camera-ip>:8081/towp/save'
+to set the current pointer and save it to the global image pointer.
+For each subsequent image, one can then repeatedly call
+'http://<camera-ip>:8081/torp/wait/img/next/save' to set the current pointer to
+the global read pointer (torp) and to wait for the image at that pointer to be
+ready (wait). The image is then transferred (img), the pointer advanced (next)
+and saved again (save). This means that the same URL can be called again and
+again and always provides the next image.
+'''
 
 CamIP = 'http://192.168.0.9'
 StartURL = CamIP + ':8081/towp/save'
