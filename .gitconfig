@@ -1,0 +1,12 @@
+[user]
+	name = David Haberthür
+	email = email@davidhaberthuer.ch
+[core]
+	editor = nano
+[difftool]
+	prompt = false
+[alias]
+	dt = difftool
+	l = log --graph --pretty=format:'%C(red)%h%Creset%C(green)%d%Creset %C(black)%s%Creset %C(white dim)(by %an %ar)%Creset'
+	ll = !git l --all
+
