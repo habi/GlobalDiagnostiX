@@ -5,14 +5,29 @@ The aim is to be able to interact with an [Elphel](http://elphel.com) camera and
 
 ## Prerequisites
 - According to the [Embedded Linux Wiki](http://elinux.org/RPi_SD_cards), a Transcend 16GB SDHC card is working well. Order one from [Digitec](https://www.digitec.ch/ProdukteDetails2.aspx?Reiter=Details&Artikel=194092) for (currently) 24 CHF.
-- Download the [Raspbian Installer](http://www.raspbian.org/RaspbianInstaller) onto the SD card.
-- Plug in this SD card and boot your Raspberry Pi from it to install a current version of [Raspbian](http://www.raspbian.org/).
-- Follow the [directions from the Installer page])(http://www.raspbian.org/RaspbianInstaller), they are not always self-explaining in the GUI.
-- Give the root user a sensible password and make a new user, for day-to-day use (I chose user 'gdx', with a sensible password).
-- Wait for a long while for the setup to complete.
+- Download the [BerryBoot Installer](http://www.berryterminal.com/doku.php/berryboot) and unzip it onto your SD card
+- Boot your Raspberry Pi from this SD card to install a current version of [Raspbian](http://www.raspbian.org/) or any other operating system.
+- Reboot, and go through `raspi-config` to reconfigure locales, keyboard and timezone if necessary
 
 ## Further setup
-	apt-get update
-	apt-get upgrade
-	apt-get install geany, git, imagemagick, scipy, numpy
-	
+	sudo apt-get update				                # update the repositories
+	sudo apt-get upgrade				            # upgrade the system to the newest packages
+	sudo apt-get install libblas-dev		        # good for scipy and numpy, see also http://raspberrypi.stackexchange.com/a/1730
+	sudo apt-get install liblapack-dev              # ditto
+	sudo apt-get install python-dev                 # we want to develop in python
+	sudo apt-get install libatlas-base-dev          # speeds up execution according to http://is.gd/H7zqxv
+	sudo apt-get install gfortran                   # compiler for scipy and numpy
+	sudo apt-get install python-setuptools          # helps with download, build and installation of Python packages
+	sudo apt-get install python-scipy               # install scipy
+	sudo apt-get install python-numpy               # install numpy
+	sudo apt-get install python-matplotlib          # no plotting without it
+	sudo apt-get install ipython                    # interactive Pythoning
+	sudo apt-get install geany                      # my preferred Python IDE
+	sudo apt-get install imagemagick                # do some image magic
+	sudo apt-get install git                        # version that code!
+	sudo apt-get install chromium-browser           # faster than Midori according to http://is.gd/8Hgfcc
+
+# Tweaks
+- set up git (username, email)
+- set up pep8
+- do we need to boot into the X-server every time?
