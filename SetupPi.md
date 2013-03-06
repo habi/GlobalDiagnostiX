@@ -10,8 +10,17 @@ The aim is to be able to interact with an [Elphel](http://elphel.com) camera and
 - Reboot, and go through `raspi-config` to reconfigure locales, keyboard and timezone if necessary
 
 ## Further setup
-	sudo apt-get update				                # update the repositories
-	sudo apt-get upgrade				            # upgrade the system to the newest packages
+- Update the repositories and upgrade the system to the newest packages with:
+	sudo apt-get update && sudo apt-get upgrade
+
+- Reboot
+- Install git and pull the GlobalDiagnostiX repository into your home folder. This should also take care of the `git` configuration, since we're also pulling `.gitconfig`.
+
+	sudo apt-get install git
+	cd; git clone git@github.com:habi/GlobalDiagnostiX.git
+
+- Copy the lines below from `~/SetupPi.md` to install all the other repositories. This will long, go and have a coffe! You can either do it line by line (below, with explanations) or just copy the line at the bottom which does everything in one go. In the second case you can go and have two coffees...
+
 	sudo apt-get install libblas-dev		        # good for scipy and numpy, see also http://raspberrypi.stackexchange.com/a/1730
 	sudo apt-get install liblapack-dev              # ditto
 	sudo apt-get install python-dev                 # we want to develop in python
@@ -24,10 +33,10 @@ The aim is to be able to interact with an [Elphel](http://elphel.com) camera and
 	sudo apt-get install ipython                    # interactive Pythoning
 	sudo apt-get install geany                      # my preferred Python IDE
 	sudo apt-get install imagemagick                # do some image magic
-	sudo apt-get install git                        # version that code!
 	sudo apt-get install chromium-browser           # faster than Midori according to http://is.gd/8Hgfcc
 
+    sudo apt-get install libblas-dev liblapack-dev python-dev libatlas-base-dev gfortran python-setuptools python-scipy python-numpy python-matplotlib ipython geany imagemagick chromium-browser
+
 # Tweaks
-- set up git (username, email)
 - set up pep8
 - do we need to boot into the X-server every time?
