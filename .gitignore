@@ -9,3 +9,11 @@
 .pulse/
 .ssh/
 .xsession-errors
+.bash_logout
+.bashrc
+.imagej/
+.matplotlib/
+.pki/
+.profile
+Desktop/
+Dev/Elphel/Images/
