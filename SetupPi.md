@@ -50,4 +50,9 @@ The aim is to be able to interact with an [Elphel](http://elphel.com) camera and
 - Install and set up `pep8` (http://www.venkysblog.com/pep8-and-pylint-in-geany)
 	- sudo easy_install pep8
 	- Follow http://www.venkysblog.com/pep8-and-pylint-in-geany
-
+- Buy a small monitor
+	- I bought http://bit.ly/10N9MbN and used a 12V power supply we had at TOMCAT.
+	- Setup the composite (yellow) output to support the resolution of the monitor (PAL or NTSC, 480x272)
+		- Go to 'Edit menu' in the BerryBoot boot menu, click on the arrow on top right to go to "Advanced configuration" and edit the config.txt. See [this post in the RPI forum](http://raspberrypi.org/phpBB3//viewtopic.php?f=26&t=16403) for a screenshot.
+		- add `framebuffer_width=480` and `sdtv_aspect=3`, according to http://elinux.org/RPiconfig#Video_mode_options
+		- Reboot with 'Exit'
