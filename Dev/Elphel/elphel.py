@@ -22,6 +22,7 @@ for i in range(options.Images):
 	print 'writing image',i,'/',len(range(options.Images))
 	# get the url of the camera which spit out an image
 	# save the image to 'SaveDir', with an unique name based on the current time
-	urllib.urlretrieve("http://192.168.0.9:8081/wait/img",os.path.join(SaveDir,str(time.time()) + '.jpg'))
+	urllib.urlretrieve("http://192.168.0.9:8081/wait/img",
+					   os.path.join(SaveDir,str(time.time()) + '.jpg'))
 
 print 'saved to',SaveDir

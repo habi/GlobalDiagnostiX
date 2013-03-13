@@ -35,7 +35,7 @@ if Options.DHCP or Options.PSI:
     os.system('sudo dhclient eth0 > /dev/null')
     print
     print ('Unplug the Ethernet cable from the Camera, plug in the PSI '
-          'Ethernet cable and interweb')
+           'Ethernet cable and interweb')
 elif Options.Elphel:
     print ('Setting network interface to "Elphel" with '
            '"sudo ifconfig eth0 192.168.0.1 > /dev/null"')
