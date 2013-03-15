@@ -3,7 +3,10 @@
 .cache/
 .config/
 .dbus/
+.dillo/
 .esd_auth
+.fltk/
+.gftp/
 .local/
 .pulse-cookie
 .pulse/
@@ -16,4 +19,5 @@
 .pki/
 .profile
 Desktop/
-Dev/Elphel/Images/
+*.*~
+Dev/Elphel/Images
