@@ -5,22 +5,22 @@ FTP this file to ftp://CameraIP/var/html and look at it at
 http://CameraIP/var/globaldiagnostix.php
 */
 
-echo "Hallihallo"
+echo "Hallihallo<br/>";
 
 echo "Original state was=".elphel_get_state()."<br/>\n";
 if (elphel_get_state()>7) {  //! compressor is running
-	echo "1"
+	echo "1<br/>";
 	elphel_compressor_stop(); //! stop it
-	echo "2"
+	echo "2<br/>";
 	//! while (elphel_get_state()>7) usleep (100000) ; //! just wait - will wait forever if async mode
-	echo "3
+	echo "3<br/>";
 	elphel_compressor_reset(); //! Maybe needed twice
-	echo "4"
+	echo "4<br/>";
 	elphel_compressor_reset(); //! Maybe needed twice
 }
 echo "Before sensor reset state was=".elphel_get_state()."<br/>\n";
 
-echo "Hallihallo"
+echo "<br/>Hallihallo<br/><br/>";
 
 echo "Image before doing anything<br/>";
 echo "<a href='http://192.168.0.9:8081/img'>
