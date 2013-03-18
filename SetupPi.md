@@ -58,6 +58,7 @@ You can either do it line by line (below, with explanations) or just copy the li
 - Install and set up `pep8`
 	- `sudo easy_install pep8`
 	- Follow [this guide](http://www.venkysblog.com/pep8-and-pylint-in-geany) to set up `pep8` in Geany.
+	- [Generate and setup SSH keys](https://help.github.com/articles/generating-ssh-keys) for easy commiting to Github
 - Buy a small monitor
 	- I bought http://bit.ly/10N9MbN and used a 12V power supply we had at TOMCAT.
 	- Setup the composite (yellow) output to support the resolution of the monitor (PAL or NTSC, 480x272)
