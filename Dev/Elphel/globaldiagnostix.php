@@ -43,39 +43,46 @@ echo "<h2>Image before doing anything</h2>\n";
 //echo "Image ".elphel_get_frame()." with an exposure time of ".(elphel_get_P_value(ELPHEL_EXPOS) / 1000)." msec<br>";
 //echo "<br>\n";
 
-echo "Setting parameter <pre>"; print_r($parameters); echo "</pre><br />\n";
+echo "The state of the AE before we do anything is ".elphel_get_P_value(ELPHEL_AUTOEXP_ON)."<br>";
+echo "you can set it by http://camearip/gdx.php?autoexposure=1 or http://camearip/gdx.php?autoexposure=0<br>";
+echo "<br>";
+echo "<br>";
 
-elphel_set_P_value(ELPHEL_AUTOEXP_ON,0);
-elphel_wait_frame();
-elphel_wait_frame();
-elphel_wait_frame();
+echo "The setting parameters from the URL are <pre>"; print_r($parameters); echo "</pre><br />\n";
 
-echo "exp is = ".elphel_get_P_value(ELPHEL_AUTOEXP_ON)."<br>\n";
-elphel_set_P_value(ELPHEL_AUTOEXP_ON,1);
-elphel_wait_frame();
-elphel_wait_frame();
-elphel_wait_frame();
-echo "exp is = ".elphel_get_P_value(ELPHEL_AUTOEXP_ON)."<br>\n";
+elphel_set_P_value(ELPHEL_AUTOEXP_ON,$parameters["autoexposure"]);
+// wait for at least three frames for the setting to stick
+for ( $counter = 0; $counter < $frame_delay; $counter += 1) { 
+	elphel_wait_frame();
+	}
 
 /*
-elphel_set_P_value(ELPHEL_AUTOEXP_ON,0);
-elphel_wait_frame();
-
 if (elphel_get_P_value(ELPHEL_AUTOEXP_ON) ==  1) // if on, turn it off
 	{
 	echo "Auto exposure is on, turning it off<br>\n";
 	elphel_set_P_value(ELPHEL_AUTOEXP_ON,0);
-	elphel_wait_frame();
+	for ( $counter = 0; $counter < $frame_delay; $counter += 1) { 
+		elphel_wait_frame();
+		}
 	}
 
 if (elphel_get_P_value(ELPHEL_AUTOEXP_ON) ==  0) // if off, turn it on
 	{
 	echo "Auto exposure is off, turning it on<br>\n";
 	elphel_set_P_value(ELPHEL_AUTOEXP_ON,1);
-	elphel_wait_frame();
+	for ( $counter = 0; $counter < $frame_delay; $counter += 1) { 
+		elphel_wait_frame();
+		}
 	}
+*/
 
-echo "exp is = ".elphel_get_P_value(ELPHEL_AUTOEXP_ON)."<br>\n";
+echo "Auto exposure is now '";
+if (elphel_get_P_value(ELPHEL_AUTOEXP_ON) == 1)
+	echo "on";
+elseif (elphel_get_P_value(ELPHEL_AUTOEXP_ON) == 0)
+	echo "off";
+echo "'<br>\n";
+
 echo "done<br>\n";
 /*
 if (elphel_get_P_value(ELPHEL_AUTOEXP_ON) == 1)
