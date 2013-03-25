@@ -2,10 +2,9 @@
 /*
 PHP script based on "camera_demo.php" from the [Elphel repository](http://is.gdvMSmPS)
 and http://cameraIP/usr/html/setparameters_demo.php"
-FTP this file to ftp://CameraIP/var/html and look at it at
+FTP this file to ftp://CameraIP/var/html (use "curl -T globaldiagnostix.php
+ftp://192.168.0.9/var/html/ --user root:pass") and look at it at
 http://CameraIP/var/globaldiagnostix.php
-
-You need to set the trigger beforehand http://192.168.0.9/parsedit.php?TRIG=4
 */
 
 // Read Parameters from URL as http://url?key1=value1&key2=value2
@@ -32,9 +31,21 @@ function convert($s) {
         return intval($s);
 }
 
+/*
+get the current URL [http://is.gd/vllbf] and use
+echo print_r($_SERVER);
+to see all the variables available (as seen in the first comment on
+http://stackoverflow.com/a/189113/323100).
+*/ 
+$url="http://".$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+
 // Give out some HTML code, so that we actually have a nice page
 echo "<html>\n<head>\n<title>GlobalDiagnostiX - PHP</title>\n</head>\n<body>\n";
 echo "<h1>GlobalDiagnostiX exposure settings page</h1>\n";
+echo "<h2>Parameters before doing anything</h2>\n";
+echo "Automatic exposure = ".elphel_get_P_value(ELPHEL_AUTOEXP_ON).".<br>";
+echo "Exposure =  ".elphel_get_P_value(ELPHEL_EXPOS)." usec.<br>";
+
 echo "<h2>Image before doing anything</h2>\n";
 
 // Show first image 
@@ -43,73 +54,34 @@ echo "<h2>Image before doing anything</h2>\n";
 //echo "Image ".elphel_get_frame()." with an exposure time of ".(elphel_get_P_value(ELPHEL_EXPOS) / 1000)." msec<br>";
 //echo "<br>\n";
 
-echo "The state of the AE before we do anything is ".elphel_get_P_value(ELPHEL_AUTOEXP_ON)."<br>";
-echo "you can set it by http://camearip/gdx.php?autoexposure=1 or http://camearip/gdx.php?autoexposure=0<br>";
-echo "<br>";
 echo "<br>";
 
-echo "The setting parameters from the URL are <pre>"; print_r($parameters); echo "</pre><br />\n";
-
-elphel_set_P_value(ELPHEL_AUTOEXP_ON,$parameters["autoexposure"]);
-// wait for at least three frames for the setting to stick
-for ( $counter = 0; $counter < $frame_delay; $counter += 1) { 
-	elphel_wait_frame();
-	}
-
-/*
-if (elphel_get_P_value(ELPHEL_AUTOEXP_ON) ==  1) // if on, turn it off
+// only set parameters if requested, i.e !isempty($parameters)
+if ( !empty( $parameters))
 	{
-	echo "Auto exposure is on, turning it off<br>\n";
-	elphel_set_P_value(ELPHEL_AUTOEXP_ON,0);
+	echo "The setting parameters from the URL are <pre>"; print_r($parameters); echo "</pre><br />\n";
+	echo "Setting AE ";
+	if ($parameters["autoexposure"] == 0) 
+		echo "'off'. ";
+	elseif ($parameters["autoexposure"] == 1) 
+		echo "'on'. ";
+	elphel_set_P_value(ELPHEL_AUTOEXP_ON,$parameters["autoexposure"]);
+	// wait for at least three frames for the setting to stick
 	for ( $counter = 0; $counter < $frame_delay; $counter += 1) { 
 		elphel_wait_frame();
 		}
 	}
+echo "<br>\n";
 
-if (elphel_get_P_value(ELPHEL_AUTOEXP_ON) ==  0) // if off, turn it on
-	{
-	echo "Auto exposure is off, turning it on<br>\n";
-	elphel_set_P_value(ELPHEL_AUTOEXP_ON,1);
-	for ( $counter = 0; $counter < $frame_delay; $counter += 1) { 
-		elphel_wait_frame();
-		}
-	}
-*/
-
-echo "Auto exposure is now '";
+echo "Auto exposure is '";
 if (elphel_get_P_value(ELPHEL_AUTOEXP_ON) == 1)
 	echo "on";
 elseif (elphel_get_P_value(ELPHEL_AUTOEXP_ON) == 0)
 	echo "off";
-echo "'<br>\n";
+echo "'. Click the links here to turn it either '<a href='".$url."?autoexposure=1'>ON</a>' or '<a href='".$url."?autoexposure=0'>OFF</a>'.<br>\n";
 
-echo "done<br>\n";
-/*
-if (elphel_get_P_value(ELPHEL_AUTOEXP_ON) == 1)
-	echo "Auto exposure is currently on<br>\n";
-elseif (elphel_get_P_value(ELPHEL_AUTOEXP_ON) == 0)
-	echo "Auto exposure is currently off<br>\n";
-echo "<br>\n";
-echo "hello2";
-*/
-
-/*
-echo "exp is =".elphel_get_P_value(ELPHEL_AUTOEXP_ON)."<br>\n";
-
-elphel_set_P_value(ELPHEL_AUTOEXP_ON,1);
-
-echo "hello";
-echo "<br>\n";
-echo elphel_get_P_value(ELPHEL_AUTOEXP_ON);
-echo "<br>\n";
-if (elphel_get_P_value(ELPHEL_AUTOEXP_ON) == 1)
-	echo "Auto exposure is currently on<br>\n";
-elseif (elphel_get_P_value(ELPHEL_AUTOEXP_ON) == 0)
-	echo "Auto exposure is currently off<br>\n";
-echo "<br>\n";
-echo "hello2";
-
-*/
+if ( isset ( $parameters["exposure"] ) )
+	echo "SETTING EXPOSURE";
 
 /*
 if (isset($_GET['EXPOS']))
