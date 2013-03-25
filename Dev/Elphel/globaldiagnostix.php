@@ -46,7 +46,7 @@ echo "<html>\n<head>\n	<title>GlobalDiagnostiX - PHP</title>\n</head>\n<body>\n"
 echo "<h1>GlobalDiagnostiX exposure settings page</h1>\n";
 echo "<h2>Parameters before doing anything</h2>\n";
 echo "Automatic exposure = ".elphel_get_P_value(ELPHEL_AUTOEXP_ON).".<br />\n";
-echo "Exposure =  ".elphel_get_P_value(ELPHEL_EXPOS)." usec.<br />\n";
+echo "Exposure = ".elphel_get_P_value(ELPHEL_EXPOS)." usec.<br />\n";
 
 echo "<h2>Image before doing anything</h2>\n";
 echo "<a href='http://".$_SERVER['HTTP_HOST'].":8081/img'>\n<img src='http://".$_SERVER['HTTP_HOST'].":8081/img' width='200' alt='Image before settings change'>\n</a><br />\n";
@@ -58,9 +58,12 @@ elseif (elphel_get_P_value(ELPHEL_AUTOEXP_ON) == 0)
 	echo "off";
 echo ".<br />\n";
 
-// only show parameters if we are actually setting them, i.e $parameters is not empty
-if ( !empty( $parameters))
+// only show parameters if we are actually setting them, i.e when $parameters is not empty
+if ( !empty( $parameters ) )
+	{
+	echo "<br />\n";
 	echo "The setting parameters from the URL are <pre>\n"; print_r($parameters); echo "</pre><br />\n";
+	}
 echo "<br />\n";
 
 if ( isset ( $parameters["exposure"] ) )
@@ -89,6 +92,5 @@ if ( isset ( $parameters["autoexposure"] ) )
 for ( $counter = 0; $counter <= $frame_delay; $counter += 1) { 
 	elphel_wait_frame();
 	}
-
 
 ?>
