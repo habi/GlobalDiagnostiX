@@ -41,7 +41,8 @@ elif Options.Elphel:
            '"sudo ifconfig eth0 192.168.0.1 > /dev/null"')
     os.system('sudo ifconfig eth0 192.168.0.1 > /dev/null')
     print
-    print ('Uplug the PSI Ethernet cable, plug in the Elphel cable and '
+    print ('Uplug the PSI Ethernet cable, plug in both ends of the Elphel '
+	   'ethernet cable, powercycle the camera with the POE supply and '
            'wait a while for the camera to boot')
 
 if Options.DHCP or Options.PSI:
