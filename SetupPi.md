@@ -49,13 +49,16 @@ You can either do it line by line (below, with explanations) or just copy the li
 		sudo apt-get install ftp		# so we can `ftp`stuff to the camera
 		sudo apt-get install gftp		# so we can graphically `ftp`stuff to the camera
 		sudo apt-get install gedit		# graphical text editor
-		sudo apt-get install numlockx		# set numlock on boot
 
     - All in one go:
 
-		sudo apt-get install libblas-dev liblapack-dev python-dev libatlas-base-dev gfortran python-setuptools python-scipy python-numpy python-matplotlib ipython geany imagemagick imagej chromium-browser screen telnet ftp gftp gedit numlockx
+		sudo apt-get install libblas-dev liblapack-dev python-dev libatlas-base-dev gfortran python-setuptools python-scipy python-numpy python-matplotlib ipython geany imagemagick imagej chromium-browser screen telnet ftp gftp gedit
 
 # Tweaks
+- Num Lock on boot (according to [RPi-forum](http://is.gd/Fa0DxF)
+	- `sudo nano /etc/kbd/config`
+	- CTRL+V two or three times to go to line 67
+	- remove the comment in front of "LEDS=+num"
 - Install and set up `pep8`
 	- `sudo easy_install pep8`
 	- Follow [this guide](http://www.venkysblog.com/pep8-and-pylint-in-geany) to set up `pep8` in Geany.
