@@ -49,7 +49,7 @@ echo "Automatic exposure = ".elphel_get_P_value(ELPHEL_AUTOEXP_ON).".<br />\n";
 echo "Exposure = ".elphel_get_P_value(ELPHEL_EXPOS)." usec.<br />\n";
 
 echo "<h2>Image before doing anything</h2>\n";
-echo "<a href='http://".$_SERVER['HTTP_HOST'].":8081/img'>\n<img src='http://".$_SERVER['HTTP_HOST'].":8081/img' width='200' alt='Image before settings change'>\n</a><br />\n";
+echo "<a href='http://".$_SERVER['HTTP_HOST'].":8081/img'>\n<img src='http://".$_SERVER['HTTP_HOST'].":8081/img/save' width='200' alt='Image before settings change'>\n</a><br />\n";
 echo "Image ".elphel_get_frame()." with an exposure time of ";
 echo (elphel_get_P_value(ELPHEL_EXPOS) / 1000)." msec, auto exposure = ";
 if (elphel_get_P_value(ELPHEL_AUTOEXP_ON) == 1)
@@ -77,7 +77,7 @@ echo "<h2>Image after updated settings</h2>\n";
 for ( $counter = 0; $counter <= $frame_delay; $counter += 1) { 
 	elphel_wait_frame();
 	}
-echo "<a href='http://".$_SERVER['HTTP_HOST'].":8081/bimg'>\n<img src='http://".$_SERVER['HTTP_HOST'].":8081/".elphel_get_frame()."/bimg' width='200' alt='Image after settings change'>\n</a><br />\n";
+echo "<a href='http://".$_SERVER['HTTP_HOST'].":8081/img'>\n<img src='http://".$_SERVER['HTTP_HOST'].":8081/torp/prev/prev/prev/bimg' width='200' alt='Image after settings change'>\n</a><br />\n";
 echo "Image ".elphel_get_frame()." with an exposure time of ".(elphel_get_P_value(ELPHEL_EXPOS) / 1000)." msec<br />\n";
 
 echo "<br />\n";
