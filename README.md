@@ -4,8 +4,9 @@ I'm trying to work with an [Elphel](http://elphel.com)-camera connected to a [Ra
 
 * /Dev/Elphel/CamReader.py: Script to read the camera and either save the images, show them or do a triggered exposure
 * /Dev/Elphel/elphel.py: First iteration of a script to read out the camera. First proof of concept experiments were performed with this
-* /Dev/Elphel/GPIO.py: Test-Script to set the GPIO of the Raspberry Pi
+* /Dev/Elphel/GPIO*.py: Smallish test-scripts to use the GPIO pins of the Raspberry Pi for input and output
 * /Dev/Elphel/TriggeredExposure.py: Script to use the internal clock of the camera to trigger the anode rotation, x-ray pulse and the exposure. Then read out the image
+* Info/*: Directory with some information and notes I made during development
 * LICENSE: (un)license
 * README.md: The file you're looking at now
 * SetupPi.md: HowTo for setting up a Raspberry Pi from scratch, to use with these scripts to download images from an Elphel camera and to trigger an x-ray exposure
