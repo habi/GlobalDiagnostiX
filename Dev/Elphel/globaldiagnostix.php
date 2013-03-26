@@ -77,7 +77,7 @@ echo "<h2>Image after updated settings</h2>\n";
 for ( $counter = 0; $counter <= $frame_delay; $counter += 1) { 
 	elphel_wait_frame();
 	}
-echo "<a href='http://".$_SERVER['HTTP_HOST'].":8081/img'>\n<img src='http://".$_SERVER['HTTP_HOST'].":8081/torp/prev/prev/prev/bimg' width='200' alt='Image after settings change'>\n</a><br />\n";
+echo "<a href='http://".$_SERVER['HTTP_HOST'].":8081/img'>\n<img src='http://".$_SERVER['HTTP_HOST'].":8081/torp/next/next/next/img' width='200' alt='Image after settings change'>\n</a><br />\n";
 echo "Image ".elphel_get_frame()." with an exposure time of ".(elphel_get_P_value(ELPHEL_EXPOS) / 1000)." msec<br />\n";
 
 echo "<br />\n";
