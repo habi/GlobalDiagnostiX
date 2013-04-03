@@ -134,15 +134,15 @@ else:
 # http://elinux.org/File:GPIOs.png to see what each pin does or which
 # number it actually is.
 if options.Test:
-    print 'TESTING: Setting up board pins layout and "AnodePin"'
-        print 'TESTING: Spinning up anode'
+	print 'TESTING: Setting up board pins layout and "AnodePin"'
+	print 'TESTING: Spinning up anode'
 else:
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(AnodePin, GPIO.OUT)
-    # Set the 'AnodePin' to HIGH to spin up the anode
-    GPIO.output(AnodePin, GPIO.HIGH)
-    # wait for half a second until the anode is ready
-    time.slee(0.5)
+	GPIO.setmode(GPIO.BOARD)
+	GPIO.setup(AnodePin, GPIO.OUT)
+	# Set the 'AnodePin' to HIGH to spin up the anode
+	GPIO.output(AnodePin, GPIO.HIGH)
+	# wait for half a second until the anode is ready
+	time.slee(0.5)
 # Wait for camera signaling that it is ready by listening on the input port
 if options.Test:
     print 'TESTING: Setting up "InputPin"'
