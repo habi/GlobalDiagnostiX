@@ -13,6 +13,7 @@ from optparse import OptionParser
 import os
 import sys
 import urllib
+import urllib2
 import time
 from pylab import *
 
@@ -141,10 +142,11 @@ ImageURL = CamIP + ':8081/torp/wait/img/next/save'
 # See if we can reach the camera, abort if not
 # adapted from http://stackoverflow.com/a/3764660/323100
 try:
-    response = urllib.urlopen(CampIP, timeout=3)
-except:
-    print 'I cannot reach the camera. Did you switch the Ethernet port?'
-    print 'Use "~/./Switch.py -e" to switch to the Elphel camera'
+    urllib2.urlopen(CamIP,timeout=3)
+except urllib2.URLError as err:
+    print 'If I try to reach the camera, I get "' + str(err.reason) +'"'
+    print 'Did you switch the Ethernet port?'
+    print 'Use\n~/./Switch.py -e\nto switch to the Elphel camera'
     sys.exit(1)
 
 # The command below sets and saves the current camera pointer.
