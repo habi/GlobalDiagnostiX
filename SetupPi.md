@@ -42,8 +42,6 @@ You can either do it line by line (below, with explanations) or just copy the li
 		sudo apt-get install ipython		# interactive Pythoning
 		sudo apt-get install geany		# my preferred Python IDE
 		sudo apt-get install imagemagick	# do some image magic
-		sudo apt-get install openjdk-6-jre	# install java
-		sudo apt-get install openjdk-6-jdk	# install java compiler to compile ImageJ plugins
 		sudo apt-get install imagej		# view and work with images
 		sudo apt-get install chromium-browser	# faster than Midori according to http://is.gd/8Hgfcc
 		sudo apt-get install screen		# Nice terminal multiplexer
@@ -51,10 +49,11 @@ You can either do it line by line (below, with explanations) or just copy the li
 		sudo apt-get install ftp		# so we can `ftp`stuff to the camera
 		sudo apt-get install gftp		# so we can graphically `ftp`stuff to the camera
 		sudo apt-get install gedit		# graphical text editor
+		sudo apt-get install tkdiff		# a graphical tool to diff files
 
     - All in one go:
 
-		sudo apt-get install libblas-dev liblapack-dev python-dev libatlas-base-dev gfortran python-setuptools python-scipy python-numpy python-matplotlib ipython geany imagemagick openjdk-6-jre openjdk-6-jdk imagej chromium-browser screen telnet ftp gftp gedit
+		sudo apt-get install libblas-dev liblapack-dev python-dev libatlas-base-dev gfortran python-setuptools python-scipy python-numpy python-matplotlib ipython geany imagemagick openjdk-6-jre openjdk-6-jdk imagej chromium-browser screen telnet ftp gftp gedit tkdiff
 
 # Tweaks
 - Num Lock on boot (according to [RPi-forum](http://is.gd/Fa0DxF)
