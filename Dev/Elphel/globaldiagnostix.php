@@ -19,6 +19,7 @@ if (isset($_GET['framedelay']))
 	$framedelay = $_GET['framedelay'];
 	}
 else
+	$framedelay = 3; // default framedelay is 3
 
 function convert($s) {
     // clean up
@@ -43,23 +44,24 @@ $url="http://".$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
 // Give out some HTML code, so that we actually have a page to look at
 echo "<html>\n<head>\n	<title>GlobalDiagnostiX - PHP</title>\n</head>\n<body>\n";
 echo "<h1>GlobalDiagnostiX exposure settings page</h1>\n";
-echo "<h2>Parameters before doing anything</h2>\n";
-echo "Automatic exposure = ".elphel_get_P_value(ELPHEL_AUTOEXP_ON).".<br />\n";
-echo "Exposure = ".elphel_get_P_value(ELPHEL_EXPOS)." usec.<br />\n";
-
 echo "<h2>Image before doing anything</h2>\n";
-echo "<a href='http://".$_SERVER['HTTP_HOST'].":8081/img'>\n<img src='http://".$_SERVER['HTTP_HOST'].":8081/img/save' width='200' alt='Image before settings change'>\n</a><br />\n";
-echo "Image ".elphel_get_frame()." with an exposure time of ";
-echo (elphel_get_P_value(ELPHEL_EXPOS) / 1000)." msec, auto exposure = ";
+echo "<a href='http://".$_SERVER['HTTP_HOST'].":8081/img'>\n<img src='http://".$_SERVER['HTTP_HOST'].":8081/last/".str_repeat("prev/",$framedelay + 1)."img' width='200' alt='Image before settings change'>\n</a><br />\n"; # go to the 'last' frame, go back '$framedelay +1' frames and show this 'img'. This should be the one image before setting anything (or one before that).
+echo "Image ".elphel_get_frame()." with";
+echo "<ul><li>";
+echo "Exposure time = ".(elphel_get_P_value(ELPHEL_EXPOS) / 1000)." msec";
+echo "</li><li>";
+echo "Auto exposure = ";
 if (elphel_get_P_value(ELPHEL_AUTOEXP_ON) == 1)
 	echo "on";
 elseif (elphel_get_P_value(ELPHEL_AUTOEXP_ON) == 0)
 	echo "off";
+echo "</li></ul>";
 echo ".<br />\n";
 
-// only show parameters if we are actually setting them, i.e when $parameters is not empty
+// only show parameters if we are actually setting anything, i.e when $parameters is not empty
 if ( !empty( $parameters ) )
 	{
+	echo "<h2>Setting parameters for camera</h2>\n";
 	echo "<br />\n";
 	echo "The setting parameters from the URL are <pre>\n"; print_r($parameters); echo "</pre><br />\n";
 	}
@@ -68,25 +70,38 @@ echo "<br />\n";
 if ( isset ( $parameters["exposure"] ) )
 	{
 	elphel_set_P_value(ELPHEL_AUTOEXP_ON,0); // turn off autoexposure if we're setting the exposure manually.
-	elphel_set_P_value(ELPHEL_EXPOS,($parameters['exposure'] * 1000 )); // input in msec, set in usec
+	elphel_set_P_value(ELPHEL_EXPOS,($parameters['exposure'] * 1000 )); // input is in msec, set is in usec
 	}
 
 echo "<h2>Image after updated settings</h2>\n";
 // wait for at least three frames for the setting from above to stick
-elphel_wait_frames($framedelay);
+// it seems that wait_frame is not enough, we need to do skip_frames. Maybe this is because of the way PHP works...
+elphel_skip_frames($framedelay);
 
-echo "<a href='http://".$_SERVER['HTTP_HOST'].":8081/img'>\n<img src='http://".$_SERVER['HTTP_HOST'].":8081/torp/next/next/next/img' width='200' alt='Image after settings change'>\n</a><br />\n";
-echo "Image ".elphel_get_frame()." with an exposure time of ".(elphel_get_P_value(ELPHEL_EXPOS) / 1000)." msec<br />\n";
+echo "<a href='http://".$_SERVER['HTTP_HOST'].":8081/img'>\n<img src='http://".$_SERVER['HTTP_HOST'].":8081/last/img' width='200' alt='Image after settings change'>\n</a><br />\n";
+echo "Image ".elphel_get_frame()." with";
+echo "<ul><li>";
+echo "Exposure time = ".(elphel_get_P_value(ELPHEL_EXPOS) / 1000)." msec";
+echo "</li><li>";
+echo "Auto exposure = ";
+if (elphel_get_P_value(ELPHEL_AUTOEXP_ON) == 1)
+	echo "on";
+elseif (elphel_get_P_value(ELPHEL_AUTOEXP_ON) == 0)
+	echo "off";
+echo "</li></ul>";
+echo ".<br />\n";
 
 echo "<br />\n";
+/*
 echo "Click the links here to turn AE either '<a href='".$url."?autoexposure=1'>ON</a>' or '<a href='".$url."?autoexposure=0'>OFF</a>'.<br />\n";
+*/
 echo "</body>\n</html>\n";
 
-// set autoexposure to what the user requests with "URL?autoexposure=bool"
+// set autoexposure to what the user requested with "URL?autoexposure=bool"
 if ( isset ( $parameters["autoexposure"] ) )
 	{
 	elphel_set_P_value(ELPHEL_AUTOEXP_ON,$parameters["autoexposure"]);
 	}
-elphel_wait_frames($framedelay);
+	elphel_skip_frames($framedelay);
 
 ?>
