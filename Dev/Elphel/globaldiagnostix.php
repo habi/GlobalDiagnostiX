@@ -16,10 +16,9 @@ foreach($_GET as $key => $value) {
 // parameters are set X frames in the future
 if (isset($_GET['framedelay']))
 	{
-	$frame_delay = $_GET['framedelay'];
+	$framedelay = $_GET['framedelay'];
 	}
 else
-	$frame_delay = 3; // default framedelay is 3
 
 function convert($s) {
     // clean up
@@ -74,9 +73,8 @@ if ( isset ( $parameters["exposure"] ) )
 
 echo "<h2>Image after updated settings</h2>\n";
 // wait for at least three frames for the setting from above to stick
-for ( $counter = 0; $counter <= $frame_delay; $counter += 1) { 
-	elphel_wait_frame();
-	}
+elphel_wait_frames($framedelay);
+
 echo "<a href='http://".$_SERVER['HTTP_HOST'].":8081/img'>\n<img src='http://".$_SERVER['HTTP_HOST'].":8081/torp/next/next/next/img' width='200' alt='Image after settings change'>\n</a><br />\n";
 echo "Image ".elphel_get_frame()." with an exposure time of ".(elphel_get_P_value(ELPHEL_EXPOS) / 1000)." msec<br />\n";
 
@@ -89,8 +87,6 @@ if ( isset ( $parameters["autoexposure"] ) )
 	{
 	elphel_set_P_value(ELPHEL_AUTOEXP_ON,$parameters["autoexposure"]);
 	}
-for ( $counter = 0; $counter <= $frame_delay; $counter += 1) { 
-	elphel_wait_frame();
-	}
+elphel_wait_frames($framedelay);
 
 ?>
