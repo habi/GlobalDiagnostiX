@@ -9,4 +9,5 @@
 	dt = difftool
 	l = log --graph --pretty=format:'%C(red)%h%Creset%C(blue)%d%Creset %C(white)%s%Creset %C(white dim)(by %an %ar)%Creset'
 	ll = !git l --all
-
+[color]
+	ui=auto
