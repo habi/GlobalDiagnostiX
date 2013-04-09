@@ -19,11 +19,12 @@ except:
 	sys.exit(1)
 
 try:
-	sleepytime = float(sys.argv[1])
-	steps = int(sys.argv[2])
+	Pin = int(sys.argv[1])
+	sleepytime = float(sys.argv[2])
+	steps = int(sys.argv[3])
 except:	
-	print 'Start the script with two parameters'
-	print sys.argv[0],'Sleeptime Repeats'
+	print 'Start the script with three parameters'
+	print sys.argv[0],'Pin Sleeptime Repeats'
 	sys.exit(1)
 
 def is_even(i):
@@ -34,7 +35,7 @@ GPIO.setmode(GPIO.BOARD) # Named sequentially, as seen on the connector. compare
 # GPIO.setmode(GPIO.BCM) # Named GPIO*, see table http://is.gd/xWDsp7 (e.g. 007 is the last pin)
 
 print 'set up GPIO output channel'
-Pin = 26 # BOARD
+# Pin = 26 # BOARD
 #~ Pin = 007 # BMC
 GPIO.setup(Pin, GPIO.OUT)
 
