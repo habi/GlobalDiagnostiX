@@ -22,21 +22,22 @@ parser = OptionParser()
 usage = 'usage: % prog [options] arg'
 
 parser.add_option('-i', dest='Images',
-                  help='how many successive images should I read from the camera?',
+                  help='how many successive images should I read from'
+                  'the camera?',
                   metavar='123',
                   type=int)
 parser.add_option('-o', dest='OutputName',
-                  help='Name for the Output-Directory (when option -i) or Output-File '
-                  '(when option -t)',
+                  help='Name for the Output-Directory (when option -i)'
+                  'or Output-File (when option -t)',
                   metavar='DirectoryName',
                   type='string')
 parser.add_option('-s', dest='Show',
-                  help='Show the images (Default=Off). Cannot be used together '
-                  'with "-i" or "-t"',
+                  help='Show the images (Default=Off). Cannot be used'
+                  'together with "-i" or "-t"',
                   action='store_true')
 parser.add_option('-t', dest='Trigger',
-                  help='Use the external trigger and expose for one image'
-                  'with given exposure time (in ms).',
+                  help='Use the external trigger and expose for one'
+                  'image with given exposure time (in ms).',
                   metavar=516,
                   type=int)
 parser.add_option('-v', dest='Verbose',
@@ -46,7 +47,8 @@ parser.add_option('-v', dest='Verbose',
 (options, args) = parser.parse_args()
 
 if not options.Images and not options.Show and not options.Trigger:
-    # Print the OptionParser help if none of the important options are given
+    # Print the OptionParser help if none of the important options are
+    # given
     parser.print_help()
     exit()
 
@@ -82,27 +84,32 @@ def query_yes_no(question, default="yes"):
         elif choice in valid.keys():
             return valid[choice]
         else:
-            sys.stdout.write("Please type 'yes' or 'no' (or 'y' or 'n').\n")
+            sys.stdout.write("Please type 'yes' or 'no' (or 'y' or",
+                             "'n').\n")
 
 SubDirName = 'Images'
-# Make a subdirectory relative to the current directory to save the images
+# Make a subdirectory relative to the current directory to save the
+# images
 try:
     os.mkdir(os.path.join(os.getcwd(), SubDirName))
 except:
     pass
 
 if options.Images:
-    # If we are saving the images in a certain subdirectory, then generate
-    # the names according to what the user requested
+    # If we are saving the images in a certain subdirectory, then
+    # generate the names according to what the user requested
     if options.OutputName:
-        SaveDir = os.path.join(os.getcwd(), SubDirName, options.OutputName)
+        SaveDir = os.path.join(os.getcwd(), SubDirName,
+                               options.OutputName)
     else:
-        SaveDir = os.path.join(os.getcwd(), SubDirName, str(time.time()))
+        SaveDir = os.path.join(os.getcwd(), SubDirName,
+                               str(time.time()))
     try:
         os.mkdir(SaveDir)
     except:
         print 'Directory', SaveDir, 'already exists.'
-        if query_yes_no('Are you sure you want to overwrite the files in ' + SaveDir, default='no') == 'no':
+        if query_yes_no('Are you sure you want to overwrite the files',
+                        'in ' + SaveDir, default='no') == 'no':
             print
             print 'Start again with a different -o parameter'
             sys.exit(1)
@@ -110,29 +117,34 @@ if options.Images:
             print 'Ok, you asked for it! Proceeding...'
 
 if options.Show:
-    print 'Making the directory', os.path.join(os.getcwd(), SubDirName, 'Snapshots')
+    print 'Making the directory', os.path.join(os.getcwd(), SubDirName,
+                                               'Snapshots')
     try:
         os.mkdir(os.path.join(os.getcwd(), SubDirName, 'Snapshots'))
     except:
-        print 'Directory', os.path.join(os.getcwd(), SubDirName, 'Snapshots'), 'already exists.'
+        print 'Directory', os.path.join(os.getcwd(), SubDirName,
+                                        'Snapshots'), 'already exists.'
 
 if options.Trigger:
-    print 'Making the directory', os.path.join(os.getcwd(), SubDirName, 'Triggered')
+    print 'Making the directory', os.path.join(os.getcwd(), SubDirName,
+                                               'Triggered')
     try:
         os.mkdir(os.path.join(os.getcwd(), SubDirName, 'Triggered'))
     except:
-        print 'Directory', os.path.join(os.getcwd(), SubDirName, 'Triggered'), 'already exists.'
+        print 'Directory', os.path.join(os.getcwd(), SubDirName,
+                                        'Triggered'), 'already exists.'
 
 '''
-According to http://wiki.elphel.com/index.php?title=Imgsrv#imgsrv_usage one
-call 'http://<camera-ip>:8081/towp/save'
-to set the current pointer and save it to the global image pointer.
-For each subsequent image, one can then repeatedly call
-'http://<camera-ip>:8081/torp/wait/img/next/save' to set the current pointer to
-the global read pointer (torp) and to wait for the image at that pointer to be
-ready (wait). The image is then transferred (img), the pointer advanced (next)
-and saved again (save). This means that the same URL can be called again and
-again and always provides the next image.
+According to http://wiki.elphel.com/index.php?title=Imgsrv#imgsrv_usage
+one call 'http://<camera-ip>:8081/towp/save' to set the current pointer
+and save it to the global image pointer. For each subsequent image, one
+can then repeatedly call
+'http://<camera-ip>:8081/torp/wait/img/next/save' to set the current
+pointer to the global read pointer (torp) and to wait for the image at
+that pointer to be ready (wait). The image is then transferred (img),
+the pointer advanced (next) and saved again (save). This means that the
+same URL can be called again and again and always provides the next
+image.
 '''
 
 CamIP = 'http://192.168.0.9'
@@ -142,9 +154,10 @@ ImageURL = CamIP + ':8081/torp/wait/img/next/save'
 # See if we can reach the camera, abort if not
 # adapted from http://stackoverflow.com/a/3764660/323100
 try:
-    urllib2.urlopen(CamIP,timeout=3)
+    urllib2.urlopen(CamIP, timeout=3)
 except urllib2.URLError as err:
-    print 'If I try to reach the camera, I get "' + str(err.reason) +'"'
+    print 'If I try to reach the camera, I get "' + str(err.reason) +\
+        '"'
     print 'Did you switch the Ethernet port?'
     print 'Use\n~/./Switch.py -e\nto switch to the Elphel camera'
     sys.exit(1)
@@ -161,26 +174,37 @@ if options.Images:
     for i in range(1, options.Images+1):
         FileName = 'img_' + str('%.04d' % i) + '.jpg'
         if options.Verbose:
-            print 'writing image ' + str(i) + '/' + str(options.Images), 'as', os.path.join(SaveDir, FileName)
-        # get the url of the camera which spits out an image (ImageURL, set above)
-        # and save the image to 'SaveDir' with consecutively numbered images
+            print 'writing image ' + str(i) + '/' +\
+                str(options.Images), 'as',\
+                os.path.join(SaveDir, FileName)
+        # get the url of the camera which spits out an image (ImageURL,
+        # set above) and save the image to 'SaveDir' with consecutively
+        # numbered images
         urllib.urlretrieve(ImageURL, os.path.join(SaveDir, FileName))
     TimeUsed = time.time() - StartTime
-    print 'Saved', options.Images, 'images in', np.round(TimeUsed, decimals=3), 'seconds (' + str(np.round(options.Images/TimeUsed, decimals=3)) + ' img/s)'
+    print 'Saved', options.Images, 'images in',\
+        np.round(TimeUsed, decimals=3), 'seconds (' +\
+        str(np.round(options.Images/TimeUsed, decimals=3)) + ' img/s)'
 elif options.Show:
     # Remove snapshots from prior runs
-    removecommand = 'rm ' + os.path.join(os.getcwd(), SubDirName, 'Snapshots', 'Snap*')
+    removecommand = 'rm ' + os.path.join(os.getcwd(), SubDirName,
+                                         'Snapshots', 'Snap*')
     try:
         os.system(removecommand)
         print 'I just removed all snapshots from prior runs'
     except:
         pass
-    # Save the current image to disk and display it as fast as possible in a matlotlib-figure
+    # Save the current image to disk and display it as fast as possible
+    # in a matlotlib-figure
     plt.figure()
-    # make matplotlib interactive, so we can just plt.draw() the image into a plt.figure()
+    # make matplotlib interactive, so we can just plt.draw() the image
+    # into a plt.figure()
     ion()
     plt.show()
-    print 'Saving camera images to ' + os.path.join(os.getcwd(), SubDirName, 'Snapshots', 'Snapshot_*.jpg')
+    print 'Saving camera images to ' + os.path.join(os.getcwd(),
+                                                    SubDirName,
+                                                    'Snapshots',
+                                                    'Snapshot_*.jpg')
     print 'and showing it in a matplotlib-figure'
     print
     print 'rinse, lather, repeat'
@@ -190,12 +214,23 @@ elif options.Show:
         while True:
             FileName = 'Snapshot_' + str('%.04d' % Counter) + '.jpg'
             DownScale = 10
-            urllib.urlretrieve(CamIP + ':8081/img', os.path.join(os.getcwd(), SubDirName, 'Snapshots', FileName))
+            urllib.urlretrieve(CamIP + ':8081/img',
+                               os.path.join(os.getcwd(), SubDirName,
+                               'Snapshots', FileName))
             if options.Verbose:
-                print 'I have written image', Counter, 'as', os.path.join(os.getcwd(), SubDirName, FileName)
-            plt.imshow(plt.imread(os.path.join(os.getcwd(), SubDirName, 'Snapshots', FileName))[::DownScale, ::DownScale, :], origin='lower', interpolation='nearest')
+                print 'I have written image', Counter, 'as',\
+                    os.path.join(os.getcwd(), SubDirName, FileName)
+            plt.imshow(plt.imread(os.path.join(os.getcwd(), SubDirName,
+                                               'Snapshots',
+                                               FileName)
+                                  )[::DownScale, ::DownScale, :],
+                       origin='lower',
+                       interpolation='nearest')
             TimeUsed = time.time() - StartTime
-            ImageTitle = str(FileName) + ' written in ' + str(int(np.round(TimeUsed))) + ' s = (' + str(np.round(Counter/TimeUsed, decimals=3)) + ' img/s)' + '\nshown ' + str(DownScale) + 'x downscaled'
+            ImageTitle = str(FileName) + ' written in ' +\
+                str(int(np.round(TimeUsed))) + ' s = (' +\
+                r(np.round(Counter/TimeUsed, decimals=3)) + ' img/s)' +\
+                '\nshown ' + str(DownScale) + 'x downscaled'
             plt.title(ImageTitle)
             Counter += 1
             plt.draw()
@@ -204,27 +239,22 @@ elif options.Show:
         # switch back to normal matplotlib behaviour
         ioff()
 elif options.Trigger:
+    # upload PHP files to camera
+    print 'uploading ~/Dev/Elphel/*.php to', CamIp, '/var'
+    os.system("bash ~/Dev/Elphel/ftp_files_to_camera.sh")
     # Set Exposure via PHP call
-    CameraCommand = 'wget "' + str(CamIP) + '/parsedit.php?title=Setting+triggered+exposure+parameters'
-    CameraCommand += '&AUTOEXP_ON=0'  # turn off auto-exposure
-    CameraCommand += '&EXPOS=' + str(options.Trigger*1000)
-    # set exposure time to 'Exposure time in microseconds'.
-    # We input it in ms, so we multiply by 1000
-    CameraCommand += '&WB_EN=0'  # turn off white balance
-    CameraCommand += '&WOI_WIDTH=10000&WOI_HEIGHT=10000'
-    # reset sensor to full size ("Sensor width is 'reduced' to full sensor
-    # if set to 10000")
-    CameraCommand += '&TRIG=0"'  # set camera to be UN-triggered
-    #~ CameraCommand += '&TRIG=4"'  # set camera to be triggered externally
+    CameraCommand = 'wget "' + str(CamIP) + '/var/globaldiagnostix.php'
+    CameraCommand += '&exposure=' + str(options.Trigger)
+    # set exposure time to 'Exposure time in ms'. The PHP script will
+    # convert ms to us.
     CameraCommand += ' --delete-after'  # delete wget output afterwards
-    print 'Setting the camera with'
+    print 'Setting the exposure time with a call to'
     print '---'
     print CameraCommand
     print '---'
     print 80 * '_'
     print
-    print 'I AM NOT DOING ANYTHING, UNCOMMENT LINE 214 TO ACTUALLY PERFORM THE COMMAND'
-    #~ os.system(CameraCommand)
+    os.system(CameraCommand)
     print 80 * '_'
     # Try to import the GPIO library
     try:
@@ -245,23 +275,33 @@ elif options.Trigger:
     # The last one in the row of P1 is 'Ground'
     GPIO.setup(26, GPIO.OUT)
     print 'As soon as you press the trigger, I will expose the camera'
-    print 'with an exposure time of', options.Trigger, 'ms (or', np.round(double(options.Trigger)/1000, decimals=3), 's)'
+    print 'with an exposure time of', options.Trigger, 'ms (or',\
+        np.round(double(options.Trigger)/1000, decimals=3), 's)'
     raw_input('Simulate a trigger by pressing Enter... [Enter]')
-    # Set the pin to high, sleep for options.Trigger time and set it to low
+    # Set the pin to high, sleep for options.Trigger time and set it to
+    # low
     print
     print 10 * ' ' + 'Blitzflashdiblitzblitz!'
     print
     GPIO.output(26, GPIO.HIGH)
-    print 'sleeping for', np.round(double(options.Trigger)/1000, decimals=3), 's, then getting image'
+    print 'sleeping for',\
+        np.round(double(options.Trigger)/1000, decimals=3),\
+        's, then getting image'
     time.sleep(np.round(double(options.Trigger)/1000, decimals=3))
     GPIO.output(26, GPIO.LOW)
     print
     if options.OutputName:
-        FileName = 'Triggered_' + options.OutputName + '_' + str(options.Trigger) + '.jpg'
+        FileName = 'Triggered_' + options.OutputName + '_' +\
+            str(options.Trigger) + '.jpg'
     else:
-        FileName = 'Triggered_' + str(options.Trigger) + '_' + str(time.time()) + '.jpg'
+        FileName = 'Triggered_' + str(options.Trigger) + '_' +\
+            str(time.time()) + '.jpg'
     print FileName
-    urllib.urlretrieve('http://192.168.0.9:8081/trig/pointers', os.path.join(os.getcwd(), SubDirName, 'Triggered', FileName))
+    urllib.urlretrieve('http://192.168.0.9:8081/trig/pointers',
+                       os.path.join(os.getcwd(),
+                       SubDirName,
+                       'Triggered',
+                       FileName))
     # Reset RPi channels after we're done
     GPIO.cleanup()
 
@@ -270,7 +310,8 @@ if options.Images:
     print os.path.join(os.getcwd(), SaveDir, 'img_****.jpg')
 elif options.Show:
     print 'Snapshot images have been saved saved to'
-    print os.path.join(os.getcwd(), SubDirName, 'Snapshot', FileName)[:-8] + '****.jpg'
+    print os.path.join(os.getcwd(), SubDirName, 'Snapshot',
+                       FileName)[:-8] + '****.jpg'
 elif options.Trigger:
     print 'One triggered image has been saved saved to'
     print os.path.join(os.getcwd(), SubDirName, 'Triggered', FileName)
