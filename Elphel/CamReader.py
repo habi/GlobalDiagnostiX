@@ -76,7 +76,7 @@ try:
 except urllib2.URLError as err:
     print 'If I try to reach the camera, I get "' + str(err.reason) +\
         '"'
-    print 'Did you switch the Ethernet port (or turn WiFi off on the Mac)?'
+    print 'Did you switch the Ethernet port?'
     print 'Use\n~/./Switch.py -e\nto switch to the Elphel camera'
     sys.exit(1)
 
@@ -115,18 +115,14 @@ def query_yes_no(question, default="yes"):
             sys.stdout.write("Please type 'yes' or 'no' (or 'y' or",
                              "'n').\n")
 
-
 def set_exposure_time(exposuretime):
     '''
     Sets the exposure time of the camera to 'exposuretime' ms
     '''
     # upload PHP script.
-    print 'Uploading', os.path.join(os.getcwd(),'setexposure.php'), 'to',\
-		CamIP + '/var'
-    FTPcommand = ' '.join(['curl -s -T',
-						   os.path.join(os.getcwd(),'setexposure.php'),
-						   'ftp' + CamIP[4:] + '/var/html/ --user root:pass'])
-	# CamIP[4:] gets rid of the 'http' prefix
+    print 'Uploading ~/Dev/Elphel/globaldiagnostix.php to', CamIP + '/var'
+    FTPcommand = 'curl -s -T ~/Dev/Elphel/setexposure.php ftp' +\
+        CamIP[4:] + '/var/html/ --user root:pass'  # CamIP[4:] deletes 'http'...
     if options.Verbose:
         print 'by calling "' + FTPcommand + '"'
     os.system(FTPcommand)
@@ -213,11 +209,7 @@ if options.Images:
         print 'Getting', options.Images, 'images as fast as possible'
         print 'Please stand by'
     for i in range(1, options.Images+1):
-		if options.Exposure:
-        	FileName = 'img_' + str('%.04d' % i) + '_' +\
-				str(options.Exposure) + 'ms.jpg'
-		else:
-			FileName = 'img_' + str('%.04d' % i) + 'ms.jpg'
+        FileName = 'img_' + str('%.04d' % i) + '.jpg'
         if options.Verbose:
             print 'writing image ' + str(i) + '/' +\
                 str(options.Images), 'as',\
@@ -256,11 +248,7 @@ elif options.Show:
     StartTime = time.time()
     try:
         while True:
-			if options.Exposure:
-            	FileName = 'Snapshot_' + str('%.04d' % Counter) + '_' +\
-					str(options.Exposure) + 'ms.jpg'
-			else:
-				FileName = 'Snapshot_' + str('%.04d' % Counter) + 'ms.jpg'
+            FileName = 'Snapshot_' + str('%.04d' % Counter) + '.jpg'
             DownScale = 10
             urllib.urlretrieve(CamIP + ':8081/img', os.path.join(os.getcwd(),
                                SubDirName, 'Snapshots', FileName))
