@@ -1,0 +1,44 @@
+# https://w9.siemens.com/cms/oemproducts/Home/X-rayToolbox/spektrum/Pages/radIn.aspx
+# Anode material: Tungsten
+# Peak tube voltage:
+# (range 30 - 140 kV) kV 40 kV
+# Relative voltage ripple: 0.04
+# Air kerma 0.0000025 Gy
+# Mean energy 30.135462 keV
+# List of filters
+# Material Thickness, mm
+# Al 4
+8 0
+9 6.92027e-018
+10 4.83183e-012
+11 7.97695e-009
+12 3.72287e-006
+13 0.000430855
+14 0.0190835
+15 0.365002
+16 2.24474
+17 10.1849
+18 33.8629
+19 96.1645
+20 218.135
+21 370.927
+22 561.07
+23 816.748
+24 1088
+25 1382.29
+26 1656.68
+27 1915.43
+28 2205.35
+29 2475.59
+30 2753.72
+31 2747.1
+32 2635.81
+33 2463.78
+34 2200.73
+35 1847.59
+36 1399.24
+37 856.554
+38 505.129
+39 191.833
+40 57.8783
+41 0
