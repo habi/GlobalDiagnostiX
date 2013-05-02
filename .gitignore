@@ -21,8 +21,10 @@
 .profile
 Desktop/
 *.*~
-Dev/Elphel/Images
 Downloads/
 ImageJ-Elphel/
 *.pdf
 *.png
+.svn
+matplotlib2tikz*
+libtiff*
