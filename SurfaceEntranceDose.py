@@ -102,13 +102,17 @@ print
 savemovie = True
 if savemovie:
     # Save output as movie: http://stackoverflow.com/a/12905458/323100
-    for angle in range(225-60, 225+60):  # 150:270 good values for presentation
+    angles = range(225-60, 225+60)  # 150:270 good values for presentation
+    counter = 1
+    for angle in angles:
         ax.view_init(elev=34.4, azim=angle)
         print 'saving angle', str(angle + 1) + '° of 360° as movie' + \
-            str("%03d" % angle) + '.png'
+            str("%03d" % angle) + '.png - [' + str(counter) + '/' +\
+            str(len(angles)) + ']'
         plt.savefig('Dose_movie' + str("%03d" % angle) + '.png',
                     transparent=True)
         plt.draw()
+        counter += 1
 else:
     ax.view_init(elev=34.4, azim=225)
     plt.savefig('Dose' + str(showCase) + '.png', transparent=True)
