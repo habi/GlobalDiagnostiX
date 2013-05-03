@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Tiny tool to calculate the surface entrance dose of a certain x-ray measurment
+Tiny tool to calculate the surface entrance dose of a certain x-ray measurement
 Gives the same results as the 'Diagnostische Referenzwerte' Excel calculator on
 the BAG-page, in the right side-bar of http://is.gd/E2qIPA.
 The calculation is based on 'Merkblatt R-06-04' from BAG
@@ -61,16 +61,33 @@ ax.plot_surface(X, Y, Dose,
                 cstride=1,
                 rstride=1)
 
-showkV = (40., 70., 120., 40.)
-showmAs = (50., 2, 50., 25.)
-what = ('Wrist 1', 'Wrist 2', 'LWS ap', 'Zhentian')
+
+showCase = 2
+if showCase == 1:
+    # Multiple Values, including Zhentians Breast scan
+    showkV = (40., 70., 120., 40.)
+    showmAs = (50., 2, 50., 25.)
+    what = ('Wrist 1', 'Wrist 2', 'LWS ap', 'Zhentian')
+elif showCase == 2:
+    # General values for radiology (from Heinz). Used in presentation
+    showkV = (40., 70., 120.)
+    showmAs = (50., 2, 50.)
+    what = ('Wrist 1', 'Wrist 2', 'LWS ap')
+elif showCase == 3:
+    # The two wrist images in the talk, 70 kV with much too high mAs, but
+    # otherwise we wouldn't have reached the exposure time needed to sync the
+    # camera.
+    showkV = (40., 70.,)
+    showmAs = (50., 50,)
+    what = ('Wrist 1', 'Wrist 2')
 
 for kV, mAs, method in zip(showkV, showmAs, what):
     CurrentDose = Dose[Range_mAs.index(mAs)][Range_kV.index(kV)]
     ax.plot([kV], [mAs], CurrentDose, 'o', c='r', ms=20)
     label = '%d kV & %d mAs\nSE-Dose %0.3f mGy\n%s' % (kV, mAs, CurrentDose,
                                                        method)
-    ax.text(kV, mAs, CurrentDose, label)
+    if not showCase == 3:
+        ax.text(kV, mAs, CurrentDose, label)
     print
     print 'For a radiography of a', method
     print 'with a source voltage of', kV, 'kV and a charge of', mAs, 'mAs, '
@@ -82,13 +99,19 @@ ax.set_zlabel('Dose [mGy]')
 
 print
 
-#~ # Save output as movie: http://stackoverflow.com/a/12905458/323100
-#~ for angle in range(350,360):
-    #~ ax.view_init(elev=32., azim=angle)
-    #~ print 'saving angle', str(angle + 1) + '° of 360° as movie' + \
-        #~ str("%03d" % angle) + '.png'
-    #~ plt.savefig('movie' + str("%03d" % angle) + '.png')
-    #~ plt.draw()
+savemovie = True
+if savemovie:
+    # Save output as movie: http://stackoverflow.com/a/12905458/323100
+    for angle in range(225-60, 225+60):  # 150:270 good values for presentation
+        ax.view_init(elev=34.4, azim=angle)
+        print 'saving angle', str(angle + 1) + '° of 360° as movie' + \
+            str("%03d" % angle) + '.png'
+        plt.savefig('Dose_movie' + str("%03d" % angle) + '.png',
+                    transparent=True)
+        plt.draw()
+else:
+    ax.view_init(elev=34.4, azim=225)
+    plt.savefig('Dose' + str(showCase) + '.png', transparent=True)
 
 ioff()
 print
