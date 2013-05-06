@@ -59,7 +59,7 @@ WeightingFactor = 0.12  # http://en.wikipedia.org/wiki/Dosimetry#Effective_dose
 ExposureTime = 100e-3  # s
 
 # Read xray spectra
-Spectrapath = '/afs/psi.ch/project/EssentialMed/Dev/Spectra'
+Spectrapath = os.path.join(os.getcwd(),'Spectra')
 Spectra = [(os.path.join(Spectrapath, 'Xray-Spectrum_046kV.txt')),
            (os.path.join(Spectrapath, 'Xray-Spectrum_070kV.txt'))]
 
