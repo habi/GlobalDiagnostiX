@@ -59,20 +59,21 @@ X, Y = np.meshgrid(Range_kV, Range_mAs)
 ax.plot_surface(X, Y, Dose,
                 cmap=cm.jet,
                 cstride=1,
-                rstride=1)
-
+                rstride=1,
+		linewidth=0)
 
 showCase = 2
 if showCase == 1:
     # Multiple Values, including Zhentians Breast scan
-    showkV = (40., 70., 120., 40.)
-    showmAs = (50., 2, 50., 25.)
-    what = ('Wrist 1', 'Wrist 2', 'LWS ap', 'Zhentian')
+    showkV = (40., 70., 120., 125., 40.)
+    showmAs = (50., 2, 50., 2., 25.)
+    what = ('Wrist 1', 'Wrist 2', 'LWS ap', 'Thorax', 'Zhentian')
 elif showCase == 2:
-    # General values for radiology (from Heinz). Used in presentation
-    showkV = (40., 70., 120.)
-    showmAs = (50., 2, 50.)
-    what = ('Wrist 1', 'Wrist 2', 'LWS ap')
+    # General values for radiology (from Heinz and R-06-04). Used in
+    # movie in presentation
+    showkV = (40., 70., 120., 125.)
+    showmAs = (50., 2, 50., 2.)
+    what = ('Wrist 1', 'Wrist 2', 'LWS ap', 'Thorax')
 elif showCase == 3:
     # The two wrist images in the talk, 70 kV with much too high mAs, but
     # otherwise we wouldn't have reached the exposure time needed to sync the
@@ -97,12 +98,10 @@ ax.set_xlabel('kV')
 ax.set_ylabel('mAs')
 ax.set_zlabel('Dose [mGy]')
 
-print
-
-savemovie = True
+savemovie = False
 if savemovie:
     # Save output as movie: http://stackoverflow.com/a/12905458/323100
-    angles = range(225-60, 225+60)  # 150:270 good values for presentation
+    angles = range(225-44, 225+44)  # 150:270 good values for presentation
     counter = 1
     for angle in angles:
         ax.view_init(elev=34.4, azim=angle)
@@ -110,7 +109,7 @@ if savemovie:
             str("%03d" % angle) + '.png - [' + str(counter) + '/' +\
             str(len(angles)) + ']'
         plt.savefig('Dose_movie' + str("%03d" % angle) + '.png',
-                    transparent=True)
+                    transparent=False)
         plt.draw()
         counter += 1
 else:
