@@ -56,7 +56,7 @@ eV = 1.602e-19  # J
 
 QFactor = 1  # http://en.wikipedia.org/wiki/Dosimetry#Equivalent_Dose
 WeightingFactor = 0.12  # http://en.wikipedia.org/wiki/Dosimetry#Effective_dose
-ExposureTime = 100e-3  # s
+ExposureTime = 500e-3  # s
 
 # Read xray spectra
 Spectrapath = os.path.join(os.getcwd(),'Spectra')
@@ -87,17 +87,16 @@ for Voltage, Current, case in zip((SourceVoltage[0], SourceVoltage[1]),
     # Number of absorbed photons
     #~ N = N0(1-e^-uT)
     N = N0 * (1 - math.e ** (-AttenuationCoefficient[case] * Thickness))
-
+    
     print '    - %.4e' % N, 'photons/s are absorbed in the sample, if we',\
         'assume the sample to have an attenuation coefficient of',\
         AttenuationCoefficient[case], 'cm^-1 (@' + str(Voltage), 'kV)'
 
     # Absorbed radiation dose per second
     #~ Da = Eneregy / Weight  # J/kg per second
-    AverageEnergy[case] = 28
     Da = N * AverageEnergy[case] * 1000 * eV / Weight
 
-    print '    -', round(Da, 4), 'Gy/s are absorbed by the sample, if we',\
+    print '    -', round(Da * 1000, 4), 'mGy/s are absorbed by the sample, if we',\
         'assume it is', Weight, 'kg'
 
     # Effective dose per second
@@ -109,5 +108,5 @@ for Voltage, Current, case in zip((SourceVoltage[0], SourceVoltage[1]),
     # Total effective dose on the sample
     D = De * ExposureTime
 
-    print '    -', round(D*1000, 4), 'Sv is the effective dose on the sample',\
+    print '    -', round(D*1000, 4), 'mSv is the effective dose on the sample',\
         'for an exposure time of =', ExposureTime, 's)'

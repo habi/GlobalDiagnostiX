@@ -62,25 +62,25 @@ ax.plot_surface(X, Y, Dose,
                 rstride=1,
 		linewidth=0)
 
-showCase = 2
+showCase = 1
 if showCase == 1:
     # Multiple Values, including Zhentians Breast scan
-    showkV = (40., 70., 120., 125., 40.)
+    showkV = (46., 70., 120., 125., 40.)
     showmAs = (50., 2, 50., 2., 25.)
     what = ('Wrist 1', 'Wrist 2', 'LWS ap', 'Thorax', 'Zhentian')
 elif showCase == 2:
     # General values for radiology (from Heinz and R-06-04). Used in
     # movie in presentation
-    showkV = (40., 70., 120., 125.)
+    showkV = (46., 70., 120., 125.)
     showmAs = (50., 2, 50., 2.)
     what = ('Wrist 1', 'Wrist 2', 'LWS ap', 'Thorax')
 elif showCase == 3:
     # The two wrist images in the talk, 70 kV with much too high mAs, but
     # otherwise we wouldn't have reached the exposure time needed to sync the
     # camera.
-    showkV = (40., 70.,)
-    showmAs = (50., 50,)
-    what = ('Wrist 1', 'Wrist 2')
+    showkV = (46., 70., 70.)
+    showmAs = (50., 50, 2.)
+    what = ('Wrist 1', 'Wrist 2 (Experiment)', 'Wrist 2 (Theory)')
 
 for kV, mAs, method in zip(showkV, showmAs, what):
     CurrentDose = Dose[Range_mAs.index(mAs)][Range_kV.index(kV)]
