@@ -60,7 +60,7 @@ ax.plot_surface(X, Y, Dose,
                 cmap=cm.jet,
                 cstride=1,
                 rstride=1,
-		linewidth=0)
+                linewidth=0)
 
 showCase = 1
 if showCase == 1:
