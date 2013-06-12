@@ -46,6 +46,8 @@ ImagePath = '/afs/psi.ch/project/EssentialMed/Images'
 ImageDir = '11-MTF'
 ImageFile = 'iPhone_with_xray_film.jpg'
 ImageFile = 'iPhone_with_xray_film_hdr.jpg'
+ImageFile = 'iPhone_with_xray_film_window.jpg'
+ImageFile = 'iPhone_with_xray_film_window_hdr.jpg'
 
 ImageToLoad = os.path.join(ImagePath,ImageDir,ImageFile)
 
@@ -81,18 +83,29 @@ plt.ylim(0,ImageWidth)
 plt.title('Vertical Profile')
 plt.draw()
 
+#~ for item in HorizontalProfile:
+    #~ if item > 250:
+        #~ print HorizontalProfile[item], 'is larger than 250'
+        
+print VerticalProfile
 
-print 'hello'
-#~ if item in HorizontalProfile>100:
-    #~ print item
-    #~ 
-#~ if item in VerticalProfile>100:
-    #~ print item    
+Saturated = [int(x) for x in HorizontalProfile if x >= 245]
+
+print max(HorizontalProfile)
+print max(VerticalProfile)
+     
+
+
+
+
+
+
+
+
 
 
 plt.show()
 ioff()
-
 exit()
 
 plt.figure()
