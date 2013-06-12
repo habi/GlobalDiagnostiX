@@ -50,10 +50,11 @@ You can either do it line by line (below, with explanations) or just copy the li
 		sudo apt-get install gftp		# so we can graphically `ftp`stuff to the camera
 		sudo apt-get install gedit		# graphical text editor
 		sudo apt-get install tkdiff		# a graphical tool to diff files
+		sudo apt-get isntall mplayer vlc	# install two movie players, to look at camera output
 
     - All in one go:
 
-		sudo apt-get install libblas-dev liblapack-dev python-dev libatlas-base-dev gfortran python-setuptools python-scipy python-numpy python-matplotlib ipython geany imagemagick openjdk-6-jre openjdk-6-jdk imagej chromium-browser screen telnet ftp gftp gedit tkdiff
+		sudo apt-get install libblas-dev liblapack-dev python-dev libatlas-base-dev gfortran python-setuptools python-scipy python-numpy python-matplotlib ipython geany imagemagick openjdk-6-jre openjdk-6-jdk imagej chromium-browser screen telnet ftp gftp gedit tkdiff mplayer vlc
 
 # Tweaks
 - Num Lock on boot (according to [RPi-forum](http://is.gd/Fa0DxF)
