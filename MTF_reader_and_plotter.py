@@ -23,6 +23,7 @@ ImageDir = '11-MTF'
 #~ ImageFile = 'iPhone_with_xray_film_window.jpg'
 ImageFile = 'iPhone_with_xray_film_window_hdr.jpg'
 
+
 def MTF(edgespreadfunction):
     '''
     Compute the modulation transfer function (MTF).
@@ -72,11 +73,14 @@ plt.title('Pick point for drawing\n horizontal and vertical profile')
 if SelectStartPointManually:
     PickPoint = ginput(1)
 else:
-    PickPoint = [[1400,1400]]
+    PickPoint = [[1500, 1000]]
 plt.title('Original image')
 Horizon = int(PickPoint[0][1])
 Vertigo = int(PickPoint[0][0])
-print 'selected horizontal line', Horizon, 'and vertical line', Vertigo
+if SelectStartPointManually:
+    print 'You selected horizontal line', Horizon, 'and vertical line', Vertigo
+else:
+    print 'I selected horizontal line', Horizon, 'and vertical line', Vertigo
 plt.hlines(Horizon, 0, ImageHeight, 'r')
 plt.vlines(Vertigo, 0, ImageWidth, 'b')
 plt.draw()
@@ -99,52 +103,46 @@ print 'The horizontal profile (red) goes from', min(HorizontalProfile), 'to',\
 print 'The vertical profile (blue) goes from', min(VerticalProfile), 'to',\
     max(VerticalProfile)
 
-plt.figure()
-plt.subplot(211)
+plt.figure(figsize=(16, 9))
+plt.subplot(411)
 plt.plot(VerticalProfile)
 if SelectEdgeManually:
     plt.title('Select approximate middle of knife edge')
     EdgePosition = ginput(1)
     plt.title('Vertical Profile')
 else:
-    EdgePosition = [[LSF(VerticalProfile).argmax(),np.nan]]
+    EdgePosition = [[LSF(VerticalProfile).argmax(), np.nan]]
     plt.title('Vertical Profile\n(selected automatically)')
 plt.axvspan(EdgePosition[0][0]-EdgeRange, EdgePosition[0][0]+EdgeRange,
             facecolor='r', alpha=0.5)
-plt.subplot(234)
-plt.plot(range(int(EdgePosition[0][0])-EdgeRange, int(EdgePosition[0][0])+EdgeRange),
-         VerticalProfile[int(EdgePosition[0][0])-EdgeRange:
-                         int(EdgePosition[0][0])+EdgeRange])
-plt.title('Zoomed edge')
-plt.xlim(EdgePosition[0][0]-EdgeRange, EdgePosition[0][0]+EdgeRange)
-plt.subplot(235)
-plt.plot(LSF(VerticalProfile[EdgePosition[0][0]-EdgeRange:
-                             EdgePosition[0][0]+EdgeRange]))
-plt.title('LSF')
-plt.subplot(236)
-plt.plot(MTF(VerticalProfile[EdgePosition[0][0]-EdgeRange:
-                             EdgePosition[0][0]+EdgeRange]))
-plt.title('MTF')
 
-print LSF(VerticalProfile).max(), 
-
-plt.figure()
-plt.subplot(311)
-plt.plot(VerticalProfile)
-plt.axvspan(EdgePosition[0][0]-EdgeRange, EdgePosition[0][0]+EdgeRange,
-            facecolor='r', alpha=0.5)
-plt.subplot(312)
+plt.subplot(412)
 plt.plot(LSF(VerticalProfile))
 plt.axvspan(EdgePosition[0][0]-EdgeRange, EdgePosition[0][0]+EdgeRange,
             facecolor='r', alpha=0.5)
-plt.subplot(313)
-plt.plot(MTF(VerticalProfile))
+plt.title('LSF')
 
-#~ plt.figure()
-#~ plt.text(0.5, 0.5,'matplotlib',
-     #~ horizontalalignment='center',
-     #~ verticalalignment='center')
-#~ plt.text(LSF(VerticalProfile).max(), LSF(VerticalProfile)[LSF(VerticalProfile).argmax()], 'asdf')
+plt.subplot(413)
+plt.plot(MTF(VerticalProfile))
+plt.title('MTF')
+
+plt.subplot(4, 3, 10)
+plt.plot(range(int(EdgePosition[0][0])-EdgeRange,
+               int(EdgePosition[0][0])+EdgeRange),
+         VerticalProfile[int(EdgePosition[0][0])-EdgeRange:
+                         int(EdgePosition[0][0])+EdgeRange])
+plt.title('Zoomed Edge')
+plt.xlim(EdgePosition[0][0]-EdgeRange, EdgePosition[0][0]+EdgeRange)
+
+plt.subplot(4, 3, 11)
+plt.plot(LSF(VerticalProfile[EdgePosition[0][0]-EdgeRange:
+                             EdgePosition[0][0]+EdgeRange]))
+plt.title('Zoomed LSF')
+
+plt.subplot(4, 3, 12)
+plt.plot(MTF(VerticalProfile[EdgePosition[0][0]-EdgeRange:
+                             EdgePosition[0][0]+EdgeRange]))
+plt.title('Zoomed MTF')
 
 ioff()
 plt.show()
