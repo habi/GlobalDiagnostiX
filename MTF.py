@@ -26,7 +26,7 @@ def MTF(edgespreadfunction):
     '''
     linespreadfunction = np.diff(edgespreadfunction)
     return np.abs(np.fft.fft(linespreadfunction))
-    
+
 
 def LSF(edgespreadfunction):
     '''
@@ -41,16 +41,21 @@ def LSF(edgespreadfunction):
 
 # Generate edge for N points
 N = 500
-edge = np.zeros(N)
-edge[:N / 2] = 1
+dirac = np.zeros(N)
+dirac[:N / 2] = 1
 
 #~ edge=np.arange(-50,50,0.1)
 
 # Filter edge
 sigma_1 = 0.5
-gauss_1 = scipy.ndimage.gaussian_filter(edge, sigma=sigma_1)
+gauss_1 = scipy.ndimage.gaussian_filter(dirac, sigma=sigma_1)
 sigma_2 = 0.75
-gauss_2 = scipy.ndimage.gaussian_filter(edge, sigma=sigma_2)
+gauss_2 = scipy.ndimage.gaussian_filter(dirac, sigma=sigma_2)
+
+
+noise_sigma = 0.005
+gauss_1_noise = gauss_1 + noise_sigma * randn(len(gauss_2))
+gauss_2_noise = gauss_2 + noise_sigma * randn(len(gauss_2))
 
 '''
 Save the plots in a dictionary, so we can iterate through it afterwards. See
@@ -58,64 +63,32 @@ http://stackoverflow.com/a/2553532/323100 and
 http://docs.python.org/2/tutorial/datastructures.html#looping-techniques for
 reference how it's done.
 '''
-plots = dict((name, eval(name)) for name in ['edge', 'gauss_1', 'gauss_2'])
+plots = dict((name, eval(name)) for name in ['dirac', 'gauss_1', 'gauss_2',
+                                             'gauss_1_noise', 'gauss_2_noise'])
 
-plt.figure(figsize=(16,12))
-plt.subplot(331)
-plt.plot(edge,label='edge')
-plt.ylim(-0.1,1.1)
-plt.xlim(len(edge)/2-25,len(edge)/2+25)
-plt.title('Ideal Edge')
+plt.figure(figsize=(16, 12))
+counter = 0
+ShowRegion = 50
+for name, data in sorted(plots.iteritems()):
+    counter += 1
+    plt.subplot(3, len(plots), counter)
+    plt.plot(data)
+    plt.ylim(-0.1, 1.1)
+    plt.xlim(len(dirac)/2-ShowRegion/2, len(dirac)/2+ShowRegion/2)
+    plt.title(name)
+    plt.subplot(3, len(plots), counter+len(plots))
+    plt.plot(LSF(data))
+    plt.title('LSF')
+    plt.ylim(-0.1, 1.1)
+    plt.subplot(3, len(plots), counter+2*len(plots))
+    plt.plot(MTF(data))
+    plt.plot(np.ones(N)*MTF(data)[len(dirac)/2])
+    plt.ylim(-0.1, 1.1)
+    plt.xlim(0, len(dirac)/2)
+    plt.title(' '.join(['MTF @ Nyquist=', str(np.round(MTF(data)[len(dirac)/2],
+                                                       3)*100), '%']))
 
-plt.subplot(334)
-plt.plot(LSF(edge),label='lsf')
-plt.title('LSF')
-plt.ylim(-0.1,1.1)
-plt.xlim(len(edge)/2-25,len(edge)/2+25)
-plt.ylim(-0.1,1.1)
-
-plt.subplot(337)
-plt.plot(MTF(edge),label='MTF')
-plt.ylim(-0.1,1.1)
-plt.xlim(0,len(edge)/2)
-plt.title(' '.join(['MTF @ Nyquist=',str(np.round(MTF(edge)[len(edge)/2],3)*100),'%']))
-         
-plt.subplot(332)
-plt.plot(gauss_1,label='edge')
-plt.ylim(-0.1,1.1)
-plt.xlim(len(edge)/2-25,len(edge)/2+25)
-plt.title(' '.join(['Gauss with Sigma',str(sigma_1)]))
-
-plt.subplot(335)
-plt.plot(LSF(gauss_1),label='lsf')
-plt.ylim(-0.1,1.1)
-plt.xlim(len(edge)/2-25,len(edge)/2+25)
-plt.title(' '.join(['LSF @ Sigma',str(sigma_1)]))
-
-plt.subplot(338)
-plt.plot(MTF(gauss_1),label='MTF')
-plt.plot(np.ones(N)*MTF(gauss_1)[len(edge)/2])
-plt.ylim(-0.1,1.1)
-plt.xlim(0,len(edge)/2)
-plt.title(' '.join(['MTF @ Nyquist=',str(np.round(MTF(gauss_1)[len(edge)/2],3)*100),'%']))
-
-plt.subplot(333)
-plt.plot(gauss_2,label='edge')
-plt.ylim(-0.1,1.1)
-plt.xlim(len(edge)/2-25,len(edge)/2+25)
-plt.title(' '.join(['Gauss with Sigma',str(sigma_2)]))
-
-plt.subplot(336)
-plt.plot(LSF(gauss_2),label='lsf')
-plt.ylim(-0.1,1.1)
-plt.xlim(len(edge)/2-25,len(edge)/2+25)
-plt.title(' '.join(['LSF @ Sigma',str(sigma_2)]))
-
-plt.subplot(339)
-plt.plot(MTF(gauss_2),label='MTF')
-plt.plot(np.ones(N)*MTF(gauss_2)[len(edge)/2])
-plt.ylim(-0.1,1.1)
-plt.xlim(0,len(edge)/2)
-plt.title(' '.join(['MTF @ Nyquist=',str(np.round(MTF(gauss_2)[len(edge)/2],3)*100),'%']))
-
-plt.show()
+if SaveFigure:
+    plt.savefig('MTF' + str(int(time.time()*10)) + '.png')
+else:
+    plt.show()
