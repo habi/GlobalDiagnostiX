@@ -56,6 +56,15 @@ def rgb2gray(rgb):
     '''
     return np.dot(rgb[..., :3], [0.299, 0.587, 0.144])
 
+
+def polynomialfit(data, order):
+    '''
+    calculate the polynomial fit of an input for a defined degree
+    '''
+    x, y = range(len(data)), data
+    coefficients = np.polyfit(x, y, order)
+    return np.polyval(coefficients, x)
+
 ImageToLoad = os.path.join(ImagePath, ImageDir, ImageFile)
 
 # Read the image and convert it to grayscale rightaway
@@ -104,7 +113,7 @@ print 'The vertical profile (blue) goes from', min(VerticalProfile), 'to',\
     max(VerticalProfile)
 
 plt.figure(figsize=(16, 9))
-plt.subplot(411)
+plt.subplot(311)
 plt.plot(VerticalProfile)
 if SelectEdgeManually:
     plt.title('Select approximate middle of knife edge')
@@ -116,33 +125,32 @@ else:
 plt.axvspan(EdgePosition[0][0]-EdgeRange, EdgePosition[0][0]+EdgeRange,
             facecolor='r', alpha=0.5)
 
-plt.subplot(412)
+plt.subplot(312)
 plt.plot(LSF(VerticalProfile))
 plt.axvspan(EdgePosition[0][0]-EdgeRange, EdgePosition[0][0]+EdgeRange,
             facecolor='r', alpha=0.5)
 plt.title('LSF')
 
-plt.subplot(413)
-plt.plot(MTF(VerticalProfile))
-plt.title('MTF')
+#~ plt.subplot(413)
+#~ plt.plot(MTF(VerticalProfile))
+#~ plt.title('MTF')
 
-plt.subplot(4, 3, 10)
-plt.plot(range(int(EdgePosition[0][0])-EdgeRange,
-               int(EdgePosition[0][0])+EdgeRange),
-         VerticalProfile[int(EdgePosition[0][0])-EdgeRange:
-                         int(EdgePosition[0][0])+EdgeRange])
-plt.title('Zoomed Edge')
+plt.subplot(3, 3, 7)
+plt.plot(VerticalProfile)
 plt.xlim(EdgePosition[0][0]-EdgeRange, EdgePosition[0][0]+EdgeRange)
+plt.title('Zoomed Edge')
 
-plt.subplot(4, 3, 11)
-plt.plot(LSF(VerticalProfile[EdgePosition[0][0]-EdgeRange:
-                             EdgePosition[0][0]+EdgeRange]))
+plt.subplot(3, 3, 8)
+plt.plot(LSF(VerticalProfile))
+plt.xlim(EdgePosition[0][0]-EdgeRange, EdgePosition[0][0]+EdgeRange)
 plt.title('Zoomed LSF')
 
-plt.subplot(4, 3, 12)
-plt.plot(MTF(VerticalProfile[EdgePosition[0][0]-EdgeRange:
-                             EdgePosition[0][0]+EdgeRange]))
-plt.title('Zoomed MTF')
+plt.subplot(3, 3, 9)
+plt.plot(MTF(VerticalProfile), alpha=0.5)
+order = 20
+plt.plot(polynomialfit(MTF(VerticalProfile), order), linewidth=5)
+plt.xlim(0, len(MTF(VerticalProfile))/2)
+plt.title('MTF with polyfit of order' + str(order))
 
 ioff()
 plt.show()
