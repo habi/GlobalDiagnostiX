@@ -14,6 +14,7 @@ import scipy.fftpack
 from pylab import *
 import time
 
+
 def MTF(edgespreadfunction):
     '''
     Compute the modulation transfer function (MTF).
@@ -39,7 +40,7 @@ def LSF(edgespreadfunction):
     return np.abs(np.diff(edgespreadfunction))
 
 
-def polynomialfit(data,order):
+def polynomialfit(data, order):
     '''
     calculate the polynomial fit of an input for a defined degree
     '''
@@ -49,66 +50,106 @@ def polynomialfit(data,order):
 
 
 # Generate edge for N points
-N = 500
+N = 250
 dirac = np.zeros(N)
 dirac[:N / 2] = 1
 
 # Filter edge
-sigma_1 = 0.5
-gauss_1 = scipy.ndimage.gaussian_filter(dirac, sigma=sigma_1)
-sigma_2 = 0.75
-gauss_2 = scipy.ndimage.gaussian_filter(dirac, sigma=sigma_2)
+sigma = [0.4, 0.6, 0.8]
+gauss_1 = scipy.ndimage.gaussian_filter(dirac, sigma=sigma[0])
+gauss_2 = scipy.ndimage.gaussian_filter(dirac, sigma=sigma[1])
+gauss_3 = scipy.ndimage.gaussian_filter(dirac, sigma=sigma[2])
 
-Total = 55
-SaveFigure = True
-for iteration in range(Total):
-    print 'Plotting', iteration, 'of', Total
-    noise_sigma = 0.001
-    gauss_1_noise = gauss_1 + noise_sigma * randn(len(gauss_2))
-    gauss_2_noise = gauss_2 + noise_sigma * randn(len(gauss_2))
+SaveFigure = False
+#~ Total = 55
+#~ for iteration in range(Total):
+    #~ print 'Plotting', iteration, 'of', Total
 
-    '''
-    Save the plots in a dictionary, so we can iterate through it afterwards. See
-    http://stackoverflow.com/a/2553532/323100 and
-    http://docs.python.org/2/tutorial/datastructures.html#looping-techniques for
-    reference how it's done.
-    '''
-    plots = dict((name, eval(name)) for name in ['dirac', 'gauss_1', 'gauss_2',
-                                                 'gauss_1_noise', 'gauss_2_noise'])
+noise_sigma = 0.001
+gauss_1_noise = gauss_1 + noise_sigma * randn(len(dirac))
+gauss_2_noise = gauss_2 + noise_sigma * randn(len(dirac))
+gauss_3_noise = gauss_3 + noise_sigma * randn(len(dirac))
 
-    plt.figure(figsize=(16, 16))
-    counter = 0
-    ShowRegion = 50
-    for name, data in sorted(plots.iteritems()):
-        counter += 1
-        plt.subplot(4, len(plots), counter)
-        plt.plot(data)
-        plt.ylim(-0.1, 1.1)
-        plt.xlim(len(dirac)/2-ShowRegion/2, len(dirac)/2+ShowRegion/2)
-        plt.title(name)
+'''
+Save the plots in a dictionary, so we can iterate through it afterwards. See
+http://stackoverflow.com/a/2553532/323100 and http://is.gd/d008ai for reference
+'''
+plots = dict((name, eval(name)) for name in ['dirac',
+                                             'gauss_1', 'gauss_1_noise',
+                                             'gauss_2', 'gauss_2_noise',
+                                             'gauss_3', 'gauss_3_noise'])
 
-        plt.subplot(4, len(plots), counter+len(plots))
-        plt.plot(LSF(data))
-        plt.title('LSF')
-        plt.ylim(-0.1, 1.1)
 
-        plt.subplot(4, len(plots), counter+2*len(plots))
-        plt.plot(MTF(data))
-        plt.plot(np.ones(N)*MTF(data)[len(dirac)/2])
-        plt.ylim(-0.1, 1.1)
-        plt.xlim(0, len(dirac)/2)
-        plt.title(' '.join(['MTF @ Nyquist=', str(np.round(MTF(data)[len(dirac)/2],
-                                                           3)*100), '%']))
+def getter(lst, key, value):
+    for i, dic in enumerate(lst):
+        if dic[key] == value:
+            return i
+    return -1
 
-        plt.subplot(4, len(plots), counter+3*len(plots))
-        #~ plt.plot(MTF(data),label='orig')
-        for degree in range(4,10):
-            plt.plot(polynomialfit(MTF(data),degree),label=str(degree))
-        #~ plt.legend()
-        plt.ylim(-0.1, 1.1)        
-        plt.title('Polynomial fit with degree ' + str(degree))
+plt.figure(figsize=(16, 16))
+counter = 0
+ShowRegion = 40
+for name, data in sorted(plots.iteritems()):
+    counter += 1
+    plt.subplot(4, len(plots), counter)
+    plt.plot(data)
+    plt.ylim(-0.1, 1.1)
+    plt.xlim(len(dirac)/2-ShowRegion/2, len(dirac)/2+ShowRegion/2)
+    if name == 'dirac':
+        plt.ylabel('Edge response')
+    plt.title(name)
+    if name == 'gauss_1':
+        plt.title(name + '\nSigma=' + str(sigma[0]))
+    if name == 'gauss_2':
+        plt.title(name + '\nSigma=' + str(sigma[1]))
+    if name == 'gauss_3':
+        plt.title(name + '\nSigma=' + str(sigma[2]))
 
-    if SaveFigure:
-        plt.savefig('MTF_' + str(int(time.time()*10)) + '.png')
-    else:
-        plt.show()
+    plt.subplot(4, len(plots), counter+len(plots))
+    plt.plot(LSF(data))
+    plt.ylim(-0.1, 1.1)
+    if name == 'dirac':
+        plt.ylabel('Edge response')
+
+    plt.subplot(4, len(plots), counter+2*len(plots))
+    plt.plot(MTF(data))
+    plt.plot(np.ones(N)*MTF(data)[len(dirac)/2])
+    plt.ylim(-0.1, 1.1)
+    plt.xlim(0, len(dirac)/2)
+    if name == 'dirac':
+        plt.ylabel('MTF @ Nyquist')
+    plt.text(0.618*len(dirac)/2, MTF(data)[len(dirac)/2] - 0.1,
+             ' '.join([str(np.round(MTF(data)[len(dirac)/2], 3)*100), '%']),
+             fontsize=12, backgroundcolor='w')
+
+    plt.subplot(4, len(plots), counter+3*len(plots))
+    plt.plot(MTF(data), label='orig')
+    #~ for degree in range(10,25):
+        #~ plt.plot(polynomialfit(MTF(data), degree), label=str(degree))
+    #~ plt.legend()
+    degree = 4
+    plt.plot(polynomialfit(MTF(data), degree), label=str(degree), color='r')
+    plt.plot(np.ones(N)*polynomialfit(MTF(data), degree)[len(dirac)/2],
+             color='g')
+    plt.ylim(-0.1, 1.1)
+    plt.xlim(0, len(dirac)/2)
+    if name == 'dirac':
+        plt.ylabel(' '.join(['polynomial fit of order', str(degree),
+                             '\nfitted MTF @ Nyquist']))
+    plt.text(0.618*len(dirac)/2, MTF(data)[len(dirac)/2] - 0.1,
+             ' '.join([str(np.round(polynomialfit(MTF(data),
+                                                  degree)[len(dirac)/2],
+                                    3)*100), '%']),
+             fontsize=12, backgroundcolor='w')
+
+plt.subplot(4, len(plots), 1)
+plt.plot(dirac, 'b')
+plt.ylim(-0.1, 1.1)
+plt.axvspan(len(dirac)/2-ShowRegion/2, len(dirac)/2+ShowRegion/2,
+            facecolor='r', alpha=0.5)
+plt.title('Ideal knife edge\n red zoom-region\n is shown right')
+
+if SaveFigure:
+    plt.savefig('MTF_' + str(int(time.time()*10)) + '.png')
+else:
+    plt.show()
