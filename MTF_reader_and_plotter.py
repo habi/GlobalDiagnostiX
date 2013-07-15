@@ -11,7 +11,7 @@ import os
 ion()
 
 # SETUP
-SelectStartPointManually = False
+SelectStartPointManually = True
 SelectEdgeManually = False
 EdgeRange = 100
 
@@ -147,10 +147,10 @@ plt.title('Zoomed LSF')
 
 plt.subplot(3, 3, 9)
 plt.plot(MTF(VerticalProfile), alpha=0.5)
-order = 20
+order = 9
 plt.plot(polynomialfit(MTF(VerticalProfile), order), linewidth=5)
 plt.xlim(0, len(MTF(VerticalProfile))/2)
-plt.title('MTF with polyfit of order' + str(order))
+plt.title('MTF with polynomial fit of order ' + str(order))
 
 ioff()
 plt.show()
