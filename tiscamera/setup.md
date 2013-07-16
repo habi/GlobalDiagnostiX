@@ -18,6 +18,11 @@ Afterwards I did this
 plugged in the camera
     sudo ./euvccam-fw -p
 looked at the output of this command, which informed me that the camera is there and can be seen by Raspbian.
+
 To actually look at the image I started `mplayer` with the command below:
     mplayer tv:// -tv driver=v4l2:device=/dev/video0
+
+To save a screenshot of the current image, start mplayer with the -vt option, and press `s` while the image shows (or `S` for continuous, info from  http://is.gd/rI6nam)
+    mplayer tv:// -tv driver=v4l2:device=/dev/video0 -vf screenshot
+
 
