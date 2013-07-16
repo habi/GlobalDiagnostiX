@@ -11,3 +11,5 @@
 	ll = !git l --all
 [color]
 	ui=auto
+[credential]
+	helper = cache --timeout=3600

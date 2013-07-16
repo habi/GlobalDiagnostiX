@@ -11,12 +11,17 @@ import os
 ion()
 
 # SETUP
-SelectStartPointManually = True
+SelectStartPointManually = Falseor
 SelectEdgeManually = False
 EdgeRange = 100
+PolynomialOrder = 5
+RunningOnPi = True
 
 # Images
-ImagePath = '/afs/psi.ch/project/EssentialMed/Images'
+if RunningOnPi:
+    ImagePath = '/home/pi/Images'
+else:
+    ImagePath = '/afs/psi.ch/project/EssentialMed/Images'
 ImageDir = '11-MTF'
 #~ ImageFile = 'iPhone_with_xray_film.jpg'
 #~ ImageFile = 'iPhone_with_xray_film_hdr.jpg'
@@ -147,10 +152,12 @@ plt.title('Zoomed LSF')
 
 plt.subplot(3, 3, 9)
 plt.plot(MTF(VerticalProfile), alpha=0.5)
-order = 9
-plt.plot(polynomialfit(MTF(VerticalProfile), order), linewidth=5)
+plt.plot(polynomialfit(MTF(VerticalProfile), PolynomialOrder), linewidth=5)
 plt.xlim(0, len(MTF(VerticalProfile))/2)
-plt.title('MTF with polynomial fit of order ' + str(order))
+plt.title('MTF with polynomial fit of order ' + str(PolynomialOrder) +
+          '\nwith a minimum at :' +
+          str(round(min(polynomialfit(MTF(VerticalProfile), PolynomialOrder)),
+                    3)))
 
 ioff()
 plt.show()
