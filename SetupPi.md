@@ -2,13 +2,22 @@
 I plugged in a cheap 4 GB SD card I just had lying around, brought the system up and running and cobbled together bits and pieces and got a working system.
 This document here describes *all* the necessary steps to get up and runnig with a virgin SD card.
 If you follow all the steps in this document, you should have a RPi ready to use for the [GlobalDiagnostiX](http://globaldiagnostix.org) project.
-The aim is to be able to interact with an [Elphel](http://elphel.com) camera and to acquire images from a scintillator screen using a (commercial) x-ray source.
+The aim is to be able to interact with several cameras ([Elphel](http://elphel.com), [Awaiba](http://www.awaiba.com/), [The Imaging Source](http://www.theimagingsource.com/)) and to acquire images from a scintillator screen using a (commercial) x-ray source.
 
 ## Prerequisites
 - According to the [Embedded Linux Wiki](http://elinux.org/RPi_SD_cards), a Transcend 16GB SDHC card is working well. Order one from [Digitec](https://www.digitec.ch/ProdukteDetails2.aspx?Reiter=Details&Artikel=194092) for (currently) 24 CHF.
 - Download the [BerryBoot Installer](http://www.berryterminal.com/doku.php/berryboot) and unzip it onto your SD card
 - Boot your Raspberry Pi from this SD card to install a current version of [Raspbian](http://www.raspbian.org/) or any other operating system.
-- Reboot, and go through `raspi-config` to reconfigure locales, keyboard and timezone if necessary
+- Reboot. This will then go through `raspi-config` to reconfigure locales, keyboard and timezone (if necessary)
+- `sudo /etc/ntp.conf` to add the timeservers of PSI to the configuration, so we have the correct time. Add the lines below as first `server` entries
+    # Permit time synchronization with our time source, but do not
+    # permit the source to query or modify the service on this system.
+    server pstime1.psi.ch
+    restrict pstime1.psi.ch mask 255.255.255.255 nomodify notrap noquery
+    server pstime2.psi.ch
+    restrict pstime2.psi.ch mask 255.255.255.255 nomodify notrap noquery
+    server pstime3.psi.ch
+    restrict pstime3.psi.ch mask 255.255.255.255 nomodify notrap noquery
 
 ## Further setup
 - Update the repositories and upgrade the system to the newest packages with `sudo apt-get update && sudo apt-get upgrade`. 
