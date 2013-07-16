@@ -28,8 +28,8 @@ This should also take care of the `git` configuration, since we're also pulling 
 
         sudo apt-get install git
         cd
-        rm -r * # to remove *EVERYTHING* from your home directory
-        rm -r .* # REALLY, EVERYTHING!
+        sudo rm -r * # to remove *EVERYTHING* from your home directory
+        sudo rm -r .* # REALLY, EVERYTHING!
         git clone https://github.com/habi/GlobalDiagnostiX.git ~ # clone the GitHub repo into your home directory
         nano SetupPi.md # change something in the file
         git commit -a;git push # commit the change and push it back to the repo to see if that works
