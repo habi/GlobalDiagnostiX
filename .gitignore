@@ -34,5 +34,6 @@ Elphel/snapfull.php
 Elphel/parsedit.php
 Elphel/setparameters*.php
 tiscamera/gst/
+tiscamera/gige/
 tiscamera/tools/
 tiscamera/v4l2/
