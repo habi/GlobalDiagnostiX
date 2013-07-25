@@ -31,13 +31,13 @@ parser.add_option('-o', '--OpeningAngle', dest='OpeningAngle', default=90.0, typ
 parser.add_option('-n', '--NumericalAperture', dest='NA', default=0.4, type='float',
 	help='Numerical Aperture of the lens',
 	metavar='0.6')
-parser.add_option('-f', '--FStop', dest='FStop', default=0.8, type='float',
+parser.add_option('-f', '--FStop', dest='FStop', default=1.2, type='float',
 	help='F-Stop of the lens',
 	metavar='0.8')	
 parser.add_option('-c', '--CCDSize', dest='SensorSize', default=3.0, type='float',
 	help='Size of the CCD/CMOS sensor (in millimeters!), Default=7 mm/0.7 cm',
 	metavar='7')
-parser.add_option('-e', '--Energy', dest='InputEnergy', default=90.0, type='float',
+parser.add_option('-e', '--Energy', dest='InputEnergy', default=50.4, type='float',
 	help='Energy of the x-ray photons in kV (default=50 kV)',
 	metavar='120')
 parser.add_option('-l', '--LinePairs', dest='LinePairs', default=5.0, type='float',
@@ -64,7 +64,7 @@ if options.FOV==None \
 	print ''
 	sys.exit(1)
 
-print '________________________________________________________________________________'
+print 80 * '_'
 
 ###################### CALCULATE ######################
 # Intensifying screen
@@ -80,26 +80,40 @@ Wavelength = 500e-9 # nm (green according to http://is.gd/AWmNpp)
 #~ E = h * nu, nu = c / lambda
 PhotonEnergyJ = constants.h * constants.c / Wavelength
 PhotonEnergyeV = PhotonEnergyJ/constants.eV
-#~ print 'Photos with a wavelength of',int(Wavelength*1e9),\
-	#~ 'nm have a photon energy of',round(PhotonEnergyJ,22),'J, which corresponds',\
-	#~ 'to an energy of',round(PhotonEnergyeV,3),'eV.'
+#~ print 'Visible light photons with a wavelength of',int(Wavelength*1e9),\
+	#~ 'nm have an energy of',round(PhotonEnergyJ,22),'J or',\
+	#~ round(PhotonEnergyeV,3),'eV.'
 
 PhotonsAfterScintillator = options.InputEnergy/PhotonEnergyeV * ScreenOutput
+print 'For each', options.InputEnergy/1000, 'kV x-ray photon'
+print '    * we have', int(round(PhotonsAfterScintillator)), 'visible light',\
+    'photons after the scintillator (with a'
+print '      conversion efficiency of', ScreenOutput * 100, '%).'
 
 # Lens
-LensReflectance = 0.1
-LensAbsorption = 0.1
-LensTransmission = 1 - LensReflectance - LensAbsorption
+LensReflectance = 0.02
+LensAbsorption = 0.02
+# Assume a set of double plano-convex lenses, with 4% loss per lens
+LensTransmission = 1 - (2 * LensReflectance) - (2 * LensAbsorption)
 PhotonsAfterLens = PhotonsAfterScintillator*LensTransmission
 #~ tan(\alpha/2) = (FOV/2) / Distance
 #~ Distance = (FOV/2)/tan(\alpha/2)
 WorkingDistance = (options.FOV/2)/numpy.tan(numpy.deg2rad(options.OpeningAngle)/2)
 
+print '    * we have', int(round(PhotonsAfterLens)), 'visible light photons',\
+    'after the lens couple (with a'
+print '      transmission of', LensTransmission * 100, '%).'
+
 # Sensor
-QESensor = 0.6
+QESensor = 0.4
 ProducedElectrons = PhotonsAfterLens * QESensor
 Demagnification = options.FOV / options.SensorSize
 SensorPosition = WorkingDistance / Demagnification
+
+print '    * we get', int(round(ProducedElectrons)), 'electrons on the',\
+    'detector (with a QE of', str(QESensor) + ').'
+
+exit()
 
 # LinePairs
 LinePairsScintillator = options.FOV*10 * options.LinePairs
@@ -330,19 +344,20 @@ else:
 	plt.show()
 	
 print 'The options were:'
-print str(options).replace('{','').replace('}','').replace("'",'').replace(', ','\n') # getting the output of 'options' and doing some string-replacement to get a nice filename for the output.
+print str(options).replace('{','').replace('}','').replace("'",'').replace(', ','\n')  # getting the output of 'options' and doing some string-replacement to get a nice filename for the output.
 
-print '________________________________________________________________________________'
+print 80 * '_'
 print 'Call the script with the commandline below to get the same result...'
 print ' '.join(sys.argv)
-	
-#~ if options.Output:
-	#~ print
-	#~ print 'use the command below to open all the generated .png files with Fiji'
-	#~ viewcommand = '/home/scratch/Apps/Fiji.app/fiji-linux -eval \'run("Image Sequence...", "open=' +\
-	#~ os.getcwd() + ' starting=1 increment=1 scale=100 file=png or=[] sort");\' &'
-	#~ print viewcommand
-	#~ print '_____________________________________________________'
+
+if options.Output:
+    print
+    print 'use the command below to open all the generated .png files with Fiji'
+    viewcommand = '/home/scratch/Apps/Fiji.app/fiji-linux -eval \'run("Image',\
+        'Sequence...", "open=' + os.getcwd() + ' starting=1 increment=1',\
+        'scale=100 file=png or=[] sort");\' &'
+    print viewcommand
+    print 80 * '_'
 
 """
 # kill all runnig fiji jobs
