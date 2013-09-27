@@ -56,7 +56,7 @@ eV = 1.602e-19  # J
 
 QFactor = 1  # http://en.wikipedia.org/wiki/Dosimetry#Equivalent_Dose
 WeightingFactor = 0.12  # http://en.wikipedia.org/wiki/Dosimetry#Effective_dose
-ExposureTime = 100e-3  # s
+ExposureTime = 1000e-3  # s
 
 # Read xray spectra
 Spectrapath = os.path.join(os.getcwd(), 'Spectra')
@@ -64,16 +64,18 @@ Spectra = [(os.path.join(Spectrapath, 'Xray-Spectrum_046kV.txt')),
            (os.path.join(Spectrapath, 'Xray-Spectrum_070kV.txt'))]
 
 Data = [(np.loadtxt(FileName)) for FileName in Spectra]
-SourceVoltage = [int(open(FileName).readlines()[3].split()[7])
+
+SourceVoltage = [int(open(FileName).readlines()[2].split()[4])
                  for FileName in Spectra]
-AverageEnergy = [float(open(FileName).readlines()[6].split()[3])
+AverageEnergy = [float(open(FileName).readlines()[5].split()[3])
                  for FileName in Spectra]
 
 # Give out values
 for Voltage, Current, case in zip((SourceVoltage[0], SourceVoltage[1]),
                                   (50, 1.6), range(len(Spectra))):
     print 80 * '-'
-    print 'For a voltage of', Voltage, 'kV and a current of', Current, 'mAs'
+    print 'For a voltage of', Voltage, 'kV and a current of',\
+        Current * ExposureTime, 'mAs (exposure time', ExposureTime, 's)'
     print '    - we get a mean energy of', round(AverageEnergy[case], 4), 'keV'
 
     # Calculate the number of photons from the tube to the sample
@@ -109,4 +111,4 @@ for Voltage, Current, case in zip((SourceVoltage[0], SourceVoltage[1]),
     D = De * ExposureTime
 
     print '    -', round(D*1000, 4), 'mSv is the effective dose on the',\
-        ' sample for an exposure time of =', ExposureTime, 's)'
+        'sample for an exposure time of =', ExposureTime, 's)'
