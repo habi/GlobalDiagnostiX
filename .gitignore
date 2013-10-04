@@ -30,9 +30,9 @@ ImageJ-Elphel/
 matplotlib2tikz*
 libtiff*
 Images
-Elphel/snapfull.php
-Elphel/parsedit.php
-Elphel/setparameters*.php
+elphel/snapfull.php
+elphel/parsedit.php
+elphel/setparameters*.php
 tiscamera/gige/
 tiscamera/gst/
 tiscamera/tools/
