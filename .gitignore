@@ -33,8 +33,8 @@ Images
 Elphel/snapfull.php
 Elphel/parsedit.php
 Elphel/setparameters*.php
-tiscamera/gst/
 tiscamera/gige/
+tiscamera/gst/
 tiscamera/tools/
 tiscamera/v4l2/
 snapshot_???.jpg
