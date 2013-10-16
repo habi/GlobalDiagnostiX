@@ -1,13 +1,101 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-'''
-Calculate photons and radiation dose per second
-'''
+"""
+We'd like to know a bit more about the dose we inflict on the patient.
+This script is used to calculate said dose based on the x-ray spectra that we
+will be able to set (see Source-Specifications).
+"""
 
-from pylab import *
-import numpy as np
+from optparse import OptionParser
+import sys
 import os
+import numpy as np
+
+# Use Pythons Optionparser to define and read the options, and also
+# give some help to the user
+parser = OptionParser()
+usage = "usage: %prog [options] arg"
+parser.add_option('-v', '--voltage', dest='Voltage',
+                  type='int',
+                  metavar='53',
+                  default=100,
+                  help='Tube peak voltage you would like to calcuate the dose '
+                       'for. The script only accepts voltages that are in the '
+                       'specs')
+parser.add_option('-c', '--chatty', dest='chatty',
+                  default=False, action='store_true',
+                  help='Be chatty. Default: Tell us only the relevant stuff.',
+                  metavar=1)
+(options, args) = parser.parse_args()
+
+# show the help if no parameters are given
+if options.Voltage is None:
+    parser.print_help()
+    print 'Example:'
+    print 'The command below calculates the dose for a peak tube voltage of',\
+        '60 kV.'
+    print
+    print sys.argv[0], '-v 60'
+    exit(1)
+
+# Inform the user that we only have certain values to work with
+Voltage = [46, 53, 60, 70, 80, 90, 100, 120]
+if not options.Voltage in Voltage:
+    print 'You can only enter one of these voltages:',\
+        str(Voltage).strip('[]'), 'kV'
+    print
+    print 'Try again with the closest allowed value:'
+    # http://stackoverflow.com/a/9706105/323100
+    print sys.argv[0], '-v', Voltage[min(range(len(Voltage)),
+                                     key=lambda i:abs(Voltage[i] -
+                                                      options.Voltage))]
+    exit(1)
+
+# Load spectra
+SpectraPath = os.path.join(os.getcwd(), 'Spectra')
+# Construct file names, then load the data with the filenames (we could do this
+# in one step, but like this it's easier to debug. 'SpectrumData' is the data
+# without comments, thus we read the mean energy on line 7 in a second step
+SpectrumLocation = [os.path.join(SpectraPath, 'Xray-Spectrum_' +
+                                              str("%03d" % kV) + 'kV.txt')
+                    for kV in Voltage]
+SpectrumData = [(np.loadtxt(FileName)) for FileName in SpectrumLocation]
+MeanEnergy = [float(open(FileName).readlines()[5].split()[3]) for FileName in
+              [os.path.join(SpectraPath, 'Xray-Spectrum_' + str("%03d" % kV) +
+                            'kV.txt') for kV in Voltage]]
+if options.chatty:
+    for v, e in zip(Voltage, MeanEnergy):
+        print 'Peak tube voltage', v, 'kV = mean energy', int(round(e)), 'keV'
+
+print 'For a peak tube voltage of', options.Voltage, 'kV we have a mean',\
+    'energy of', round(MeanEnergy[Voltage.index(options.Voltage)], 3), 'keV'
+
+
+#~ # Calculate the number of photons from the tube to the sample
+    #~ N0 = (VI/E)*eta*(A/4Pir²)
+    #~ N0 = (Voltage * Current) / (Voltage * eV) * \
+        #~ eta * Z * Voltage * \
+        #~ Area / (4 * np.pi * r ** 2)
+#~ 
+    #~ print '    - the tube emitts %.4e' % N0, 'photons per second'
+#~ 
+#~ # Number of absorbed photons
+#~ N = N0(1-e^-uT)
+#~ 
+#~ 
+
+print 'done'
+exit()
+
+
+
+
+
+
+
+
+
 
 # Setup parameters
 FOV = 10  # cm. Approximation of a wrist (10 * 10 * 5cm)
@@ -60,8 +148,10 @@ ExposureTime = 1000e-3  # s
 
 # Read xray spectra
 Spectrapath = os.path.join(os.getcwd(), 'Spectra')
+#~ Spectra = [(os.path.join(Spectrapath, 'Xray-Spectrum_046kV.txt')),
+           #~ (os.path.join(Spectrapath, 'Xray-Spectrum_070kV.txt'))]
 Spectra = [(os.path.join(Spectrapath, 'Xray-Spectrum_046kV.txt')),
-           (os.path.join(Spectrapath, 'Xray-Spectrum_070kV.txt'))]
+           (os.path.join(Spectrapath, 'Xray-Spectrum_090kV.txt'))]
 
 Data = [(np.loadtxt(FileName)) for FileName in Spectra]
 
@@ -71,8 +161,10 @@ AverageEnergy = [float(open(FileName).readlines()[5].split()[3])
                  for FileName in Spectra]
 
 # Give out values
+#~ for Voltage, Current, case in zip((SourceVoltage[0], SourceVoltage[1]),
+                                  #~ (50, 1.6), range(len(Spectra))):
 for Voltage, Current, case in zip((SourceVoltage[0], SourceVoltage[1]),
-                                  (50, 1.6), range(len(Spectra))):
+                                  (8, 125), range(len(Spectra))):
     print 80 * '-'
     print 'For a voltage of', Voltage, 'kV and a current of',\
         Current * ExposureTime, 'mAs (exposure time', ExposureTime, 's)'
