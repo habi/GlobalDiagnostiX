@@ -6,7 +6,7 @@ We'd like to know a bit more about the dose we inflict on the patient.
 This script is used to calculate said dose based on the x-ray spectra that we
 will be able to set (see Source-Specifications).
 """
-
+from __future__ import division  # fix integer division
 from optparse import OptionParser
 import sys
 import os
@@ -18,9 +18,9 @@ from scipy import constants
 parser = OptionParser()
 usage = "usage: %prog [options] arg"
 parser.add_option('-v', '--kv', dest='kV',
-                  type='int',
+                  type='float',
                   metavar='53',
-                  default=53,
+                  default=120,
                   help='Tube peak voltage [kV] you would like to calcuate the '
                        'dose for. The script only accepts voltages that are '
                        'in the specs (and tells you if you set others). '
@@ -28,18 +28,18 @@ parser.add_option('-v', '--kv', dest='kV',
 parser.add_option('-m', '--mas', dest='mAs',
                   type='float',
                   metavar='1.6',
-                  default=125,
+                  default=2,
                   help='mAs settings. Defaults to 125 mAs, which with the '
                        'default 90 kV is the setting for lumbar spine.')
 parser.add_option('-e', '--exposuretime', dest='Exposuretime',
                   type='float',
                   metavar='100',
-                  default=1000,
+                  default=50,
                   help='Exposure time [ms]. Defaults to 1 second, because we '
                        'assume that "-m" (mAs) is used as input. If the user '
                        'insists, an exposure time can be set.')
 parser.add_option('-d', '--distance', dest='Distance',
-                  type='int',
+                  type='float',
                   metavar='100',
                   default=140,
                   help='Source-Detector distance [cm]. Defaults to 1.4 m')
@@ -49,15 +49,14 @@ parser.add_option('-l', '--length', dest='Length',
                   default=20,
                   help='Length of the (square) FOV [cm]. Defaults to 20 cm.')
 parser.add_option('-t', '--thickness', dest='Thickness',
-                  type='int',
+                  type='float',
                   metavar='13',
-                  default=20,
+                  default=20.,
                   help='Thickness of the patient [cm]. Used to calculate '
                        'attenuation. Defaults to 20 cm.')
 parser.add_option('-c', '--chatty', dest='chatty',
                   default=False, action='store_true',
-                  help='Be chatty. Default: Tell us only the relevant stuff.',
-                  metavar=1)
+                  help='Be chatty. Default: Tell us only the relevant stuff.')
 (options, args) = parser.parse_args()
 
 # show the help if no parameters are given
@@ -100,31 +99,50 @@ if options.chatty:
     for v, e in zip(Voltage, MeanEnergy):
         print 'Peak tube voltage', v, 'kV = mean energy', int(round(e)), 'keV'
 
-
 print 'For a peak tube voltage of', options.kV, 'kV and a current of',\
-    int(round(options.mAs / (options.Exposuretime / 1000.))), 'mAs (exposure',\
+    int(round(options.mAs / (options.Exposuretime / 1000.))), 'mAs (exp.',\
     'time', options.Exposuretime, 'ms) we get a mean energy of',\
-    round(MeanEnergy[ChosenVoltage], 3), 'keV'
+    round(MeanEnergy[ChosenVoltage], 3), 'keV.'
+print
 
 # Calculate the numbers of photons emitted from the tube.
-PhotonEnergy = ( MeanEnergy[ChosenVoltage] / 1000 ) * constants.e  # Joules
+PhotonEnergy = (MeanEnergy[ChosenVoltage] / 1000) * constants.e  # Joules
 print 'At this mean energy, a single photon has an energy of',\
-    '%.3e' % PhotonEnergy, 'J'
-eta = 1e-9  # *ZV
-Z = 74  # Tungsten
+    '%.3e' % PhotonEnergy, 'J.'
+print
 
-# Calculate the number of photons from the tube to the sample
-#~ N0 = (UI/E)*eta*(Area/4*Pi*r²)
-    # Energie / PhotonEnergie = Nr. of Photons produced
-    # Nr. of Photons produced * Conversion Efficiency = Photons emitted
-    # Photons emitted reaching target area
-# Calculate the current from the mAs
-Current = (options.mAs / (options.Exposuretime / 1000.)) / 1000.  # Ampere
-N0 = ((options.kV * Current)/PhotonEnergy)
- 
-print '    - the tube emitts %.3e' % N0, 'photons'
+# Surface entrance dose
+# The K-value is based on the machine. The BAG-calculator (see below) list 0.1
+K = 0.1  # mGy m^2 mAs^-1
+# BSF found by Arouna2000, cited by BAG2012. Gives the same SED as the
+# XLS-calculator from BAG (http://is.gd/oTpniQ)
+BSF = 1.35
 
-print 'done'
+# calculating while converting Focusdistance from m to cm
+SED = K * (options.kV / 100) ** 2 * options.mAs *\
+    (100 / options.Distance) ** 2 * BSF
+print 'The surface entrance dose for an x-ray pulse with'
+print '   * U =', options.kV, 'kV'
+print '   * Q =', options.mAs, 'mAs'
+print '   * FOD =', options.Distance / 100, 'm'
+print '   * K =', K, 'mGy*m²/mAs'
+print '   * BSF =', BSF
+print 'is SED = K*(U/100)^2*Q*(1/FOD)^2*BSF =', round(SED, 3), 'mGy (mJ/kg).'
+print
+
+# Correspond SED to photon count
+N0 = SED / PhotonEnergy
+print 'A SED of', '%.3e' % (SED / 1000), 'Gy corresponds to',\
+    '%.3e' % N0, 'absorbed photons per kg (with a photon',\
+    'energy of', '%.3e' % PhotonEnergy, 'J per photon).'
+
+# Flux
+Flux = N0 / ( options.Exposuretime / 1000)
+print 'With an exposure time of', options.Exposuretime , 'ms this',\
+    ' corresponds to',\
+    'a photon flux of', '%.3e' % Flux, 'photons per second from the source to the',\
+    'patient.'
+
 exit()
 
 
