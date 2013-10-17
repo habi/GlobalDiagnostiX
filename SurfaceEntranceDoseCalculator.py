@@ -61,7 +61,7 @@ RSF = 1.35
 
 # calculating while converting Focusdistance from m to cm
 SED = K * (options.kV / 100) ** 2 * options.mAs *\
-    (100. / options.FocusDistance) ** 2 * RSF
+    (100 / options.FocusDistance) ** 2 * RSF
 print
 print 'Calculating the surface entrance dose for an x-ray pulse with',\
     options.kV, 'kV and', options.mAs, 'mAs with a focal distance of',\
