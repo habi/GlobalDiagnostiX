@@ -52,7 +52,7 @@ parser.add_option('-t', '--thickness', dest='Thickness',
                   type='float',
                   metavar='13',
                   default=20.,
-                  help='Thickness of the patient [cm]. Used to calculate '
+                  help='Patient or sample thickness [cm]. Used to calculate '
                        'attenuation. Defaults to 20 cm.')
 parser.add_option('-c', '--chatty', dest='chatty',
                   default=False, action='store_true',
@@ -137,11 +137,26 @@ print 'A SED of', '%.3e' % (SED / 1000), 'Gy corresponds to',\
     'energy of', '%.3e' % PhotonEnergy, 'J per photon).'
 
 # Flux
-Flux = N0 / ( options.Exposuretime / 1000)
-print 'With an exposure time of', options.Exposuretime , 'ms this',\
-    ' corresponds to',\
-    'a photon flux of', '%.3e' % Flux, 'photons per second from the source to the',\
-    'patient.'
+Flux = N0 / (options.Exposuretime / 1000)
+print 'With an exposure time of', options.Exposuretime, 'ms this',\
+    ' corresponds to a photon flux of', '%.3e' % Flux, 'photons per second',\
+    ' from the source to the surface of the patient.'
+
+N0 = 456789.0
+# Attenuation in Patient
+AttenuationCoefficient = 0.5  # For calculation we just simply assume 50%.
+# We NEED to read the data from the NIST tables, but they're in shutdown now...
+print 'Attenuation coefficient set to', AttenuationCoefficient, 'cm^-1 (@' +\
+    str(Voltage[ChosenVoltage]), 'kV)'
+# Number of absorbed photons
+# N = N0(e^-uT)
+N = N0 * (np.exp((-AttenuationCoefficient * (options.Thickness/100))))
+print 'Assuming an attenuation coefficient of', AttenuationCoefficient, 'and',\
+    'a penetration depth of', options.Thickness, 'cm we have (according to',\
+    'the Beer-Lambert law (N = N0 * e^-uT)'
+print '   * ', '%.3e' % N, 'photons after the xrays have passed the patient'
+print '   * thus', '%.3e' % (N0 - N), 'photons were absorbed'
+print '   * the intensity dropped to', round((N/N0)*100, 2), '%'
 
 exit()
 
@@ -154,14 +169,7 @@ exit()
 
 
 
-# Setup parameters
-FOV = 10  # cm. Approximation of a wrist (10 * 10 * 5cm)
-Area = FOV ** 2  # cm²
-Thickness = 5  # cm
-Volume = Area * Thickness
-Density = 1.02  # g/cm³
-Weight = float(Volume) * Density / 1000  # kg
-
+# Attenuation Coefficients
 # @40kV, half bone, half muscle
 AttenuationCoefficient = []
 AttenuationCoefficient.append(np.mean((2.685e-1, 6.655-1)))
@@ -181,6 +189,9 @@ Skeletal muscle (http://is.gd/D88OFv)
     5.00000E-02  2.262E-01  4.349E-02
     6.00000E-02  *2.048E-01*  3.258E-02
     8.00000E-02  *1.823E-01*  2.615E-02
+    1.00000E-01  1.693E-01  2.544E-02
+    1.50000E-01  1.492E-01  2.745E-02
+    2.00000E-01  1.358E-01  2.942E-02
 Cortical bone (http://is.gd/2176eQ)
     Energy         μ/ρ       μen/ρ
     (MeV)       (cm2/g)    (cm2/g)
@@ -190,72 +201,43 @@ Cortical bone (http://is.gd/2176eQ)
     3.00000E-02  1.331E+00  1.070E+00
     4.00000E-02  *6.655E-01*  4.507E-01
     5.00000E-02  4.242E-01  2.336E-01
-    6.00000E-02  *3.148E-01* 1.400E-01
+    6.00000E-02  *3.148E-01*  1.400E-01
     8.00000E-02  *2.229E-01*  6.896E-02
+    1.00000E-01  1.855E-01  4.585E-02
+    1.50000E-01  1.480E-01  3.183E-02
+    2.00000E-01  1.309E-01  3.003E-02
 '''
 
 r = 140  # cm, Distance from source to sample
 eta = 1e-9  # *ZV
 Z = 74  # Tungsten
 eV = 1.602e-19  # J
-
 QFactor = 1  # http://en.wikipedia.org/wiki/Dosimetry#Equivalent_Dose
 WeightingFactor = 0.12  # http://en.wikipedia.org/wiki/Dosimetry#Effective_dose
 ExposureTime = 1000e-3  # s
 
-# Read xray spectra
-Spectrapath = os.path.join(os.getcwd(), 'Spectra')
-#~ Spectra = [(os.path.join(Spectrapath, 'Xray-Spectrum_046kV.txt')),
-           #~ (os.path.join(Spectrapath, 'Xray-Spectrum_070kV.txt'))]
-Spectra = [(os.path.join(Spectrapath, 'Xray-Spectrum_046kV.txt')),
-           (os.path.join(Spectrapath, 'Xray-Spectrum_090kV.txt'))]
+# Calculate the number of photons from the tube to the sample
+#~ N0 = (VI/E)*eta*(A/4Pir²)
+N0 = (Voltage * Current) / (Voltage * eV) * \
+    eta * Z * Voltage * \
+    Area / (4 * np.pi * r ** 2)
+print '    - the tube emitts %.4e' % N0, 'photons per second'
 
-Data = [(np.loadtxt(FileName)) for FileName in Spectra]
+# Absorbed radiation dose per second
+#~ Da = Eneregy / Weight  # J/kg per second
+Da = N * AverageEnergy[case] * 1000 * eV / Weight
 
-SourceVoltage = [int(open(FileName).readlines()[2].split()[4])
-                 for FileName in Spectra]
-AverageEnergy = [float(open(FileName).readlines()[5].split()[3])
-                 for FileName in Spectra]
+print '    -', round(Da * 1000, 4), 'mGy/s are absorbed by the sample,',\
+    ' if we assume it is', Weight, 'kg'
 
-# Give out values
-#~ for Voltage, Current, case in zip((SourceVoltage[0], SourceVoltage[1]),
-                                  #~ (50, 1.6), range(len(Spectra))):
-for Voltage, Current, case in zip((SourceVoltage[0], SourceVoltage[1]),
-                                  (8, 125), range(len(Spectra))):
-    print 80 * '-'
-    print 'For a voltage of', Voltage, 'kV and a current of',\
-        Current * ExposureTime, 'mAs (exposure time', ExposureTime, 's)'
-    print '    - we get a mean energy of', round(AverageEnergy[case], 4), 'keV'
+# Effective dose per second
+#~ De = Da * Wr, WR = Q * N
+De = Da * QFactor * WeightingFactor
 
-    # Calculate the number of photons from the tube to the sample
-    #~ N0 = (VI/E)*eta*(A/4Pir²)
-    N0 = (Voltage * Current) / (Voltage * eV) * \
-        eta * Z * Voltage * \
-        Area / (4 * np.pi * r ** 2)
-    print '    - the tube emitts %.4e' % N0, 'photons per second'
+print '    -', round(De*1000, 4), 'mSv/s is the effective dose'
 
-    # Number of absorbed photons
-    #~ N = N0(1-e^-uT)
-    N = N0 * (1 - math.e ** (-AttenuationCoefficient[case] * Thickness))
-    print '    - %.4e' % N, 'photons/s are absorbed in the sample, if we',\
-        'assume the sample to have an attenuation coefficient of',\
-        AttenuationCoefficient[case], 'cm^-1 (@' + str(Voltage), 'kV)'
+# Total effective dose on the sample
+D = De * ExposureTime
 
-    # Absorbed radiation dose per second
-    #~ Da = Eneregy / Weight  # J/kg per second
-    Da = N * AverageEnergy[case] * 1000 * eV / Weight
-
-    print '    -', round(Da * 1000, 4), 'mGy/s are absorbed by the sample,',\
-        ' if we assume it is', Weight, 'kg'
-
-    # Effective dose per second
-    #~ De = Da * Wr, WR = Q * N
-    De = Da * QFactor * WeightingFactor
-
-    print '    -', round(De*1000, 4), 'mSv/s is the effective dose'
-
-    # Total effective dose on the sample
-    D = De * ExposureTime
-
-    print '    -', round(D*1000, 4), 'mSv is the effective dose on the',\
-        'sample for an exposure time of =', ExposureTime, 's)'
+print '    -', round(D*1000, 4), 'mSv is the effective dose on the',\
+    'sample for an exposure time of =', ExposureTime, 's)'
