@@ -51,21 +51,24 @@ if options.kV is None or options.mAs is None:
 # Parameters
 # The K-value is based on the machine. The BAG-calculator (see below) list 0.1
 K = 0.1
-# RSF as found by Arouna2000, cited by BAG2012. *This* RSF gives the same SED
+# BSF as found by Arouna2000, cited by BAG2012. *This* BSF gives the same SED
 # values as the XLS-calculator from BAG (http://is.gd/oTpniQ) which I copied to
 # /afs/psi.ch/project/EssentialMed/PresentationsAndInfo/BAG/R-0 DRWCalc 5.0.xls
-RSF = 1.35
-# RSF as found in BAG2012. "Der über verschiedene Anlagen gemittelte
+BSF = 1.35
+# BSF as found in BAG2012. "Der über verschiedene Anlagen gemittelte
 # Korrekturfaktor betrug 1.15"
-#RSF = 1.15
+#BSF = 1.15
 
 # calculating while converting Focusdistance from m to cm
 SED = K * (options.kV / 100) ** 2 * options.mAs *\
-    (100 / options.FocusDistance) ** 2 * RSF
+    (100 / options.FocusDistance) ** 2 * BSF
 print
-print 'Calculating the surface entrance dose for an x-ray pulse with',\
-    options.kV, 'kV and', options.mAs, 'mAs with a focal distance of',\
-    options.FocusDistance / 100, 'm. The characteristic constant of the',\
-    'x-ray setup is set to', K, 'mGy/mA, the "Rückstreufaktor" RSF was set',\
-    'to', str(RSF) + '. The surface entrance dose is thus SED =',\
-    'K*(U/100)^2*Q*(1/FOD)^2*RSF=' + str(round(SED, 3)), 'mGy'
+print 'Calculating the surface entrance dose for an x-ray pulse with'
+print '   *', options.kV, 'kV'
+print '   *', options.mAs, 'mAs and'
+print '   *', options.FocusDistance / 100, 'm focal distance.'
+print '   * the characteristic constant K of the setup was set to', K,\
+    'mGy/mA.'
+print '   * the back-scatter factor was set to', str(BSF) + '.'
+print 'The surface entrance dose is thus SED = K*(U/100)^2*Q*(1/FOD)^2*BSF=' +\
+    str(round(SED, 3)), 'mGy'

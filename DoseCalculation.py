@@ -20,7 +20,7 @@ usage = "usage: %prog [options] arg"
 parser.add_option('-v', '--kv', dest='kV',
                   type='float',
                   metavar='53',
-                  default=120,
+                  default=90,
                   help='Tube peak voltage [kV] you would like to calcuate the '
                        'dose for. The script only accepts voltages that are '
                        'in the specs (and tells you if you set others). '
@@ -28,13 +28,13 @@ parser.add_option('-v', '--kv', dest='kV',
 parser.add_option('-m', '--mas', dest='mAs',
                   type='float',
                   metavar='1.6',
-                  default=2,
+                  default=125,
                   help='mAs settings. Defaults to 125 mAs, which with the '
                        'default 90 kV is the setting for lumbar spine.')
 parser.add_option('-e', '--exposuretime', dest='Exposuretime',
                   type='float',
                   metavar='100',
-                  default=50,
+                  default=1000,
                   help='Exposure time [ms]. Defaults to 1 second, because we '
                        'assume that "-m" (mAs) is used as input. If the user '
                        'insists, an exposure time can be set.')
@@ -132,17 +132,21 @@ print
 
 # Correspond SED to photon count
 N0 = SED / PhotonEnergy
-print 'A SED of', '%.3e' % (SED / 1000), 'Gy corresponds to',\
+print 'A SED of', '%.3e' % (SED / 1000), 'Gy (mJ/kg) corresponds to',\
     '%.3e' % N0, 'absorbed photons per kg (with a photon',\
     'energy of', '%.3e' % PhotonEnergy, 'J per photon).'
+print 'We assume these photons are all the photons that reached the patient,',\
+    'and thus can calculate the photon flux from this.'
 
 # Flux
 Flux = N0 / (options.Exposuretime / 1000)
-print 'With an exposure time of', options.Exposuretime, 'ms this',\
-    ' corresponds to a photon flux of', '%.3e' % Flux, 'photons per second',\
-    ' from the source to the surface of the patient.'
+print 'With an exposure time of', options.Exposuretime, 'ms the',\
+    'aforementioned number of photons corresponds to a photon flux of',\
+    '%.3e' % Flux, 'photons per second (from the source to the patient',\
+    'surface.'
 
-N0 = 456789.0
+
+
 # Attenuation in Patient
 AttenuationCoefficient = 0.5  # For calculation we just simply assume 50%.
 # We NEED to read the data from the NIST tables, but they're in shutdown now...
@@ -154,12 +158,18 @@ N = N0 * (np.exp((-AttenuationCoefficient * (options.Thickness/100))))
 print 'Assuming an attenuation coefficient of', AttenuationCoefficient, 'and',\
     'a penetration depth of', options.Thickness, 'cm we have (according to',\
     'the Beer-Lambert law (N = N0 * e^-uT)'
-print '   * ', '%.3e' % N, 'photons after the xrays have passed the patient'
+print '   *', '%.3e' % N, 'photons after the xrays have passed the patient'
 print '   * thus', '%.3e' % (N0 - N), 'photons were absorbed'
 print '   * the intensity dropped to', round((N/N0)*100, 2), '%'
 
-exit()
 
+
+print
+print
+print 'Use nist-attenuation-scraper.py to get the correct attenuation!'
+
+
+exit()
 
 
 
