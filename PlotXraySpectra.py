@@ -33,14 +33,13 @@ plt.xlabel('Energy [kV]')
 plt.ylabel('Photons')
 plt.savefig('plot.pdf')
 
-WhichOneShallWeIntegrate = 6
-plt.figure()
-plt.plot(Data[WhichOneShallWeIntegrate][:, 0],
-         Data[WhichOneShallWeIntegrate][:, 1])
+for WhichOneShallWeIntegrate in range(len(Spectra)):
+    #~ plt.figure()
+    #~ plt.plot(Data[WhichOneShallWeIntegrate][:, 0],
+            #~ Data[WhichOneShallWeIntegrate][:, 1])
 
-Integral = scipy.integrate.trapz(Data[WhichOneShallWeIntegrate][:, 1],
-                                 Data[WhichOneShallWeIntegrate][:, 0])
-print 'The integral for', Energy[WhichOneShallWeIntegrate], 'kV is',\
-    str(round(Integral/1e6, 3)) + 'e6 photons'
-
-plt.show()
+    Integral = scipy.integrate.trapz(Data[WhichOneShallWeIntegrate][:, 1],
+                                    Data[WhichOneShallWeIntegrate][:, 0])
+    print 'The integral for', Energy[WhichOneShallWeIntegrate], 'kV is',\
+        str(round(Integral/1e6, 3)) + 'e6 photons'
+    #~ plt.show()
