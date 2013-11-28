@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 """
 Script to read out the TIScamera using python.
 Probably using a wrapper to interface to Mplayer
@@ -35,7 +38,7 @@ parser.add_option("-i", "--images", dest="images",
 (options, args) = parser.parse_args()
 
 if len(sys.argv[1:]) == 0:
-    print "You need to enter at least one options, here's the help"
+    print "You need to enter at least one option, here's the help"
     parser.print_help()
     sys.exit()
 
@@ -48,6 +51,17 @@ if not options.exposure:
 print 80 * "-"
 print "Hey ho, let's go!"
 
+# Check at which /dev/video we have a camera
+for device in range(5):
+    if os.path.exists('/dev/video' + str(device)):
+        CameraPath = '/dev/video' + str(device)
+        if options.verbose:
+            print 'Found a camera on', CameraPath
+        break
+    else:
+        if options.verbose:
+            print 'Nothing found at /dev/video' + str(device)
+
 if options.verbose:
     print "We are trying to work with the '" + options.camera + "' camera"
     print
@@ -56,8 +70,8 @@ else:
     print "The '" + options.camera + "' camera provides these sizes"
 
 # Get available output sizes of the currently connected camera using v4l2-ctl
-process = subprocess.Popen(['v4l2-ctl', '--list-formats-ext'],
-                           stdout=subprocess.PIPE)
+process = subprocess.Popen(['v4l2-ctl', '--device=' + CameraPath,
+                            '--list-formats-ext'], stdout=subprocess.PIPE)
 output, error = process.communicate()
 width = []
 height = []
@@ -91,44 +105,69 @@ if options.verbose:
             print "The current exposure time is", line.split("=")[-1], "cycles"
 
 #~ Use 'v4l2-ctl -c exposure_absolute=time' to set exposure time
-process = subprocess.Popen(["v4l2-ctl",
+process = subprocess.Popen(["v4l2-ctl", '--device=' + CameraPath,
                             "-c", "exposure_absolute=" +
                             str(options.exposure)], stdout=subprocess.PIPE)
-process = subprocess.Popen(['v4l2-ctl', '-L'], stdout=subprocess.PIPE)
+process = subprocess.Popen(['v4l2-ctl', '--device=' + CameraPath, '-L'],
+                           stdout=subprocess.PIPE)
 output, error = process.communicate()
 for line in output.split("\n"):
     if line and line.split()[0].startswith("exp"):
         print "The exposure time has been set to", line.split("=")[-1],\
             "cycles"
 
+# Construct a general NULL pointer, used for the subprocesses
+DEVNULL = open(os.devnull, 'w')
 # Show the stream if desired
 if options.show:
-    print "I'm now showing you the stream from the camera using mplayer."
+    CMOSwidth = 640
+    CMOSheight = 480
+    print "I'm now showing you a 640x480 steam from the upper left corner",\
+        "of the sensor, so you can doublecheck everything."
     print "Exit with pressing the 'q' key!"
     # mplayer command based on official TIScamera page: http://is.gd/5mJEM7
     subprocess.call(["mplayer tv:// -tv driver=v4l2:width=" + str(CMOSwidth) +
-                     ":height=" + str(CMOSheight) + ":device=/dev/video0"],
-                    stdout=FNULL, stderr=subprocess.STDOUT, shell=True)
-
+                     ":height=" + str(CMOSheight) + ":device=" + CameraPath],
+                    stdout=DEVNULL, stderr=subprocess.STDOUT, shell=True)
 
 # Save output to a file, load that and display it.
-IMAGES = 15
-# We save IMAGES images, since we often demand an image from the camera while
-# it is in the middle of a circle, thus it's a corrupted image...
-FNULL = open(os.devnull, 'w')
+# We save option.images images, since we often demand an image from the camera
+# while it is in the middle of a circle, thus it's a corrupted image...
+Runtime = str(int(time.time()))
+try:
+    # Generating necessary directories
+    os.makedirs(os.path.join('Images', options.camera, Runtime))
+except:
+    print os.path.join('Images', options.camera, Runtime),\
+        'cannot be generated'
+    sys.exit(1)
+
 # ffmpeg command based on http://askubuntu.com/a/102774
 print "Getting", options.images, "images from the camera"
+t0 = time.time()
 subprocess.call(["ffmpeg -f video4linux2 -s " + str(CMOSwidth) + "x" +
-                 str(CMOSheight) + " -i /dev/video0 -vframes " +
-                 str(options.images) + " snapshot_%03d.jpg"], stdout=FNULL,
+                 str(CMOSheight) + " -i " + CameraPath + " -vframes " +
+                 str(options.images) + " " +
+                 os.path.join('Images', options.camera, Runtime) +
+                 "/snapshot_%03d.jpg"], stdout=DEVNULL,
                 stderr=subprocess.STDOUT, shell=True)
+t1 = time.time()
+print "in", str(round(t1 - t0, 3)), "seconds (" +\
+    str(round(options.images / (t1-t0), 3)) + " images per second)"
 
-filename = "snapshot_%03d" % (int(round(options.images / 2.0))) + ".jpg"
+filename = os.path.join('Images', options.camera, Runtime,
+                        "snapshot_%03d" % (int(round(options.images / 2.0))) +
+                        ".jpg")
 image = plt.imread(filename)
 plt.imshow(image, origin="lower")
-plt.title(' '.join([filename, "(middle one) with an exposure time of",
-                    options.exposure, "cycles"]))
+plt.title(' '.join(["Snapshot", str(int(round(options.images / 2.0))), "of",
+                    str(options.images), "from",
+                    os.path.join("Images", options.camera, Runtime),
+                    "\nwith an exposure time of", options.exposure, "cycles"]))
 plt.show()
 
+print 'Images saved to', os.path.abspath(os.path.join('Images', options.camera,
+                                                      Runtime,
+                                                      'snapshot*.jpg'))
 print 80 * "-"
 print "done"
