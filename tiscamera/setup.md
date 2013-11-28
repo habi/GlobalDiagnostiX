@@ -9,26 +9,31 @@ Linux.
 
 I downloaded the code with
 > git clone https://code.google.com/p/tiscamera/
+
 (into /afs/psi.ch/project/EssentialMed/Dev/tiscamera) but could not compile the
 code due to missing libraries.
 
 I had to install `libusb` and the `glib` libraries to make compilation work (and
 at the same time installed `mplayer` for looking at the video stream)
-This was done (on the Raspberry Pi) with·
+This was done (on the Raspberry Pi) with
 > sudo apt-get install libglib2.0-dev libusb-dev mplayer
+
 and with the following command on SL6
 > sudo yum install libglib* libusb* mplayer
 
 Afterwards I did this
 > cd tiscamera/tools/euvccam-fw/
 > make
+
 plugged in the camera
 > sudo ./euvccam-fw -p
+
 looked at the output of this command, which informed me that the camera is there
 and can be seen by Raspbian.
 
 To actually look at the image I started `mplayer` with the command below:
 > mplayer tv:// -tv driver=v4l2:device=/dev/video0
+
 This gives a 640x480 window (top left) of the total chip (and made me question
 my screwdriver skills, because I suspected that I atteched the lens holder
 completely wrong).
