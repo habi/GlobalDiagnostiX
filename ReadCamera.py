@@ -20,21 +20,22 @@ usage = "usage: %prog [options] arg1 arg2"
 parser = OptionParser(usage=usage)
 parser.add_option("-v", "--verbose", dest="verbose",
                   action="store_true", default=False,
-                  help="Be chatty. Off by default")
+                  help="Be chatty. (default: %default)")
 parser.add_option("-c", "--camera", dest="camera",
                   default="tis", metavar='name',
                   help="Camera to use; at the moment 'tis', 'aptina' and "
                        "'awaiba', even when the two latter options are not "
-                       "implemented yet... [default: %default]")
+                       "implemented yet... (default: %default)")
 parser.add_option("-e", "--exposure", dest="exposure",
                   metavar='58',
                   help="Exposure time [cycles] (?)")
-parser.add_option("-s", "--show", dest="show",
+parser.add_option("-p", "--preview", dest="preview",
                   action="store_true", default=False,
-                  help="Show the stream (default=off)")
+                  help="Preview image (default: %default)")
 parser.add_option("-i", "--images", dest="images",
                   default=5, type="int",
-                  help="How many images should ffmpeg save at the end?")
+                  help="How many images should ffmpeg save at the end? "
+                       "(default: %default)")
 (options, args) = parser.parse_args()
 
 if len(sys.argv[1:]) == 0:
@@ -102,7 +103,8 @@ if options.verbose:
     output, error = process.communicate()
     for line in output.split("\n"):
         if line and line.split()[0].startswith("exp"):
-            print "The current exposure time is", line.split("=")[-1], "cycles"
+            print "The exposure time was set from", line.split("=")[-1],\
+                "cycles",
 
 #~ Use 'v4l2-ctl -c exposure_absolute=time' to set exposure time
 process = subprocess.Popen(["v4l2-ctl", '--device=' + CameraPath,
@@ -113,22 +115,27 @@ process = subprocess.Popen(['v4l2-ctl', '--device=' + CameraPath, '-L'],
 output, error = process.communicate()
 for line in output.split("\n"):
     if line and line.split()[0].startswith("exp"):
-        print "The exposure time has been set to", line.split("=")[-1],\
-            "cycles"
+        print "to", line.split("=")[-1], "cycles"
 
 # Construct a general NULL pointer, used for the subprocesses
 DEVNULL = open(os.devnull, 'w')
 # Show the stream if desired
-if options.show:
-    CMOSwidth = 640
-    CMOSheight = 480
-    print "I'm now showing you a 640x480 steam from the upper left corner",\
-        "of the sensor, so you can doublecheck everything."
+if options.preview:
+    print "I'm now showing you a", CMOSwidth, "px wide image from the upper",\
+        "left corner of the sensor, so you can doublecheck everything."
     print "Exit with pressing the 'q' key!"
     # mplayer command based on official TIScamera page: http://is.gd/5mJEM7
-    subprocess.call(["mplayer tv:// -tv driver=v4l2:width=" + str(CMOSwidth) +
-                     ":height=" + str(CMOSheight) + ":device=" + CameraPath],
-                    stdout=DEVNULL, stderr=subprocess.STDOUT, shell=True)
+    previewwidth = 1280
+    previewheight = 720
+    mplayercommand = "mplayer tv:// -tv noaudio:width=" + str(previewwidth) +\
+        ":device=" + CameraPath +\
+        " -geometry 50%:50% -title 'Previewing top left edge' -nosound"
+    if options.verbose:
+        print 'Previewing images with'
+        print mplayercommand
+        print
+    subprocess.call(mplayercommand, stdout=DEVNULL, stderr=subprocess.STDOUT,
+                    shell=True)
 
 # Save output to a file, load that and display it.
 # We save option.images images, since we often demand an image from the camera
@@ -145,12 +152,16 @@ except:
 # ffmpeg command based on http://askubuntu.com/a/102774
 print "Getting", options.images, "images from the camera"
 t0 = time.time()
-subprocess.call(["ffmpeg -f video4linux2 -s " + str(CMOSwidth) + "x" +
-                 str(CMOSheight) + " -i " + CameraPath + " -vframes " +
-                 str(options.images) + " " +
-                 os.path.join('Images', options.camera, Runtime) +
-                 "/snapshot_%03d.jpg"], stdout=DEVNULL,
-                stderr=subprocess.STDOUT, shell=True)
+ffmpegcommand = "ffmpeg -f video4linux2 -s " + str(CMOSwidth) + "x" +\
+    str(CMOSheight) + " -i " + CameraPath + " -vframes " +\
+    str(options.images) + " " +\
+    os.path.join('Images', options.camera, Runtime) + "/snapshot_%03d.jpg"
+if options.verbose:
+    print 'Saving images with'
+    print ffmpegcommand
+    print
+subprocess.call(ffmpegcommand, stdout=DEVNULL, stderr=subprocess.STDOUT,
+                shell=True)
 t1 = time.time()
 print "in", str(round(t1 - t0, 3)), "seconds (" +\
     str(round(options.images / (t1-t0), 3)) + " images per second)"
@@ -160,10 +171,22 @@ filename = os.path.join('Images', options.camera, Runtime,
                         ".jpg")
 image = plt.imread(filename)
 plt.imshow(image, origin="lower")
-plt.title(' '.join(["Snapshot", str(int(round(options.images / 2.0))), "of",
-                    str(options.images), "from",
-                    os.path.join("Images", options.camera, Runtime),
-                    "\nwith an exposure time of", options.exposure, "cycles"]))
+title = ' '.join(["Snapshot", str(int(round(options.images / 2.0))), "of",
+                  str(options.images), "from",
+                  os.path.join("Images", options.camera, Runtime),
+                  "\nwith an exposure time of", options.exposure, "cycles"])
+if options.preview:
+    plt.axhspan(ymin=CMOSheight-previewheight, ymax=CMOSheight,
+                xmin=0, xmax=float(previewwidth)/CMOSwidth,
+                facecolor='r', alpha=0.5)
+    #~ 2592 x 1944 px
+    plt.xlim([0, CMOSwidth])
+    plt.ylim([0, CMOSheight])
+    plt.title(' '.join(["Snapshot", str(int(round(options.images / 2.0))),
+                        "of", str(options.images), "from",
+                        os.path.join("Images", options.camera, Runtime),
+                        "\nwith an exposure time of", options.exposure,
+                        "cycles", "\nred=preview area"]))
 plt.show()
 
 print 'Images saved to', os.path.abspath(os.path.join('Images', options.camera,
