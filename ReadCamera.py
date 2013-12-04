@@ -11,7 +11,7 @@ import sys
 import os
 import subprocess
 import time
-from pylab import *
+import matplotlib.pylab as plt
 
 # Use Pythons Optionparser to define and read the options, and also
 # give some help to the user
