@@ -1,0 +1,73 @@
+//**************************************************************************************
+// Copyright 2006 Micron Technology, Inc. All rights reserved.
+//
+//
+// No permission to use, copy, modify, or distribute this software and/or
+// its documentation for any purpose has been granted by Micron Technology, Inc.
+// If any such permission has been granted ( by separate agreement ), it
+// is required that the above copyright notice appear in all copies and
+// that both that copyright notice and this permission notice appear in
+// supporting documentation, and that the name of Micron Technology, Inc. or any
+// of its trademarks may not be used in advertising or publicity pertaining
+// to distribution of the software without specific, written prior permission.
+//
+//
+//	This software and any associated documentation are provided “AS IS” and 
+//	without warranty of any kind.   MICRON TECHNOLOGY, INC. EXPRESSLY DISCLAIMS 
+//	ALL WARRANTIES EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO, NONINFRINGEMENT 
+//	OF THIRD PARTY RIGHTS, AND ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS 
+//	FOR A PARTICULAR PURPOSE.  MICRON DOES NOT WARRANT THAT THE FUNCTIONS CONTAINED 
+//	IN THIS SOFTWARE WILL MEET YOUR REQUIREMENTS, OR THAT THE OPERATION OF THIS SOFTWARE 
+//	WILL BE UNINTERRUPTED OR ERROR-FREE.  FURTHERMORE, MICRON DOES NOT WARRANT OR 
+//	MAKE ANY REPRESENTATIONS REGARDING THE USE OR THE RESULTS OF THE USE OF ANY 
+//	ACCOMPANYING DOCUMENTATION IN TERMS OF ITS CORRECTNESS, ACCURACY, RELIABILITY, 
+//	OR OTHERWISE.  
+//*************************************************************************************/
+//
+// $Revision: 18622 $
+// $Date: 2008-07-29 12:14:54 -0700 (Tue, 29 Jul 2008) $ 
+//
+// [CHIP_DESCRIPTOR]
+//    CHIPNAME = "string"
+//    SERIAL_BASE_ADDRESS = hex
+//	SERIAL_ADDR_SIZE = 8/16 (default 8)
+//	SERIAL_DATA_SIZE = 8/16 (default 16)
+// [END]
+//
+// [REGISTERS]
+//    REGDEF = {hex, CORE/IP, hex, RW/RO, hex, "string", "string", "string"}
+//      {BITDEF, hex, RW/RO, "string", "string"}
+//      {BITDEF, hex, RW/RO, "string", "string"}
+//      ...
+//      {BITDEF, hex, RW/RO, "string", "string"}
+// [END]
+//
+
+[CHIP_DESCRIPTOR]
+CHIPNAME = "DEMO2 A3"
+SERIAL_BASE_ADDRESS = 0x64
+SERIAL_DATA_SIZE = 16
+[END]
+
+//REGDEF =              {ADDR, TYPE, MASK,   RW, DEFAULT, DESC, DETAIL}
+//  {BITDEF,                         MASK,   RW,          DESC, DETAIL}
+//  {BITDEF,                         MASK,   RW,          DESC, DETAIL}
+//  ...
+//  {BITDEF,                         MASK,   RW,          DESC, DETAIL}
+
+[REGISTERS]
+LV_DELAY_REG =          {0x00, CHIP, 0xFFFF, RW, 0x0000, "LV Delay", ""}
+REG_01 =                {0x01, CHIP, 0xFFFF, RW, 0x0000, "Reserved", "Do not use"}
+DATA_MASK_REG =         {0x02, CHIP, 0xFFFF, RW, 0x0000, "Data Mask", "3:10bit swizzle; 0xC0:8+2bitswizzle"}
+DATA_DELAY_REG =        {0x03, CHIP, 0xFFFF, RW, 0x0002, "Data Delay", ""}
+FREQ_COUNT_REG =        {0x04, CHIP, 0xFFFF, RO, 0x0000, "Frequency Count", ""}
+CHIP_VERSION_REG =      {0x05, CHIP, 0xFFFF, RO, 0x00A3, "Version Number", ""}
+PIXEL_LINE_H =          {0x06, CHIP, 0xFFFF, RO, 0x0000, "Pixel/Line_H", ""}
+PIXEL_LINE_L =          {0x07, CHIP, 0xFFFF, RO, 0x0000, "Pixel/Line_L", ""}
+LINE_FRAME_H =          {0x08, CHIP, 0xFFFF, RO, 0x0000, "Line/Frame_H", ""}
+LINE_FRAME_L =          {0x09, CHIP, 0xFFFF, RO, 0x0000, "Line/Frame_L", ""}
+PIXEL_FRAME_31_24 =     {0x0A, CHIP, 0xFFFF, RO, 0x0000, "Pixel/Frame_31_24", ""}
+PIXEL_FRAME_23_16 =     {0x0B, CHIP, 0xFFFF, RO, 0x0000, "Pixel/Frame_23_16", ""}
+PIXEL_FRAME_15_8  =     {0x0C, CHIP, 0xFFFF, RO, 0x0000, "Pixel/Frame_15_8", ""}
+PIXEL_FRAME_7_0   =     {0x0D, CHIP, 0xFFFF, RO, 0x0000, "Pixel/Frame_7_0", ""}
+[END]

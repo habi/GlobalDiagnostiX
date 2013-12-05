@@ -1,0 +1,123 @@
+//**************************************************************************************
+// Copyright 2006 Micron Technology, Inc. All rights reserved.
+//
+//
+// No permission to use, copy, modify, or distribute this software and/or
+// its documentation for any purpose has been granted by Micron Technology, Inc.
+// If any such permission has been granted ( by separate agreement ), it
+// is required that the above copyright notice appear in all copies and
+// that both that copyright notice and this permission notice appear in
+// supporting documentation, and that the name of Micron Technology, Inc. or any
+// of its trademarks may not be used in advertising or publicity pertaining
+// to distribution of the software without specific, written prior permission.
+//
+//
+//	This software and any associated documentation are provided “AS IS” and 
+//	without warranty of any kind.   MICRON TECHNOLOGY, INC. EXPRESSLY DISCLAIMS 
+//	ALL WARRANTIES EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO, NONINFRINGEMENT 
+//	OF THIRD PARTY RIGHTS, AND ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS 
+//	FOR A PARTICULAR PURPOSE.  MICRON DOES NOT WARRANT THAT THE FUNCTIONS CONTAINED 
+//	IN THIS SOFTWARE WILL MEET YOUR REQUIREMENTS, OR THAT THE OPERATION OF THIS SOFTWARE 
+//	WILL BE UNINTERRUPTED OR ERROR-FREE.  FURTHERMORE, MICRON DOES NOT WARRANT OR 
+//	MAKE ANY REPRESENTATIONS REGARDING THE USE OR THE RESULTS OF THE USE OF ANY 
+//	ACCOMPANYING DOCUMENTATION IN TERMS OF ITS CORRECTNESS, ACCURACY, RELIABILITY, 
+//	OR OTHERWISE.  
+//*************************************************************************************/
+//
+// $Revision: 18622 $
+// $Date: 2008-07-29 12:14:54 -0700 (Tue, 29 Jul 2008) $ 
+//
+// [CHIP_DESCRIPTOR]
+//    CHIPNAME = "string"
+//    SERIAL_BASE_ADDRESS = hex
+//	SERIAL_ADDR_SIZE = 8/16 (default 8)
+//	SERIAL_DATA_SIZE = 8/16 (default 16)
+// [END]
+//
+// [REGISTERS]
+//    REGDEF = {hex, CORE/IP, hex, RW/RO, hex, "string", "string", "string"}
+//      {BITDEF, hex, RW/RO, "string", "string"}
+//      {BITDEF, hex, RW/RO, "string", "string"}
+//      ...
+//      {BITDEF, hex, RW/RO, "string", "string"}
+// [END]
+//
+
+[CHIP_DESCRIPTOR]
+CHIPNAME = "DEMO2 B5"
+SERIAL_BASE_ADDRESS = 0x64
+SERIAL_DATA_SIZE = 16
+[END]
+
+//REGDEF =              {ADDR, TYPE, MASK,   RW, DEFAULT, DESC, DETAIL}
+//  {BITDEF,                         MASK,   RW,          DESC, DETAIL}
+//  {BITDEF,                         MASK,   RW,          DESC, DETAIL}
+//  ...
+//  {BITDEF,                         MASK,   RW,          DESC, DETAIL}
+
+[Registers]
+CHIP_VERSION_REG  =	 {0x05, CHIP, 0xFFFF, RO, 0x00B5, "FPGA version number",""}
+    {VER,                             0x7FFF, RO,         "0-14: FPGA version number",""}
+FORMAT_CONTROL_REG =     {0x10, CHIP, 0xFFFF, RW, 0x0000, "Format Control Register",""}
+    {CLKEDGE,                         0x0001, RW,         "0: CLKEDGE", "0: falling edge; 1: rising edge"}
+    {HACK41,                          0x0002, RW,         "1: Hack 4100 Ship Interface", ""}			 
+    {BUFTYPE,                         0x000C, RW,         "2-3: BUFTYPE", "0: RESERVED; 1: Single Buffer; 2: Double Buffer; 3: Triple Buffer"}
+    {INFMT,                           0x0030, RW,         "4-5: INFMT", "0: RESERVED; 1: 12,14,or 16 bits per clock; 2: 10 bits per clock; 3: 8 bits per clock"}
+    {INBIG,                           0x00C0, RW,         "6-7: INBIG", "0: 12; 1: 14; 2: 16 bits per clock"}
+    {OUT10,                           0x0100, RW,         "8: OUT10", "0: 32 bit DRAM data unchanged; 1: Unpack 10 bit data"}
+    {OUTSW,                           0x0200, RW,         "9: OUTSW", "0: 32 bit DRAM data unchanged; 1: Swap 16 bit words"}
+    {OUTSB,                           0x0400, RW,         "10: OUTSB", "0: 32 bit DRAM data unchanged; 1: Swap bytes "}
+    {INNS,                            0x0800, RW,         "11: INNS", "0: Input data swizzled; 1: Input data straight through "}
+    {CLKEDGE_1300,                    0x1000, RW,         "12: CLKEDGE_1300", "0: not 1300 sensor; 1: 1300 sensor "}
+COLUMNS =	         {0x11, CHIP, 0xFFFF, RO, 0x0000, "Total columns in last frame grabbed",""}
+ROWS =	                 {0X12, CHIP, 0xFFFF, RO, 0x0000, "Total rows in last frame grabbed",""}
+IFRMSLO =	         {0x13, CHIP, 0xFFFF, RO, 0x0000, "Total frames grabbed", "Low Word"}
+IFRMSHI =	         {0x14, CHIP, 0xFFFF, RO, 0x0000, "Total frames grabbed", "High Word"}
+OFRMSLO =	         {0x15, CHIP, 0xFFFF, RO, 0x0000, "Total frames sent to PC", "Low Word"}
+OFRMSHI =	         {0x16, CHIP, 0xFFFF, RO, 0x0000, "Total frames sent to PC", "High Word"}
+RESET_REG =              {0x1A, CHIP, 0xFFFF, RW, 0x0000, "Reset Register",""}
+    {FRESET,                          0x0001, RW,             "0: FRESET", "0: Normal Operation; 1: RESET FPGA"}
+    {SRESET,                          0x0002, RW,             "1: SRESET", "0: Normal Operation; 1: RESET Sensor"}
+    {FPAUSE,                          0x0004, RW,             "2: FPAUSE", "0: Normal Operation; 1: Pause PC after next frame"}
+CLOCK_CONTROL =          {0x1B, CHIP, 0xFFFF, RW, 0x0000, "Clock Control Register",""}
+    {MCLK_S,                          0x000F, RW,         "0-3: Output Clock Rate", "0:6.75 1:12 2:13.5 3:24 4:27 5:48 6:54 7:96 8:10 9:20 10:40 11:80"}
+    {DLL54L,                          0x0010, RO,         "4: DCM1 status", "1: DCM Locked"}
+    {DLL80L,                          0x0020, RO,         "5: DCM2 status", "1: DCM Locked"}
+FX2CNT=	                 {0x1C, CHIP, 0xFFFF, RO, 0x0000, "FX2CNT","Number of 48 MHz clocks in a scan line"}
+FRAME_CONTROL =          {0x1D, CHIP, 0xFFFF, RW, 0x0000, "Frame Control & Status Register",""}
+    {FBPAUSE,                         0x0001, RW,         "0: FBPAUSE", "FBPAUSE: 0: normal; 1: pause at end of current frame"}
+    {FBEMPTY,                         0x0002, RO,         "1: FBEMPTY", "FBEMPTY: 1: frame buffer empty"}
+    {DRAMRDY,                         0x0004, RO,         "1: DRAMRDY", "DRAMRDY: 1: DRAM power up initialization complete"}
+DEBUG_FIFO_REG=	         {0x20, CHIP, 0xFFFF, RW, 0x0000, "Debug FIFO Register",""}
+    {OUTFUND,                         0x0001, RW,         "0: OUTFUND", "Output FIFO: 0: normal; 1: underflow"}
+    {OUTFOVF,                         0x0010, RW,         "4: OUTFOVF", "Output FIFO: 0: normal; 1: overflow"}
+    {INFUND,                          0x0100, RW,         "8: INFUND", "Input FIFO: 0: normal; 1: underflow"}
+    {INFOVF,                          0x1000, RW,         "12: INFOVF", "Input FIFO: 0: normal; 1: overflow"}
+DEBUG_REG =	         {0x21, CHIP, 0xFFFF, RW, 0x0000, "Debug Register",""}
+    {OUTFSIZ,                         0x003F, RW,         "0-5: OUTFSIZ", "Maximum space used in output fifo"}
+    {INFSIZ,                          0x7F00, RW,         "8-14: INFSIZ", "Maximum space used in input fifo"}
+BIGCNT=	                 {0x22, CHIP, 0xFFFF, RW, 0x0000, "Enable the big counter output instead of video",""}
+INFIFO_WM =	         {0x23, CHIP, 0xFFFF, RW, 0x0000, "Input FIFO Watermark Register",""}
+    {INFIFO_LWM,                      0x003F, RW,         "0-5: INFIFO_LWM", "Low watermark for input FIFO"}
+    {INFIFO_HWM,                      0x3F00, RW,         "8-13: INFIFO_HWM", "High watermark for input FIFO"}
+OUTFIFO_WM =	         {0x24, CHIP, 0xFFFF, RW, 0x0000, "Output FIFO Watermark Register",""}
+    {OUTFIFO_LWM,                     0x003F, RW,         "0-5: OUTFIFO_LWM", "Low watermark for output FIFO"}
+    {OUTFIFO_HWM,                     0x3F00, RW,         "8-13: OUTFIFO_HWM", "High watermark for output FIFO"}
+SP_CONTROL =             {0x25, CHIP, 0xFFFF, RW, 0x0000, "Special Purpose Pins","Control the 8 special purpose output pins"}
+    {SP0_ENABLE,                      0x0001, RW,         "SP0 enable", "0 = high-Z;  1 = enabled"}
+    {SP1_ENABLE,                      0x0002, RW,         "SP1 enable", "0 = high-Z;  1 = enabled"}
+    {SP2_ENABLE,                      0x0004, RW,         "SP2 enable", "0 = high-Z;  1 = enabled"}
+    {SP3_ENABLE,                      0x0008, RW,         "SP3 enable", "0 = high-Z;  1 = enabled"}
+    {SP4_ENABLE,                      0x0010, RW,         "SP4 enable", "0 = high-Z;  1 = enabled"}
+    {SP5_ENABLE,                      0x0020, RW,         "SP5 enable", "0 = high-Z;  1 = enabled"}
+    {SP6_ENABLE,                      0x0040, RW,         "SP6 enable", "0 = high-Z;  1 = enabled"}
+    {SP7_ENABLE,                      0x0080, RW,         "SP7 enable", "0 = high-Z;  1 = enabled"}
+    {SP0,                             0x0100, RW,         "SP0", "0 = low;  1 = high"}
+    {SP1,                             0x0200, RW,         "SP1", "0 = low;  1 = high"}
+    {SP2,                             0x0400, RW,         "SP2", "0 = low;  1 = high"}
+    {SP3,                             0x0800, RW,         "SP3", "0 = low;  1 = high"}
+    {SP4,                             0x1000, RW,         "SP4", "0 = low;  1 = high"}
+    {SP5,                             0x2000, RW,         "SP5", "0 = low;  1 = high"}
+    {SP6,                             0x4000, RW,         "SP6", "0 = low;  1 = high"}
+    {SP7,                             0x8000, RW,         "SP7", "0 = low;  1 = high"}
+[END]

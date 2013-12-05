@@ -1,0 +1,24 @@
+[CHIP_DESCRIPTOR]
+CHIPNAME = "BigDog FPGA"
+SERIAL_BASE_ADDRESS = 0x6a
+SERIAL_DATA_SIZE = 16
+[END]
+
+//REGDEF =              {ADDR, TYPE, MASK,   RW, DEFAULT, DESC, DETAIL}
+//  {BITDEF,                         MASK,   RW,          DESC, DETAIL}
+//  {BITDEF,                         MASK,   RW,          DESC, DETAIL}
+//  ...
+//  {BITDEF,                         MASK,   RW,          DESC, DETAIL}
+
+[REGISTERS]
+CHIP_VERSION_REG =             {0x0000,  CHIP, 0xFFFF, RO, 0xCAFE, "Frame Buffer_ID", ""}
+Column_Count =                 {0x0001,  CHIP, 0xFFFF, RO, 0x0000, "Column Count", ""}
+Row_Count =                    {0x0002,  CHIP, 0xFFFF, RO, 0x0000, "Row Count", ""}
+Row_Time =                     {0x0003,  CHIP, 0xFFFF, RO, 0x0000, "Row Time", ""}
+Frame_Time_Lower =             {0x0004,  CHIP, 0xFFFF, RO, 0x0000, "LSBs of Frame Time", ""}
+Frame_Time_Upper =             {0x0005,  CHIP, 0xFFFF, RO, 0x0000, "MSBs of Frame Time", ""}
+FB_Config =                    {0x0007,  CHIP, 0x000F, RW, 0x0000, "Frame Buffer Config", ""}
+    {Output_Mode,                              0x0003, RW,         "0: 8 Bit, 1: 10 Bit, 2: 12 Bit", ""}
+    {Swizzle,                                  0x0004, RW,         "Swizzle output of Frame Buffer", ""}
+    {Capture_Posdge,                           0x0008, RW,         "Capture incoming data on posedge of pixclk", ""}
+[END]

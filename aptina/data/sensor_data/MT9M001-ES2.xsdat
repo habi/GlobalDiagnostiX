@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="sensor_data.xsl"?>
+<!--
+****************************************************************************************************
+*   If you are reading this, you are not taking advantage of the XML Stylesheet                    *
+*                                                                                                  *
+*   Instructions for viewing XML SDAT file can be found in:                                        *
+*   C:\Aptina Imaging [Dev]\sensor_data\!DevWare XML-formatted SDAT User Guide.pdf                 *
+****************************************************************************************************
+-->
+<sensor name="A-1300"
+	part_number="MT9M001"
+	version="2"
+	version_name="ES2"
+	width="1280"
+	height="1024"
+	image_type="BAYER"
+	bits_per_clock="10"
+	clocks_per_pixel="1"
+	pixel_clock_polarity="0"
+	full_width="1280"
+	full_height="1024"
+	reg_addr_size="8"
+	reg_data_size="16"
+	ship_base_address="0xBA 0x90">
+	<demo_system>
+	</demo_system>
+	<addr_spaces>
+		<space name="CORE" type="REG" value="4" desc="4: Core Registers"></space>
+	</addr_spaces>
+	<registers>
+		<reg  name="CHIP_VERSION_REG" addr="0x00" space="CORE" mask="0xFFFF" display_name="chip_version_reg" range="0x0000 0xFFFF" default="0x8421" rw="RO"><detail>Chip version.</detail></reg>
+		<reg  name="ROW_WINDOW_START_REG" addr="0x01" space="CORE" mask="0x07FF" display_name="row_window_start_reg" range="0x0000 0x07FF" default="0x000C"></reg>
+		<reg  name="COL_WINDOW_START_REG" addr="0x02" space="CORE" mask="0x07FF" display_name="col_window_start_reg" range="0x0000 0x07FF" default="0x0014"><detail>Must be Even Number [min 0x14]</detail></reg>
+		<reg  name="ROW_WINDOW_SIZE_REG" addr="0x03" space="CORE" mask="0x07FF" display_name="row_window_size_reg" range="0x0000 0x07FF" default="0x03FF"><detail>Number of rows minus 1 [min 0x02]</detail></reg>
+		<reg  name="COL_WINDOW_SIZE_REG" addr="0x04" space="CORE" mask="0x07FF" display_name="col_window_size_reg" range="0x0000 0x07FF" default="0x04FF"><detail>Number of columns minus 1</detail></reg>
+		<reg  name="HORZ_BLANK_REG" addr="0x05" space="CORE" mask="0x07FF" display_name="horz_blank_reg" range="0x0000 0x07FF" default="0x0009"><detail>Column Fill-in</detail></reg>
+		<reg  name="VERT_BLANK_REG" addr="0x06" space="CORE" mask="0x07FF" display_name="vert_blank_reg" range="0x0000 0x07FF" default="0x0019"><detail>Vertical Blanking-default = 0x0019 (25 rows).</detail></reg>
+		<reg  name="CONTROL_MODE_REG" addr="0x07" space="CORE" mask="0xFFFF" display_name="control_mode_reg" range="0x0000 0xFFFF" default="0x0002">
+			<bitfield  name="SYNC" mask="0x0001" display_name="0: sync" range="0x0000 0x0001"><detail>0: update changes immediately; 1: do not update till 0</detail></bitfield>
+			<bitfield  name="CHIP_ENABLE" mask="0x0002" display_name="1: chip_enable" range="0x0000 0x0001"><detail>0: stops video output at end of current frame; 1: normal</detail></bitfield>
+			<bitfield  name="CONTROL_MODE_BIT2" mask="0x0004" display_name="2: control_mode_bit2" range="0x0000 0x0001"><detail>0: normal operation; 1: test mode operation</detail></bitfield>
+			<bitfield  name="DGAIN_OVRD" mask="0x0008" display_name="3: dgain_ovrd" range="0x0000 0x0001"><detail>0: normal operation; 1: gain passed to gain switches</detail></bitfield>
+			<bitfield  name="USE_TDATA" mask="0x0040" display_name="6: use_tdata" range="0x0000 0x0001"><detail>0: normal; 1: output data = value of test data register</detail></bitfield></reg>
+		<reg  name="INTEG_TIME_REG" addr="0x09" space="CORE" mask="0x3FFF" display_name="integ_time_reg" range="0x0000 0x3FFF" default="0x0419"><detail>Number of rows of integration</detail></reg>
+		<reg  name="RESTART_REG" addr="0x0B" space="CORE" mask="0x0001" display_name="restart_reg" range="0x0000 0x0001"></reg>
+		<reg  name="SHUTTER_DELAY_REG" addr="0x0C" space="CORE" mask="0x07FF" display_name="shutter_delay_reg" range="0x0000 0x07FF"></reg>
+		<reg  name="RESET_REG" addr="0x0D" space="CORE" mask="0x0001" display_name="reset_reg" range="0x0000 0x0001"><detail>0: Resume, 1: Reset</detail></reg>
+		<reg  name="READ_MODE_1" addr="0x1E" space="CORE" mask="0xFFFF" display_name="read_mode_1" range="0x0000 0xFFFF" default="0x8000">
+			<bitfield  name="BIT_0" confidential="Y" mask="0x0001" display_name="0: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="BIT_1" confidential="Y" mask="0x0002" display_name="1: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="COLUMN_SKIP_4" mask="0x0004" display_name="2: column_skip_4" range="0x0000 0x0001"><detail>1:enable</detail></bitfield>
+			<bitfield  name="ROW_SKIP_4" mask="0x0008" display_name="3: row_skip_4" range="0x0000 0x0001"><detail>1:enable</detail></bitfield>
+			<bitfield  name="COLUMN_SKIP_8" mask="0x0010" display_name="4: column_skip_8" range="0x0000 0x0001"><detail>1:enable</detail></bitfield>
+			<bitfield  name="ROW_SKIP_8" mask="0x0020" display_name="5: row_skip_8" range="0x0000 0x0001"><detail>1:enable</detail></bitfield>
+			<bitfield  name="BIT_6" confidential="Y" mask="0x0040" display_name="6: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="BIT_7" confidential="Y" mask="0x0080" display_name="7: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="SNAPSHOT_MODE" mask="0x0100" display_name="8: snapshot_mode" range="0x0000 0x0001"><detail>0: continuous; 1:enable</detail></bitfield>
+			<bitfield  name="STROBE_ENABLE" mask="0x0200" display_name="9: strobe_enable" range="0x0000 0x0001"><detail>0: no strobe [default]; 1:enable</detail></bitfield>
+			<bitfield  name="STROBE_WIDTH" mask="0x0400" display_name="10: strobe_width" range="0x0000 0x0001"><detail>0: default; 1:extend strobe width</detail></bitfield>
+			<bitfield  name="STROBE_OVERRIDE" mask="0x0800" display_name="11: strobe_override" range="0x0000 0x0001"><detail>0: default; 1:override strobe signal</detail></bitfield>
+			<bitfield  name="BIT_12" confidential="Y" mask="0x1000" display_name="12: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="BIT_13" confidential="Y" mask="0x2000" display_name="13: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="BIT_14" confidential="Y" mask="0x4000" display_name="14: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="BIT_15" confidential="Y" mask="0x8000" display_name="15: Reserved" range="0x0000 0x0001"></bitfield></reg>
+		<reg  name="READ_MODE_2" addr="0x20" space="CORE" mask="0xFFFF" display_name="read_mode_2" range="0x0000 0xFFFF" default="0x1104">
+			<bitfield  name="NO_BAD_FRAMES" mask="0x0001" display_name="0: no_bad_frames" range="0x0000 0x0001"><detail>0: only good frames; 1: all frames</detail></bitfield>
+			<bitfield  name="BIT_1" confidential="Y" mask="0x0002" display_name="1: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="OFFSET_ON" mask="0x0004" display_name="2: offset_on" range="0x0000 0x0001"><detail>Reserved-default is 1; set to &quot;1&quot; at all times.</detail></bitfield>
+			<bitfield  name="COLUMN_SKIP" mask="0x0008" display_name="3: column_skip" range="0x0000 0x0001"><detail>0: normal readout; 1: read 2 rows, skip 2 cols</detail></bitfield>
+			<bitfield  name="ROW_SKIP" mask="0x0010" display_name="4: row_skip" range="0x0000 0x0001"><detail>0: normal readout; 1: read 2 rows, skip 2 rows</detail></bitfield>
+			<bitfield  name="BIT_5" confidential="Y" mask="0x0020" display_name="5: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="OFFSET_POST" mask="0x0040" display_name="6: offset_post" range="0x0000 0x0001"><detail>set to 0</detail></bitfield>
+			<bitfield  name="FLIP_ROW" mask="0x0080" display_name="7: flip_row" range="0x0000 0x0001"><detail>0: normal; 1: readout 1 row later</detail></bitfield>
+			<bitfield  name="OFFSET_PRE" mask="0x0100" display_name="8: offset_pre" range="0x0000 0x0001"><detail>set to 1</detail></bitfield>
+			<bitfield  name="LINE_VALID" mask="0x0200" display_name="9: line_valid" range="0x0000 0x0001"><detail>1: Produce Line Valid during Veritcal Blank</detail></bitfield>
+			<bitfield  name="XOR_LINE_VALID" mask="0x0400" display_name="10: xor_line_valid" range="0x0000 0x0001"><detail>1: Line valid = Line Valid XOR Frame Valid</detail></bitfield>
+			<bitfield  name="DARK_ROWS" mask="0x0800" display_name="11: dark_rows" range="0x0000 0x0001"><detail>1: all 14 dark rows read plus valid data</detail></bitfield>
+			<bitfield  name="BIT_12" confidential="Y" mask="0x1000" display_name="12: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="BIT_13" confidential="Y" mask="0x2000" display_name="13: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="MIRROR_COL" mask="0x4000" display_name="14: mirror_col" range="0x0000 0x0001"><detail>0: Sensor reads right to left, 1: Left to right</detail></bitfield>
+			<bitfield  name="MIRROR_ROW" mask="0x8000" display_name="15: mirror_row" range="0x0000 0x0001"><detail>0: Sensor reads top to bottom, 1: Bottom to top</detail></bitfield></reg>
+		<reg  name="RESERVED_CORE_27" addr="0x27" space="CORE" confidential="Y" mask="0x01FF" display_name="Reserved" range="0x0000 0x01FF" default="0x000C"></reg>
+		<reg  name="DAC_CONTROL_2_REG" addr="0x29" space="CORE" mask="0x000F" display_name="dac_control_2_reg" range="0x0000 0x000F"><detail>Reserved, should not require modification</detail></reg>
+		<reg  name="GREEN1_GAIN_REG" addr="0x2B" space="CORE" mask="0x007F" display_name="green1_gain_reg" range="0x0000 0x007F" default="0x0008"><detail>Green1 gain-default = 0x08 (8) = 1x gain.</detail>
+			<bitfield  name="GREEN1_GAIN_VALUE" mask="0x003F" display_name="0-5: green1_gain_value" range="0x0000 0x003F"></bitfield>
+			<bitfield  name="GREEN1_GAIN_DOUBLE_1" mask="0x0040" display_name="6: green1_gain_double_1" range="0x0000 0x0001"><detail>1: Multiply gain value by 2</detail></bitfield></reg>
+		<reg  name="BLUE_GAIN_REG" addr="0x2C" space="CORE" mask="0x007F" display_name="blue_gain_reg" range="0x0000 0x007F" default="0x0008"><detail>Blue gain-default = 0x08 (8) = 1x gain.</detail>
+			<bitfield  name="BLUE_GAIN_VALUE" mask="0x003F" display_name="0-5: blue_gain_value" range="0x0000 0x003F"></bitfield>
+			<bitfield  name="BLUE_GAIN_DOUBLE_1" mask="0x0040" display_name="6: blue_gain_double_1" range="0x0000 0x0001"><detail>1: Multiply gain value by 2</detail></bitfield></reg>
+		<reg  name="RED_GAIN_REG" addr="0x2D" space="CORE" mask="0x007F" display_name="red_gain_reg" range="0x0000 0x007F" default="0x0008"><detail>Red gain-default = 0x08 (8) = 1x gain.</detail>
+			<bitfield  name="RED_GAIN_VALUE" mask="0x003F" display_name="0-5: red_gain_value" range="0x0000 0x003F"></bitfield>
+			<bitfield  name="RED_GAIN_DOUBLE_1" mask="0x0040" display_name="6: red_gain_double_1" range="0x0000 0x0001"><detail>1: Multiply gain value by 2</detail></bitfield></reg>
+		<reg  name="GREEN2_GAIN_REG" addr="0x2E" space="CORE" mask="0x007F" display_name="green2_gain_reg" range="0x0000 0x007F" default="0x0008"><detail>Green2 gain-default = 0x08 (8) = 1x gain.</detail>
+			<bitfield  name="GREEN2_GAIN_VALUE" mask="0x003F" display_name="0-5: green2_gain_value" range="0x0000 0x003F"></bitfield>
+			<bitfield  name="GREEN2_GAIN_DOUBLE_1" mask="0x0040" display_name="6: green2_gain_double_1" range="0x0000 0x0001"><detail>1: Multiply gain value by 2</detail></bitfield></reg>
+		<reg  name="RESERVED_CORE_32" addr="0x32" space="CORE" confidential="Y" mask="0x03FF" display_name="Reserved" range="0x0000 0x03FF"></reg>
+		<reg  name="GLOBAL_GAIN_REG" addr="0x35" space="CORE" mask="0x007F" display_name="global_gain_reg" range="0x0000 0x007F" default="0x0008">
+			<bitfield  name="GLOBAL_GAIN_VALUE" mask="0x003F" display_name="0-5: global_gain_value" range="0x0000 0x003F"></bitfield>
+			<bitfield  name="GLOBAL_GAIN_DOUBLE_1" mask="0x0040" display_name="6: global_gain_double_1" range="0x0000 0x0001"><detail>1: Multiply gain value by 2</detail></bitfield></reg>
+		<reg  name="RESERVED_CORE_3C" addr="0x3C" space="CORE" confidential="Y" mask="0x00FF" display_name="Reserved" range="0x0000 0x00FF" default="0x0020"></reg>
+		<reg  name="RESERVED_CORE_3D" addr="0x3D" space="CORE" confidential="Y" mask="0x00FF" display_name="Reserved" range="0x0000 0x00FF" default="0x0003"></reg>
+		<reg  name="RESERVED_CORE_3E" addr="0x3E" space="CORE" confidential="Y" mask="0x00FF" display_name="Reserved" range="0x0000 0x00FF" default="0x0003"></reg>
+		<reg  name="RESERVED_CORE_3F" addr="0x3F" space="CORE" confidential="Y" mask="0x00FF" display_name="Reserved" range="0x0000 0x00FF" default="0x0003"></reg>
+		<reg  name="RESERVED_CORE_40" addr="0x40" space="CORE" confidential="Y" mask="0x00FF" display_name="Reserved" range="0x0000 0x00FF" default="0x0003"></reg>
+		<reg  name="RESERVED_CORE_41" addr="0x41" space="CORE" confidential="Y" mask="0x00FF" display_name="Reserved" range="0x0000 0x00FF" default="0x0003"></reg>
+		<reg  name="RESERVED_CORE_42" addr="0x42" space="CORE" confidential="Y" mask="0x00FF" display_name="Reserved" range="0x0000 0x00FF" default="0x0003"></reg>
+		<reg  name="RESERVED_CORE_43" addr="0x43" space="CORE" confidential="Y" mask="0x00FF" display_name="Reserved" range="0x0000 0x00FF" default="0x0003"></reg>
+		<reg  name="RESERVED_CORE_45" addr="0x45" space="CORE" confidential="Y" mask="0x00FF" display_name="Reserved" range="0x0000 0x00FF" default="0x000C"></reg>
+		<reg  name="RESERVED_CORE_46" addr="0x46" space="CORE" confidential="Y" mask="0x00FF" display_name="Reserved" range="0x0000 0x00FF" default="0x0014"></reg>
+		<reg  name="RESERVED_CORE_47" addr="0x47" space="CORE" confidential="Y" mask="0x00FF" display_name="Reserved" range="0x0000 0x00FF" default="0x0020"></reg>
+		<reg  name="RESERVED_CORE_48" addr="0x48" space="CORE" confidential="Y" mask="0x00FF" display_name="Reserved" range="0x0000 0x00FF" default="0x0038"></reg>
+		<reg  name="RESERVED_CORE_4A" addr="0x4A" space="CORE" confidential="Y" mask="0x00FF" display_name="Reserved" range="0x0000 0x00FF" default="0x0010"></reg>
+		<reg  name="RESERVED_CORE_4E" addr="0x4E" space="CORE" confidential="Y" mask="0x00FF" display_name="Reserved" range="0x0000 0x00FF" default="0x0020"></reg>
+		<reg  name="RESERVED_CORE_4F" addr="0x4F" space="CORE" confidential="Y" mask="0x00FF" display_name="Reserved" range="0x0000 0x00FF" default="0x0008"></reg>
+		<reg  name="CAL_THRESHOLD" addr="0x5F" space="CORE" mask="0xFFFF" display_name="cal_threshold" range="0x0000 0xFFFF" default="0x0904">
+			<bitfield  name="CAL_THRESHOLD_MIN" mask="0x003F" display_name="0-5: cal_threshold_min" range="0x0000 0x003F"><detail>Lower threshold for black level in ADC LSBs</detail></bitfield>
+			<bitfield  name="CAL_THRESHOLD_AUTO" mask="0x0080" display_name="7: cal_threshold_auto" range="0x0000 0x0001"><detail>0: Auto threshold adjustment; 1: Override auto adj</detail></bitfield>
+			<bitfield  name="CAL_THRESHOLD_MAX" mask="0x7F00" display_name="8-14: cal_threshold_max" range="0x0000 0x007F"><detail>Max allowed black leven in ADC LSBs</detail></bitfield>
+			<bitfield  name="NO_GD_THRES" mask="0x8000" display_name="15: no_gd_thres" range="0x0000 0x0001"></bitfield></reg>
+		<reg  name="CAL_G1" addr="0x60" space="CORE" mask="0x01FF" display_name="cal_g1" range="0x0000 0x01FF"></reg>
+		<reg  name="CAL_G2" addr="0x61" space="CORE" mask="0x01FF" display_name="cal_g2" range="0x0000 0x01FF"></reg>
+		<reg  name="CAL_CTRL" addr="0x62" space="CORE" mask="0xFFFF" display_name="cal_ctrl" range="0x0000 0xFFFF" default="0x0498">
+			<bitfield  name="USE_SET_CALIB_VALS" mask="0x0001" display_name="0: use_set_calib_vals" range="0x0000 0x0001"><detail>1: override auto black level with programmed vals</detail></bitfield>
+			<bitfield  name="CALIB_1_2" mask="0x0006" display_name="1-2: calib_1_2" range="0x0000 0x0003"><detail>00: default; 01: continuous; 1x: disable</detail></bitfield>
+			<bitfield  name="BITS_3_8" confidential="Y" mask="0x01F8" display_name="3-8: Reserved" range="0x0000 0x003F"></bitfield>
+			<bitfield  name="BIT_9" confidential="Y" mask="0x0200" display_name="9: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="BIT_10" confidential="Y" mask="0x0400" display_name="10: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="NO_RECLC_THRESH" mask="0x0800" display_name="11: no_reclc_thresh" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="RESYNC_BL" mask="0x1000" display_name="12: resync_bl" range="0x0000 0x0001"><detail>0: normal; 1: start new average</detail></bitfield>
+			<bitfield  name="BITS_13_14" confidential="Y" mask="0x6000" display_name="13-14: Reserved" range="0x0000 0x0003"></bitfield>
+			<bitfield  name="NO_BP_LOCAL" mask="0x8000" display_name="15: no_bp_local" range="0x0000 0x0001"></bitfield></reg>
+		<reg  name="CAL_R" addr="0x63" space="CORE" mask="0x01FF" display_name="cal_r" range="0x0000 0x01FF"></reg>
+		<reg  name="CAL_B" addr="0x64" space="CORE" mask="0x01FF" display_name="cal_b" range="0x0000 0x01FF"></reg>
+		<reg  name="CLOCK_CTRL_REG" addr="0x65" space="CORE" mask="0x0003" display_name="clock_ctrl_reg" range="0x0000 0x0003"><detail>Do not modify</detail>
+			<bitfield  name="SHIP" mask="0x0001" display_name="0: ship" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="DARK" mask="0x0002" display_name="1: dark" range="0x0000 0x0001"></bitfield></reg>
+		<reg  name="CHIP_ENABLE_REG" addr="0xF1" space="CORE" mask="0x0003" display_name="chip_enable_reg" range="0x0000 0x0003" default="0x0001">
+			<bitfield  name="CHIP_ENABLE" mask="0x0001" display_name="0: chip_enable" range="0x0000 0x0001"><detail>Mirrors functionality of Reg07 bit 1</detail></bitfield>
+			<bitfield  name="SYNC" mask="0x0002" display_name="1: sync" range="0x0000 0x0001"><detail>Mirrors functionality of Reg07 bit 0</detail></bitfield></reg>
+
+
+
+	</registers>
+
+<copyright>
+  Copyright (c) 2013 Aptina Imaging Corporation.   All rights reserved.
+
+
+  No permission to use, copy, modify, or distribute this software and/or
+  its documentation for any purpose has been granted by Aptina Imaging Corporation.
+  If any such permission has been granted ( by separate agreement ), it
+  is required that the above copyright notice appear in all copies and
+  that both that copyright notice and this permission notice appear in
+  supporting documentation, and that the name of Aptina Imaging Corporation or any
+  of its trademarks may not be used in advertising or publicity pertaining
+  to distribution of the software without specific, written prior permission.
+
+
+  This software and any associated documentation are provided AS IS and
+  without warranty of any kind.   APTINA IMAGING CORPORATION EXPRESSLY DISCLAIMS
+  ALL WARRANTIES EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO, NONINFRINGEMENT
+  OF THIRD PARTY RIGHTS, AND ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
+  FOR A PARTICULAR PURPOSE.  APTINA DOES NOT WARRANT THAT THE FUNCTIONS CONTAINED
+  IN THIS SOFTWARE WILL MEET YOUR REQUIREMENTS, OR THAT THE OPERATION OF THIS SOFTWARE
+  WILL BE UNINTERRUPTED OR ERROR-FREE.  FURTHERMORE, APTINA DOES NOT WARRANT OR
+  MAKE ANY REPRESENTATIONS REGARDING THE USE OR THE RESULTS OF THE USE OF ANY
+  ACCOMPANYING DOCUMENTATION IN TERMS OF ITS CORRECTNESS, ACCURACY, RELIABILITY,
+  OR OTHERWISE.
+</copyright>
+<revision>
+// $Revision: 34474 $
+// $Date: 2013-01-07 16:17:27 -0800 (Mon, 07 Jan 2013) $
+//
+// product last modified: 2010-04-06 09:38:00   version last modified: none   register last modified: none 
+</revision>
+</sensor>
