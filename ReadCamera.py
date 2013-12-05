@@ -18,9 +18,6 @@ import matplotlib.pylab as plt
 parser = OptionParser()
 usage = "usage: %prog [options] arg1 arg2"
 parser = OptionParser(usage=usage)
-parser.add_option("-v", "--verbose", dest="verbose",
-                  action="store_true", default=False,
-                  help="Be chatty. (default: %default)")
 parser.add_option("-c", "--camera", dest="camera",
                   default="tis", type='str', metavar='name',
                   help="Camera to use; at the moment 'tis', 'aptina' and "
@@ -29,13 +26,19 @@ parser.add_option("-c", "--camera", dest="camera",
 parser.add_option("-e", "--exposure", dest="exposuretime",
                   metavar='125', type='float',
                   help="Exposure time [ms] (?)")
-parser.add_option("-p", "--preview", dest="preview",
-                  action="store_true", default=False,
-                  help="Preview image (default: %default)")
 parser.add_option("-i", "--images", dest="images",
                   default=5, type="int",
                   help="How many images should ffmpeg save at the end? "
                        "(default: %default)")
+parser.add_option("-p", "--preview", dest="preview",
+                  action="store_true", default=False,
+                  help="Preview image (default: %default)")
+parser.add_option("-s", "--suffix", dest="suffix",
+                  type='str', metavar='Suffix',
+                  help="Suffix to add after the foldername")
+parser.add_option("-v", "--verbose", dest="verbose",
+                  action="store_true", default=False,
+                  help="Be chatty. (default: %default)")
 (options, args) = parser.parse_args()
 
 if len(sys.argv[1:]) == 0:
@@ -157,7 +160,11 @@ if options.preview:
 Runtime = str(int(time.time()))
 try:
     # Generating necessary directories
-    os.makedirs(os.path.join('Images', options.camera, Runtime))
+    if options.suffix:
+        os.makedirs(os.path.join('Images', options.camera,
+                    Runtime + '_' + options.suffix))
+    else:
+        os.makedirs(os.path.join('Images', options.camera, Runtime))
 except:
     print os.path.join('Images', options.camera, Runtime),\
         'cannot be generated'
@@ -168,8 +175,14 @@ print "Getting", options.images, "images from the camera"
 Hz = int(round(1 / (options.exposuretime / 10 / 1000)))
 ffmpegcommand = "ffmpeg -f video4linux2 -s " + str(CMOSwidth) + "x" +\
     str(CMOSheight) + " -i " + CameraPath + " -vframes " +\
-    str(options.images) + " -r " + str(Hz) + " " +\
-    os.path.join('Images', options.camera, Runtime) + "/snapshot_%03d.jpg"
+    str(options.images) + " -r " + str(Hz) + " "
+if options.suffix:
+    ffmpegcommand += os.path.join('Images', options.camera,
+                                  Runtime + '_' + options.suffix) +\
+        "/snapshot_%03d.jpg"
+else:
+    ffmpegcommand += os.path.join('Images', options.camera, Runtime) +\
+        "/snapshot_%03d.jpg"
 if options.verbose:
     print 'Saving images with'
     print
@@ -182,28 +195,43 @@ t1 = time.time()
 print "in", str(round(t1 - t0, 3)), "seconds (" +\
     str(round(options.images / (t1-t0), 3)) + " images per second)"
 
-filename = os.path.join('Images', options.camera, Runtime,
-                        "snapshot_%03d" % (int(round(options.images / 2.0))) +
-                        ".jpg")
+if options.suffix:
+    filename = os.path.join('Images', options.camera,
+                            Runtime + '_' + options.suffix,
+                            "snapshot_%03d" % (int(round(options.images / 2.0))) +
+                            ".jpg")
+else:
+    filename = os.path.join('Images', options.camera, Runtime,
+                            "snapshot_%03d" % (int(round(options.images / 2.0))) +
+                            ".jpg")
 image = plt.imread(filename)
 plt.imshow(image, origin="lower")
 figuretitle = "Snapshot", str(int(round(options.images / 2.0))), "of",\
-    str(options.images), "from",\
-    os.path.join("Images", options.camera, Runtime),\
-    "\nwith an exposure time of", str(options.exposuretime), "ms"
+    str(options.images), "from"
+if options.suffix:
+    #~ Add to title-tuple with comma: http://stackoverflow.com/a/4913789
+    figuretitle += os.path.join("Images", options.camera,
+                                Runtime + '_' + options.suffix),
+else:
+    figuretitle += os.path.join("Images", options.camera, Runtime),
+figuretitle += "\nwith an exposure time of", str(options.exposuretime), "ms",
 if options.preview:
     plt.axhspan(ymin=CMOSheight-previewheight, ymax=CMOSheight,
                 xmin=0, xmax=float(previewwidth)/CMOSwidth,
                 facecolor='r', alpha=0.5)
     plt.xlim([0, CMOSwidth])
     plt.ylim([0, CMOSheight])
-    #~ Add to title-tuple with comma: http://stackoverflow.com/a/4913789
     figuretitle += "\nred=preview area",
 plt.title(' '.join(figuretitle))
 plt.show()
 
-print 'Images saved to', os.path.abspath(os.path.join('Images', options.camera,
-                                                      Runtime,
-                                                      'snapshot*.jpg'))
+print 'Images saved to',
+if options.suffix:
+    print os.path.abspath(os.path.join('Images', options.camera,
+                                       Runtime + '_' + options.suffix,
+                                       'snapshot*.jpg'))
+else:
+    print os.path.abspath(os.path.join('Images', options.camera, Runtime,
+                                       'snapshot*.jpg'))
 print 80 * "-"
 print "done"
