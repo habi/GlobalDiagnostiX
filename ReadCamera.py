@@ -198,12 +198,12 @@ print "in", str(round(t1 - t0, 3)), "seconds (" +\
 if options.suffix:
     filename = os.path.join('Images', options.camera,
                             Runtime + '_' + options.suffix,
-                            "snapshot_%03d" % (int(round(options.images / 2.0))) +
-                            ".jpg")
+                            "snapshot_%03d" % (int(round(options.images /
+                                                         2.0))) + ".jpg")
 else:
     filename = os.path.join('Images', options.camera, Runtime,
-                            "snapshot_%03d" % (int(round(options.images / 2.0))) +
-                            ".jpg")
+                            "snapshot_%03d" % (int(round(options.images /
+                                                         2.0))) + ".jpg")
 image = plt.imread(filename)
 plt.imshow(image, origin="lower")
 figuretitle = "Snapshot", str(int(round(options.images / 2.0))), "of",\

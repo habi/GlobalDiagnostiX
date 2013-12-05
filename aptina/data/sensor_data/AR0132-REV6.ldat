@@ -1,0 +1,797 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="sensor_desc.xsl"?>
+<!--
+****************************************************************************************************
+*   If you are reading this, you are not taking advantage of the XML Stylesheet                    *
+*                                                                                                  *
+*   Instructions for viewing XML LDAT file can be found in:                                        *
+*   C:\Aptina Imaging [Dev]\sensor_data\!DevWare XML-formatted SDAT User Guide.pdf                 *
+****************************************************************************************************
+-->
+<sensor name="A-1000ERS" version="6" part_number="AR0132" version_name="REV6">
+<registers>
+	<reg name="CHIP_VERSION_REG">
+		<long_desc>Model ID. Read-only. Can be made read/write by clearing R0x301A-B[3].</long_desc>
+	</reg>
+	<reg name="Y_ADDR_START">
+		<long_desc>The  first row of visible pixels to be read out (not counting any dark rows  that may be read). To move the image window, set this register to the  starting Y value.</long_desc>
+	</reg>
+	<reg name="X_ADDR_START">
+		<long_desc>The  first column of visible pixels to be read out (not counting any dark  columns that may be read). To move the image window, set this register  to the starting X value.</long_desc>
+	</reg>
+	<reg name="Y_ADDR_END">
+		<long_desc>The last row of visible pixels to be read out.</long_desc>
+	</reg>
+	<reg name="X_ADDR_END">
+		<long_desc>The last column of visible pixels to be read out.</long_desc>
+	</reg>
+	<reg name="FRAME_LENGTH_LINES">
+		<long_desc>The number of complete lines (rows) in the output frame. This includes visible lines and vertical blanking lines.&#10;The rows included are:&#10;Column correction (tied) rows. Default 8.&#10;Delta dark rows. Default 6.&#10;Extra reset. 4 rows (2 used for embedded data when enabled),&#10;Image data (y_addr_end - y_addr_start +1)&#10;Extra reset. 4 rows (2 used for embedded stats data when enabled).&#10;Zebra Test rows. Default 4.&#10;</long_desc>
+	</reg>
+	<reg name="LINE_LENGTH_PCK">
+		<long_desc>The number of pixel clock periods in one line (row) time. This includes visible pixels and horizontal blanking time.&#10;The minimum value supported in HiDY mode is 0x672.</long_desc>
+	</reg>
+	<reg name="LOCK_CONTROL">
+		<long_desc>This register protects the mirror mode select (register read mode).&#10;When set to value 0xBEEF, the horizontal and vertical mirror modes can be changed, otherwise these values are locked.</long_desc>
+	</reg>
+	<reg name="COARSE_INTEGRATION_TIME">
+		<long_desc>Integration time specified in multiples of line_length_pck_.</long_desc>
+	</reg>
+	<reg name="FINE_INTEGRATION_TIME">
+		<long_desc>In HiDY mode, fine integration time is not used. &#10;In linear ERS mode, fine integration is used to delay the shutter operation. Thus, the integration time is decreased when fine_integration_time is increased. The resolution is 1 pixel clock time.</long_desc>
+	</reg>
+	<reg name="COARSE_INTEGRATION_TIME_CB">
+		<long_desc>Coarse integration time in context B.</long_desc>
+	</reg>
+	<reg name="FINE_INTEGRATION_TIME_CB">
+		<long_desc>Fine integration time in context B.</long_desc>
+	</reg>
+	<reg name="RESET_REGISTER">
+		<long_desc>Controls the operation of the sensor. For details see the bit field descriptions.</long_desc>
+		<bitfield name="RESET">
+			<long_desc>This bit always reads as 0. Setting this bit initiates a reset sequence: the frame being generated will be truncated.</long_desc>
+		</bitfield>
+		<bitfield name="RESTART">
+			<long_desc>This bit always reads as 0. Setting this bit causes the sensor to truncate the current frame at the end of the current row and start resetting (integrating) the first row. The delay before the first valid frame is read out is equal to the integration time.</long_desc>
+		</bitfield>
+		<bitfield name="STREAM">
+			<long_desc>Setting this bit places the sensor in streaming mode. Clearing this bit places the sensor in a low power mode. The result of clearing this bit depends upon the operating mode of the sensor. &#10;Entry and exit from streaming mode can also be controlled from the signal interface.</long_desc>
+		</bitfield>
+		<bitfield name="LOCK_REG">
+			<long_desc>Many parameter limitation registers that are specified as read-only are actually implemented as read/write registers. Clearing this bit allows such registers to be written.</long_desc>
+		</bitfield>
+		<bitfield name="STDBY_EOF">
+			<long_desc>0 = Transition to standby is synchronized to the end of a sensor row readout (held-off until LINE_VALID has fallen). &#10;1 = Transition to standby is synchronized to the end of a frame.</long_desc>
+		</bitfield>
+		<bitfield name="REG_RD_EN">
+			<long_desc>Enable signal to allow read from fuse ID registers.</long_desc>
+		</bitfield>
+		<bitfield name="DRIVE_PINS">
+			<long_desc>0 = The parallel data interface (DOUT[11:0], LINE_VALID, FRAME_VALID, and PIXCLK) may enter a high-impedance state (depending upon the enabling and use of the pad OUTPUT_ENABLE_N)&#10;1 = The parallel data interface is driven. &#10;This bit is &quot;do not care&quot; unless bit[7]=1.</long_desc>
+		</bitfield>
+		<bitfield name="PARALLEL_EN">
+			<long_desc>0 = The parallel data interface (DOUT[11:0], LINE_VALID, FRAME_VALID, and PIXCLK) is disabled and the outputs are placed in a high-impedance state. &#10;1 = The parallel data interface is enabled. The output signals can be switched between a driven and a high-impedance state using output-enable control.</long_desc>
+		</bitfield>
+		<bitfield name="GPI_EN">
+			<long_desc>0 = the primary input buffers associated with the OUTPUT_ENABLE_N, TRIGGER and STANDBY inputs are powered down and cannot be used. &#10;1 = the input buffers are enabled and can be read through R0x3026-7.</long_desc>
+		</bitfield>
+		<bitfield name="MASK_BAD">
+			<long_desc>0 = The sensor will produce bad (corrupted) frames as a result of some register changes. &#10;1 = Bad (corrupted) frames are masked within the sensor by extending the vertical blanking time for the duration of the bad frame.</long_desc>
+		</bitfield>
+		<bitfield name="RESTART_BAD">
+			<long_desc>1 = a restart is forced any time a bad frame is detected. This can shorten the delay when waiting for a good frame, since the delay for masking out a bad frame will be the integration time rather than the full-frame time.</long_desc>
+		</bitfield>
+		<bitfield name="FORCED_PLL_ON">
+			<long_desc>1: enables the PLL immediately.</long_desc>
+		</bitfield>
+		<bitfield name="SMIA_SERIALISER_DIS">
+			<long_desc>This bit disables the serial (HISPI) interface</long_desc>
+		</bitfield>
+		<bitfield name="GROUPED_PARAMETER_HOLD">
+			<long_desc>Must be set to 0.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="IMAGE_MODE">
+		<long_desc>Controls imaging modes of the sensor. For details see the bit field descriptions.</long_desc>
+		<bitfield name="MIRROR_COL">
+			<long_desc>0 = Normal readout &#10;1 = Readout is mirrored horizontally so that the column specified by x_addr_end_ is read out of the sensor first.</long_desc>
+		</bitfield>
+		<bitfield name="MIRROR_ROW">
+			<long_desc>0 = Normal readout &#10;1 = Readout is flipped (mirrored) vertically so that the row specified by y_addr_end_ is read out of the sensor first.</long_desc>
+		</bitfield>
+		<bitfield name="STREAM">
+			<long_desc>Setting this bit places the sensor in streaming mode. Clearing this bit places the sensor in a low power mode. The result of clearing this bit depends upon the operating mode of the sensor. &#10;Entry and exit from streaming mode can also be controlled from the signal interface.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="DATA_PEDESTAL">
+		<long_desc>Constant offset that is added to pixel values at the end of datapath (after all corrections).</long_desc>
+	</reg>
+	<reg name="GROUP_HOLD">
+		<long_desc>Controls group parameters of the sensor. For details see the bit field descriptions.</long_desc>
+		<bitfield name="MASK_BAD">
+			<long_desc>0 = The sensor will produce bad (corrupted) frames as a result of some register changes. &#10;1 = Bad (corrupted) frames are masked within the sensor by extending the vertical blanking time for the duration of the bad frame.</long_desc>
+		</bitfield>
+		<bitfield name="GROUPED_PARAMETER_HOLD">
+			<long_desc>Must be set to 0.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="GPI_STATUS">
+		<long_desc>Reflects the status of the input pins:&#10;STANDBY(3), TRIGGER(2), OUTPUT_ENABLE_N(1). &#10;Bit 0 is not used.&#10;</long_desc>
+		<bitfield name="SADDR">
+			<long_desc>Read-only. Return the current state of the pin SADDR  input pin. &#10;This pad is not controlled by gpi_en.</long_desc>
+		</bitfield>
+		<bitfield name="OE_N">
+			<long_desc>Read-only. Return the current state of the OUTPUT_ENABLE_N input pin. Invalid if R0x301A-B[8]=0.</long_desc>
+		</bitfield>
+		<bitfield name="TRIGGER">
+			<long_desc>Read-only. Return the current state of the TRIGGER input pin. Invalid if R0x301A-B[8]=0.</long_desc>
+		</bitfield>
+		<bitfield name="STANDBY">
+			<long_desc>Read-only. Return the current state of the STANDBY input pin. Invalid if R0x301A-B[8]=0.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="ROW_SPEED">
+		<long_desc>Bits [6:4] of this register define the phase of the output pixclk.&#10;2 set of values are correct:&#10;&#10;a) 000, 010, 100, 110 =&gt; 0 delay (rising edge of pixclk coincides DOUT change).&#10;&#10;b) 001, 011, 101, 111 =&gt; 1/2 clk delay (falling edge of pixclk coincides DOUT change).</long_desc>
+	</reg>
+	<reg name="VT_PIX_CLK_DIV">
+		<long_desc>Sets the ratio of the serial output clock and sensor operation clock (P2 clock divider in PLL).</long_desc>
+	</reg>
+	<reg name="VT_SYS_CLK_DIV">
+		<long_desc>sets the ratio of the VCO clk and the serial output clock (P1 divider in PLL).</long_desc>
+	</reg>
+	<reg name="PRE_PLL_CLK_DIV">
+		<long_desc>shows the n+1 value.</long_desc>
+	</reg>
+	<reg name="PLL_MULTIPLIER">
+		<long_desc>PLL_MULTIPLIER: shows 2m value.</long_desc>
+	</reg>
+	<reg name="DIGITAL_BINNING">
+		<bitfield name="DIGITAL_BINNING_CA">
+			<long_desc>DIGITAL_BINNING for context A&#10;&#10;00 =&gt; No binning &#10;01 =&gt; Horiz only binning&#10;10 =&gt; Horiz and Vert. binning</long_desc>
+		</bitfield>
+		<bitfield name="DIGITAL_BINNING_CB">
+			<long_desc>SCALING_MODE for context B&#10;&#10;00 =&gt; No binning &#10;01 =&gt; Horiz only binning&#10;10 =&gt; Horiz and Vert. binning</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="FRAME_COUNT">
+		<long_desc>Counts the number of output frames. At the startup is initialized to 0xffff.</long_desc>
+	</reg>
+	<reg name="FRAME_STATUS">
+		<bitfield name="FRAMESYNC">
+			<long_desc>Set on register write and reset on frame synchronization. Acts as debug flag to verify that register writes completed before last frame synchronization.</long_desc>
+		</bitfield>
+		<bitfield name="STANDBY_STATUS">
+			<long_desc>This bit indicates that  the sensor is in standby state. It can be polled after standby is entered to see when the real low-power state is entered; which can happen at the end of row or frame depending on bit R0x301A[4].</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="READ_MODE">
+		<bitfield name="HORIZ_MIRROR">
+			<long_desc>0 = Normal readout &#10;1 = Readout is mirrored horizontally so that the column specified by x_addr_end_ is read out of the sensor first.&#10;&#10;</long_desc>
+		</bitfield>
+		<bitfield name="VERT_FLIP">
+			<long_desc>0 = Normal readout &#10;1 = Readout is flipped (mirrored) vertically so that the row specified by y_addr_end_ is read out of the sensor first.&#10;&#10;</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="DARK_CONTROL">
+		<bitfield name="CANCEL_TX_COL_CORR">
+			<long_desc>Enables canceling of TX pulse when in column correction rows.</long_desc>
+		</bitfield>
+		<bitfield name="SHOW_ZEBRA_TEST_ROWS">
+			<long_desc>1: The zebra test rows are included in FV (after stats data rows) and will be output.&#10;No correction (except offset correction and gain equalization when AGS enabled) wil be applied to the data.</long_desc>
+		</bitfield>
+		<bitfield name="SHOW_DARK_COLS">
+			<long_desc>1: dark columns (tied) used for row noise correction are included to LV and output.&#10;No correction (except offset correction and gain equalization when AGS enabled) will be applied to the data. Displaying dark columns can only be enabled if x_addr_start is set to 0</long_desc>
+		</bitfield>
+		<bitfield name="ROW_NOISE_CORRECTION_EN">
+			<long_desc>0 = Row-noise cancellation algorithm is disabled  &#10;&#10;1 = Row-noise cancellation algorithm is enabled.</long_desc>
+		</bitfield>
+		<bitfield name="SHOW_DARK_EXTRA_ROWS">
+			<long_desc>1: The delta dark rows (including guard rows) will be included in FV and output.&#10;the order of output rows will be:&#10;delta dark rows, embedded data, image, ..&#10;No correction (except offset correction and gain equalization when AGS enabled) will be applied to the data.</long_desc>
+		</bitfield>
+		<bitfield name="SHOW_COLCORR_ROWS">
+			<long_desc>1: The column correction rows and  delta dark rows (including guard rows) will be included in FV and output.&#10;the order of output rows will be:&#10;column correction rows, delta dark rows, embedded data, image, ..&#10;No correction (except offset correction and gain equalization when AGS enabled) will be applied to the data.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="FLASH">
+		<bitfield name="INVERT_FLASH">
+			<long_desc>Invert flash output signal. When set, the FLASH output signal will be active low.</long_desc>
+		</bitfield>
+		<bitfield name="EN_FLASH">
+			<long_desc>Enables the flash.&#10;The flash is asserted when an integration (either T1, T2 or T3 is ongoing).</long_desc>
+		</bitfield>
+		<bitfield name="TRIGGERED">
+			<long_desc>Indicates that the FLASH output signal was asserted for the current frame. Read-only.</long_desc>
+		</bitfield>
+		<bitfield name="STROBE">
+			<long_desc>Reflects the current state of the FLASH output signal. Read-only.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="GREEN1_GAIN">
+		<long_desc>Digital gain for green1 (Gr) pixels, in format of xxx.yyyyy.</long_desc>
+	</reg>
+	<reg name="BLUE_GAIN">
+		<long_desc>Digital gain for Blue pixels, in format of xxx.yyyyy.</long_desc>
+	</reg>
+	<reg name="RED_GAIN">
+		<long_desc>Digital gain for Red pixels,  in format of xxx.yyyyy.</long_desc>
+	</reg>
+	<reg name="GREEN2_GAIN">
+		<long_desc>Digital gain for green2 (Gb) pixels in format of xxx.yyyyy.</long_desc>
+	</reg>
+	<reg name="GLOBAL_GAIN">
+		<long_desc>Writing a gain to this register is equivalent to writing that code to each of the 4 color-specific gain registers. Reading from this register returns the value most recently written to the green1_gain register.</long_desc>
+	</reg>
+	<reg name="EMBEDDED_DATA_CTRL">
+		<bitfield name="EMBEDDED_STATS_EN">
+			<long_desc>Enables two rows of statistical data (used by external AE, ..) after the transmission image data. Can not be enabled unless EMBEDDED_DATA_EN is enabled.</long_desc>
+		</bitfield>
+		<bitfield name="EMBEDDED_DATA">
+			<long_desc>1 = Frames of data out of the sensor include 2 rows of embedded data. &#10;0 = Frames out of the sensor exclude the embedded data. &#10;This register field should only be change while the sensor is in software standby.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="DATAPATH_SELECT">
+		<bitfield name="SPECIAL_LINE_VALID">
+			<long_desc>00 = Normal behavior of LINE_VALID &#10;01 = LINE_VALID is driven continuously (continue generating LINE_VALID during vertical blanking) &#10;10 = LINE_VALID is driven continuously as LINE_VALID XOR FRAME_VALID</long_desc>
+		</bitfield>
+		<bitfield name="TRUE_BAYER">
+			<long_desc>Enables true Bayer scaling mode.</long_desc>
+		</bitfield>
+		<bitfield name="POSTSCALER_DATA_SEL">
+			<long_desc>0 =&gt; statistics data are generated from pixel data before scaler.&#10;&#10;1=&gt; statistics data are generated from pixel data after scaler.</long_desc>
+		</bitfield>
+		<bitfield name="HIGH_VCM">
+			<long_desc>0: For slvs low vcm.&#10;     VDDSLVS must be 0.4V&#10;&#10;1: For sub-slvs high vcm.&#10;    VDDSLVS = VDDIO = 1.8V&#10;</long_desc>
+		</bitfield>
+		<bitfield name="SLEW_RATE_CTRL_PIXCLK">
+			<long_desc>Selects the slew (edge) rate for the PIXCLK output. Has no effect when parallel data output is disabled. The value 7 results in the fastest edge rates on this signal. Slowing down the edge rate can reduce ringing and electromagnetic emissions.</long_desc>
+		</bitfield>
+		<bitfield name="SLEW_RATE_CTRL_PARALLEL">
+			<long_desc>Selects the slew (edge) rate for the DOUT[9:0], FRAME_VALID, LINE_VALID and FLASH outputs. Only affects the FLASH output when parallel data output is disabled. The value 7 results in the fastest edge rates on these signals. Slowing down the edge rate can reduce ringing and electro-magnetic emissions.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="TEST_PATTERN_MODE">
+		<long_desc>0 = Normal operation. Generate output data from pixel array  &#10;1 = Solid color test pattern.  &#10;2 = Full color bar test pattern  &#10;3 = Fade to grey color bar test pattern  &#10;256 = Marching 1 test pattern (12 bit)  &#10;other = Reserved.</long_desc>
+	</reg>
+	<reg name="TEST_DATA_RED">
+		<long_desc>The value for red pixels in the Bayer data used for the solid color test pattern and the test cursors.</long_desc>
+	</reg>
+	<reg name="TEST_DATA_GREENR">
+		<long_desc>The value for green pixels in red/green rows of the Bayer data used for the solid color test pattern and the test cursors.</long_desc>
+	</reg>
+	<reg name="TEST_DATA_BLUE">
+		<long_desc>The value for blue pixels in the Bayer data used for the solid color test pattern and the test cursors.</long_desc>
+	</reg>
+	<reg name="TEST_DATA_GREENB">
+		<long_desc>The value for green pixels in blue/green rows of the Bayer data used for the solid color test pattern and the test cursors.</long_desc>
+	</reg>
+	<reg name="EXPOSURE_T2">
+		<long_desc>T2 exposure time in rows.</long_desc>
+	</reg>
+	<reg name="EXPOSURE_T3">
+		<long_desc>Actual T3 time in pixel clocks. Read only.</long_desc>
+	</reg>
+	<reg name="OPERATION_MODE_CTRL">
+		<bitfield name="OPERATION_MODE">
+			<long_desc>00 =&gt; ERS HiDy mode&#10;01 =&gt; ERS Linear mode&#10;10 =&gt; Not valid.&#10;11 =&gt; Not valid.</long_desc>
+		</bitfield>
+		<bitfield name="RATIO_T1_T2">
+			<long_desc>Requested integration time ratio (T1 t0 T2):&#10;00 =&gt; 4&#10;01 =&gt; 8&#10;10 =&gt; 16&#10;11 =&gt; 32 Not Valid due to image quality concern</long_desc>
+		</bitfield>
+		<bitfield name="RATIO_T2_T3">
+			<long_desc>Requested integration time ratio (T2 to T3):&#10;00 =&gt; 4&#10;01 =&gt; 8&#10;10 =&gt; 16&#10;11 =&gt; 32 Not valid due to image quality concern</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="OPERATION_MODE_CTRL_CB">
+		<bitfield name="RATIO_T1_T2_CB">
+			<long_desc>RATIO_T1_T2_CB</long_desc>
+		</bitfield>
+		<bitfield name="RATIO_T2_T3_CB">
+			<long_desc>RATIO_T2_T3_CB</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="SEQ_DATA_PORT">
+		<long_desc>Register used to write to or read from the sequencer RAM.</long_desc>
+	</reg>
+	<reg name="SEQ_CTRL_PORT">
+		<long_desc>Register controlling the read and write to sequencer RAM.</long_desc>
+		<bitfield name="ACCESS_ADDRESS">
+			<long_desc>When in STANDBY (not streaming)  mode: address pointer to the sequencer RAM.</long_desc>
+		</bitfield>
+		<bitfield name="AUTO_INC_ON_READ">
+			<long_desc>If 1 =&gt; The access_address is incremented (by 1) after each read operation from seq_data_port (which returns  only1 byte)&#10;</long_desc>
+		</bitfield>
+		<bitfield name="SEQUENCER_STOPPED">
+			<long_desc>Showing that sequencer is stopped (STANDBY mode) and the RAM is available for read or write.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="X_ADDR_START_CB">
+		<long_desc>x_address_start context B</long_desc>
+	</reg>
+	<reg name="Y_ADDR_START_CB">
+		<long_desc>Y_ADDR_START for context B</long_desc>
+	</reg>
+	<reg name="X_ADDR_END_CB">
+		<long_desc>X_ADDR_END for context B</long_desc>
+	</reg>
+	<reg name="Y_ADDR_END_CB">
+		<long_desc>Y_ADDR_END for context B</long_desc>
+	</reg>
+	<reg name="ERS_PROG_START_ADDR">
+		<long_desc>In case, an ERS sequencer program is also available after the HiDY program, this register must be loaded (from OTPM or M3ROM) with the correct start address in the sequencer RAM.</long_desc>
+	</reg>
+	<reg name="X_EVEN_INC">
+		<long_desc>Read-only.</long_desc>
+	</reg>
+	<reg name="X_ODD_INC">
+		<long_desc>Not used. Do not change.</long_desc>
+	</reg>
+	<reg name="Y_EVEN_INC">
+		<long_desc>Read-only.</long_desc>
+	</reg>
+	<reg name="Y_ODD_INC">
+		<long_desc>Not supported. Do not change.</long_desc>
+	</reg>
+	<reg name="Y_ODD_INC_CB">
+		<long_desc>Y_ODD_INC context B</long_desc>
+	</reg>
+	<reg name="FRAME_LENGTH_LINES_CB">
+		<long_desc>FRAME_LENGTH_LINES context B.&#10;See description for R0x3012</long_desc>
+	</reg>
+	<reg name="EXPOSURE_T1">
+		<long_desc>Shows the t1 exposure time in HDR mode (in rows) and not used in linear mode.</long_desc>
+	</reg>
+	<reg name="DIGITAL_TEST">
+		<bitfield name="NO_SH_JUMP_LIMIT">
+			<long_desc>1:  Prevents logic from limiting the shutter increase. Normally shutter increase is limited to 4 *(ratio_t1_t2).&#10;To ensure this mode operate correctly, the frame_length_lines must be increased by 52 more than needed (meaning that VB is increased by 52).</long_desc>
+		</bitfield>
+		<bitfield name="COL_GAIN">
+			<long_desc>Column gain:&#10;00 = 1 &#10;01 = 2&#10;10 = 4&#10;11 = 8</long_desc>
+		</bitfield>
+		<bitfield name="MONO_CHROME">
+			<long_desc>1: The CFA is mono chrome and not color.  Some features like skipping and corrections are affected.</long_desc>
+		</bitfield>
+		<bitfield name="COL_GAIN_CB">
+			<long_desc>Column gain for Context B</long_desc>
+		</bitfield>
+		<bitfield name="CONTEXT_B">
+			<long_desc>0 = Use context A&#10;1 = Use Context B</long_desc>
+		</bitfield>
+		<bitfield name="PLL_COMPLETE_BYPASS">
+			<long_desc>1:  The EXTCLK will be used and PLL will be bypassed. Note that the serial interface would not function.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="TEMPSENS_DATA">
+		<long_desc>Output value from temperature sensor.</long_desc>
+	</reg>
+	<reg name="TEMPSENS_CTRL">
+		<long_desc>Control register for temperature sensor</long_desc>
+		<bitfield name="TEMPSENS_POWER_ON">
+			<long_desc>tempsens_power_on</long_desc>
+		</bitfield>
+		<bitfield name="TEMPSENS_TEST_CTRL">
+			<long_desc>Temp sensor test modes:&#10;0=normal operation&#10;1d=Vb output on vtest_in_out&#10;2d=Vctat output on vtest_in_out&#10;3d=ADC conversion w/vtest_in_out replacing Vctat&#10;4d=ADC conversion w/vtest_in_out replacing both Vctat and Vbg (expected output is zero).</long_desc>
+		</bitfield>
+		<bitfield name="TEMP_START_CONVERSION">
+			<long_desc>When asserted, a new temp value will be generated for each frame capture. When asserted in standby mode, a new temp value will be generated.</long_desc>
+		</bitfield>
+		<bitfield name="TEMP_CLEAR_VALUE">
+			<long_desc>Clear data register (sanity check).</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="SPARE_REGISTER1">
+		<long_desc>Spare register</long_desc>
+	</reg>
+	<reg name="SPARE_REGISTER2">
+		<long_desc>Spare register</long_desc>
+	</reg>
+	<reg name="DIGITAL_CTRL">
+		<bitfield name="ENABLE_DCG_COLCORR_RETRIGG">
+			<long_desc>1: A DCG change will retrigger the column FPN correction algorithm. If DCG switches everyframe, only will retrigger column correction on the first DCG change. To retrigger column correction, will need to set DCG static for at least 2 frames before changing it to allow it to retrigger column correction.</long_desc>
+		</bitfield>
+		<bitfield name="ENABLE_AGS_COLCORR_RETRIGG">
+			<long_desc>1: The AGS (analogue / column gain) change will retrigger the column FPN correction algorithm. If AGS (analogue/column gain) changes  everyframe, only will retrigger column correction on the first AGS gain change. To retrigger column correction, will need to set AGS gain static for at least 2 frames before changing it to allow it to retrigger column correction.</long_desc>
+		</bitfield>
+		<bitfield name="COLCORR_CORRECT_ALWAYS">
+			<long_desc>When set (=1) column FPN correction is applied also during collection and re-calculation of new column FPN correction values.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="GREEN1_GAIN_CB">
+		<long_desc>Digital gain green1 context B</long_desc>
+	</reg>
+	<reg name="BLUE_GAIN_CB">
+		<long_desc>digital gain blue context B</long_desc>
+	</reg>
+	<reg name="RED_GAIN_CB">
+		<long_desc>digital gain red context B</long_desc>
+	</reg>
+	<reg name="GREEN2_GAIN_CB">
+		<long_desc>digital gain green 2 context B</long_desc>
+	</reg>
+	<reg name="GLOBAL_GAIN_CB">
+		<long_desc>global digital gain context B</long_desc>
+	</reg>
+	<reg name="COLUMN_CORRECTION">
+		<bitfield name="COLCORR_ROWS">
+			<long_desc>value showing the number of column correction rows - 1.</long_desc>
+		</bitfield>
+		<bitfield name="DOUBLE_SAMPLES">
+			<long_desc>Makes the column correction use 128 rows instead of 64. Adds 64 to the minimum frame blanking.</long_desc>
+		</bitfield>
+		<bitfield name="DOUBLE_RANGE">
+			<long_desc>Double the range of the correction value but halves the precision.</long_desc>
+		</bitfield>
+		<bitfield name="ENABLE">
+			<long_desc>Enable column correction.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="AE_CTRL_REG">
+		<bitfield name="AE_ENABLE">
+			<long_desc>1 =&gt; enables the on-chip AE algorithm</long_desc>
+		</bitfield>
+		<bitfield name="AUTO_AG_EN">
+			<long_desc>1: enables the automatic ae control of analogue gain.</long_desc>
+		</bitfield>
+		<bitfield name="DCG_MANUAL_SET">
+			<long_desc>If AE is disabled or automatic  DCG is disabled, this bit will be used to decide the DCG gain. &#10;1=&gt; high gain.&#10;0 =&gt; low gain.</long_desc>
+		</bitfield>
+		<bitfield name="AUTO_DCG_ENABLE">
+			<long_desc>Enables automatic (AE controlled) DCG control.</long_desc>
+		</bitfield>
+		<bitfield name="AUTO_DG_EN">
+			<long_desc>Automatic control of digital gain by AE is enabled.</long_desc>
+		</bitfield>
+		<bitfield name="MIN_ANA_GAIN">
+			<long_desc>Minimum analogue gain to be used by AE.&#10;00 =1x (default)&#10;01 =2x&#10;10 =4x&#10;11 =8x</long_desc>
+		</bitfield>
+		<bitfield name="DCG_MANUAL_SET_CB">
+			<long_desc>Manual dcg value used in context B.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="AE_LUMA_TARGET_REG">
+		<long_desc>Average luma target value to be reached  by the auto exposure</long_desc>
+	</reg>
+	<reg name="AE_HIST_TARGET_REG">
+		<long_desc>Histogram high end target / 16</long_desc>
+	</reg>
+	<reg name="AE_HYSTERESIS_REG">
+		<long_desc>Hysteresis coefficient for histogram high end exposure ratio. Calculation of default value: Hysteresis * 32768 = 0.9 *32768 = 29491 = 0x7333.</long_desc>
+	</reg>
+	<reg name="AE_MIN_EV_STEP_REG">
+		<long_desc>Minimum exposure value step size&#10;[15:8]	: Reserved&#10;[7:0] 	: Min_EV_stepsize = (min step size)*256.&#10;Since Min_EV_stip sizes are small and they are typically less than 1 e.g. 1/16, 7/16 etc... these are multiplied by 256 and then the value is written to this register. &#10;</long_desc>
+	</reg>
+	<reg name="AE_MAX_EV_STEP_REG">
+		<long_desc>Maximum exposure value step size.&#10;Note that since this value is always greater than 1 there is no need to multiply by 256 as in the case of min_EV_stepsize.</long_desc>
+	</reg>
+	<reg name="AE_DAMP_OFFSET_REG">
+		<long_desc>Adjusts step size and settling speed.&#10;</long_desc>
+	</reg>
+	<reg name="AE_DAMP_GAIN_REG">
+		<long_desc>Adjusts step size and settling speed.</long_desc>
+	</reg>
+	<reg name="AE_DAMP_MAX_REG">
+		<long_desc>Max value allowed for recursiveDamp (multipled by 256 since internal value is typicall &lt;1).  For most applications, the value of recursiveDamp should be &lt;1, otherwise AE will overshoot the target. For applications with fast settling required, it may be desirable to allow recursiveDamp &gt;1. Default value: 0.875 * 256 = 0x00E0&#10;</long_desc>
+	</reg>
+	<reg name="AE_DCG_EXPOSURE_HIGH_REG">
+		<long_desc>Integration time above which AE (if enabled) switches to DCG high gain .&#10;The value must be greater than :&#10;AEDCGGAINFACTOR  (reg 0x3114) * AEDCGEXPOSURELOW (reg. 0x3116)</long_desc>
+	</reg>
+	<reg name="AE_DCG_EXPOSURE_LOW_REG">
+		<long_desc>Integration time below which AE (if enabled) switches to DCG lo gain.</long_desc>
+	</reg>
+	<reg name="AE_DCG_GAIN_FACTOR_REG">
+		<long_desc>Ratio gain between DCG Hi and DCG Lo (multiplied by 256). &#10;Tuned to match the DCG gain characteristics of the sensor.</long_desc>
+	</reg>
+	<reg name="AE_DCG_GAIN_FACTOR_INV_REG">
+		<long_desc>Inverse of gain ratio between DCG Hi and DCG Lo (multiplied by 256). &#10;Tuned to match the DCG gain characteristics of the sensor.</long_desc>
+	</reg>
+	<reg name="AE_MAX_EXPOSURE_REG">
+		<long_desc>Maximum  integration (exposure) time in rows to be used by AE.</long_desc>
+	</reg>
+	<reg name="AE_MIN_EXPOSURE_REG">
+		<long_desc>Minimum  integration (exposure) time in rows to be used by AE.</long_desc>
+	</reg>
+	<reg name="AE_LOW_MEAN_TARGET_REG">
+		<long_desc>Target value for low end mean (LEM).&#10;A means to specify how much of the dark region may be sacrificed and at what point the dark region is considered sacrificed.  The chosen point at which the dark region is considered sacrificed will vary based on the user&apos;s desired minimum SNR.  This choice is set using the LEM_min parameter.  The perc_lowEnd_thresh parameter specifies what percentage of pixels may be ignored in the histogram low end.  If the percentage of low end pixels exceeds perc_lowEnd_thresh, the minimum acceptable low end mean parameter (LEM_min) is applied.  This forces the histogram to increase exposure until the minimum low end mean is met.</long_desc>
+	</reg>
+	<reg name="AE_HIST_LOW_THRESH_REG">
+		<long_desc>Percentage of pixels that must be in the histogram low end before low end mean limiting is applied. Percentage * 65536. Default: 6% * 65536 = 3932 = 0x0F5C&#10;</long_desc>
+	</reg>
+	<reg name="AE_DARK_CUR_THRESH_REG">
+		<long_desc>The dark current level that stops AE from increasing integration time.&#10;Note that increased integration time would increase dark current as well and signal level (SNR) would drop because photo diode well capacity is limited.</long_desc>
+	</reg>
+	<reg name="AE_ALPHA_V1_REG">
+		<long_desc>Alpha V1 coefficient weighting of mean and hist end targets.</long_desc>
+	</reg>
+	<reg name="AE_ALPHA_COEF_REG">
+		<long_desc>Slope ratio for alpha calculation&#10;[1/(v2-v1)]*128&#10;Alpha coefficient is a weighting of mean and hist end targets.&#10;</long_desc>
+	</reg>
+	<reg name="AE_CURRENT_GAINS">
+		<long_desc>Shows the gain settings decided by AE.</long_desc>
+		<bitfield name="AE_DIG_GAIN">
+			<long_desc>The gain decided by AE, when it is enabled and can control the digital gain.</long_desc>
+		</bitfield>
+		<bitfield name="AE_ANA_GAIN">
+			<long_desc>The gain decided by AE, when it is enabled and can control the analogue gain.</long_desc>
+		</bitfield>
+		<bitfield name="AE_CONV_GAIN">
+			<long_desc>The gain decided by AE, when it is enabled and can control the conversion gain.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="AE_ROI_X_START_OFFSET">
+		<long_desc>Number of pixels into each row before the ROI starts&#10;NOTE: if statistics are being gathered from a scaled image then the &apos;number of pixels&apos; value must be the number of scaled pixels</long_desc>
+	</reg>
+	<reg name="AE_ROI_Y_START_OFFSET">
+		<long_desc>Number of rows into each frame before the ROI starts</long_desc>
+	</reg>
+	<reg name="AE_ROI_X_SIZE">
+		<long_desc>Number of columns in the ROI</long_desc>
+	</reg>
+	<reg name="AE_ROI_Y_SIZE">
+		<long_desc>Number of  rows in the ROI</long_desc>
+	</reg>
+	<reg name="AE_HIST_BEGIN_PERC">
+		<long_desc>Defines the percentage of Gr pixels that must have values below hist_begin. Specified as a number &lt; 1 = 0.xx...xx</long_desc>
+	</reg>
+	<reg name="AE_HIST_END_PERC">
+		<long_desc>Defines the percentage of Gr pixels that must have values below hist_end. Specified as a number &lt; 1 = 0.xx...xx. A value of all 1s is treated as a special case and equates to 1.0 (100%)</long_desc>
+	</reg>
+	<reg name="AE_HIST_DIV">
+		<long_desc>Defines the point at which the histogram is divided into  the low and high end. Boundary value = hist_div*16</long_desc>
+	</reg>
+	<reg name="AE_NORM_WIDTH_MIN">
+		<long_desc>Defines the minimum histogram width normalization factor (=norm_width_min*16), for norm_abs_dev calculation. A value of all 1s turns off the norm_width_min option ie. all absolute deviation is normalized by hist_end - hist_begin</long_desc>
+	</reg>
+	<reg name="AE_MEAN_H">
+		<long_desc>The true mean of all Gr pixels in the ROI (higher bits)</long_desc>
+	</reg>
+	<reg name="AE_MEAN_L">
+		<long_desc>The true mean of all Gr pixels in the ROI  (16 least signficant bits)</long_desc>
+	</reg>
+	<reg name="AE_HIST_BEGIN_H">
+		<long_desc>Code value corresponding to the histogram bin below which(hist_begin_perc*100)% of pixels exist (higher bits)</long_desc>
+	</reg>
+	<reg name="AE_HIST_BEGIN_L">
+		<long_desc>Code value corresponding to the histogram bin below which (hist_begin_perc*100)% of pixels exist  (lower 16 bits)</long_desc>
+	</reg>
+	<reg name="AE_HIST_END_H">
+		<long_desc>Code value corresponding to the histogram bin below which(hist_end_perc*100)% of pixels exist  (higher bits)</long_desc>
+	</reg>
+	<reg name="AE_HIST_END_L">
+		<long_desc>Code value corresponding to the histogram bin below which(hist_end_perc*100)% of pixels exist  (lower 16 bits)</long_desc>
+	</reg>
+	<reg name="AE_HIST_END_MEAN_H">
+		<long_desc>The true mean of all Gr pixels in the ROI that fall into the low end of the histogram (where low end is defined by hist_div) &#10;(higher bits)</long_desc>
+	</reg>
+	<reg name="AE_HIST_END_MEAN_L">
+		<long_desc>The true mean of all Gr pixels in the ROI that fall into the low end of the histogram (where low end is defined by hist_div) &#10;(lower 16 bits)</long_desc>
+	</reg>
+	<reg name="AE_PERC_LOW_END">
+		<long_desc>Percentage of Gr pixels in ROI that fall into the low end of the histogram. Specified as a number &lt; 1 = 0.xx...xxx</long_desc>
+	</reg>
+	<reg name="AE_NORM_ABS_DEV">
+		<long_desc>Percentage of Gr pixels in ROI that fall into the low end of the histogram. Specified as a number &lt; 1 = 0.xx...xxx</long_desc>
+	</reg>
+	<reg name="AE_COARSE_INTEGRATION_TIME">
+		<long_desc>The integration time decided by AE.</long_desc>
+	</reg>
+	<reg name="AE_AG_EXPOSURE_HI">
+		<long_desc>At  this integration time, the analog gain is increased (when AE is enabled to control also the analog gain).</long_desc>
+	</reg>
+	<reg name="AE_AG_EXPOSURE_LO">
+		<long_desc>At this integration time, the AE is reduced (when AE is enabled to control the analog gain also),</long_desc>
+	</reg>
+	<reg name="AE_AG_GAIN1">
+		<long_desc>Real gain ratio between analog gain 0 and 1.</long_desc>
+	</reg>
+	<reg name="AE_AG_GAIN2">
+		<long_desc>The real gain ratio between analog gain 2 and 1.</long_desc>
+	</reg>
+	<reg name="AE_AG_GAIN3">
+		<long_desc>The real gain ratio between analog gain2 and gain3.</long_desc>
+	</reg>
+	<reg name="AE_INV_AG_GAIN1">
+		<long_desc>The real inverse gain ratio between  analog gain 0 and 1.</long_desc>
+	</reg>
+	<reg name="AE_INV_AG_GAIN2">
+		<long_desc>The real inverse gain ratio (1 to 2).</long_desc>
+	</reg>
+	<reg name="AE_INV_AG_GAIN3">
+		<long_desc>The real inverse gain ratio (2 to 3).</long_desc>
+	</reg>
+	<reg name="DELTA_DK_CONTROL">
+		<bitfield name="DELTA_DK_CLIP_EN">
+			<long_desc>Enables the clipping of dark current. If the measured dark current is higher than clip level, only the clip level is used. See register 0x3182.</long_desc>
+		</bitfield>
+		<bitfield name="DELTA_DK_EVERY_FRAME">
+			<long_desc>Ruinng the delta dark algorithm every frame or when gain, integration time is changing.</long_desc>
+		</bitfield>
+		<bitfield name="DELTA_DK_SUB_EN">
+			<long_desc>Enabling the delta dark correction.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="DELTA_DK_CLIP">
+		<long_desc>Clip level for measured dark level.</long_desc>
+	</reg>
+	<reg name="DELTA_DK_T1">
+		<long_desc>Measured dark current for exposure T1</long_desc>
+	</reg>
+	<reg name="DELTA_DK_T2">
+		<long_desc>Measured dark current for exposure T2</long_desc>
+	</reg>
+	<reg name="DELTA_DK_T3">
+		<long_desc>Measured dark current for exposure T3</long_desc>
+	</reg>
+	<reg name="HDR_MC_CTRL1">
+		<bitfield name="S2_MC_THRESHOLD">
+			<long_desc>Motion Compensation S2 threshold</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="HDR_MC_CTRL2">
+		<bitfield name="MC_DIFF_THRESHOLD">
+			<long_desc>Motion Compensation difference threshold</long_desc>
+		</bitfield>
+		<bitfield name="BYPASS_PIX_COMB">
+			<long_desc>00 = smooth combination of three components.&#10;01 = T1 data&#10;10 = T2 data&#10;11 = T3 data</long_desc>
+		</bitfield>
+		<bitfield name="MOTION_CORRECTION_EN">
+			<long_desc>0 = disable motion detection and correction&#10;1 = enable motion detection and correction</long_desc>
+		</bitfield>
+		<bitfield name="MC_NOISE_FILTER_EN">
+			<long_desc>Motion Compensation noise filter enable</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="HDR_MC_CTRL3">
+		<bitfield name="MC_COUNT_THRESHOLD">
+			<long_desc>Motion Compensation count threshold</long_desc>
+		</bitfield>
+		<bitfield name="MOTION_CORRECT_2D_EN">
+			<long_desc>0 = perform 1D motion detection and correction (if motion_correction_en = 1)&#10;1 = perform 2D motion detection and correction (if motion_correction_en = 1)&#10;</long_desc>
+		</bitfield>
+		<bitfield name="MOTION2_EN">
+			<long_desc>0 = motion type 2 is ignored when detecting motion&#10;1 = motion type 2 is considered when detecting motion</long_desc>
+		</bitfield>
+		<bitfield name="PIXEL_BUILD_MODE">
+			<long_desc>00 - normal hdr pixel build&#10;01 - discard t3_data ie. region 4 or 5 data treated as region 3&#10;10 - discard t2_data and t3_data ie. all data treated as region 1&#10;11 - discard t1_data and t2_data ie. all data treated as region 5&#10;&#10;</long_desc>
+		</bitfield>
+		<bitfield name="PIXEL_BUILD_MODE_CB">
+			<long_desc>00 - normal hdr pixel build&#10;01 - discard t3_data ie. region 4 or 5 data treated as region 3&#10;10 - discard t2_data and t3_data ie. all data treated as region 1&#10;11 - discard t1_data and t2_data ie. all data treated as region 5&#10;</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="HDR_MC_CTRL4">
+		<bitfield name="MC_T1_SEL">
+			<long_desc>0 = regular motion correction&#10;1 = motion corrupted pixels forced to use T1 data</long_desc>
+		</bitfield>
+		<bitfield name="PIXEL_BUILD_DLO">
+			<long_desc>0 = Use the smooth combination method for combining t1, t2 and t3 data.&#10;1 = Use the digital lateral overflow method for combining t1, t2 and t3 data. This also overrides R0x318c[14], MOTION_CORRECTION_EN which gets disabled.</long_desc>
+		</bitfield>
+		<bitfield name="NOISE_FILTER_DLO_EN">
+			<long_desc>DLO noise filtering enable.</long_desc>
+		</bitfield>
+		<bitfield name="NOISE_FILTER_DLO_QUAD">
+			<long_desc>DLO method, 0 = Linear weighting function for the digital lateral overflow noise filter.&#10;1  0= Quadratic weighting function for the digital lateral overflow noise filter.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="HDR_MC_CTRL5">
+		<bitfield name="S12_MC_RANGE">
+			<long_desc>Motion Compensation S12 range</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="HDR_MC_CTRL6">
+		<bitfield name="T1_DLO_BARRIER">
+			<long_desc>DLO Barrier for clipping T1 data.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="HDR_MC_CTRL7">
+		<bitfield name="T2_DLO_BARRIER">
+			<long_desc>DLO Barrier for clipping T2 data.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="HDR_MC_CTRL8">
+		<bitfield name="T3_DLO_BARRIER">
+			<long_desc>DLO Barrier for clipping T3 data.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="HDR_COMP_KNEE1">
+		<bitfield name="P1_COMP_KNEE">
+			<long_desc>Compander P1 knee point</long_desc>
+		</bitfield>
+		<bitfield name="P2_COMP_KNEE">
+			<long_desc>Compander P2 knee point</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="HDR_COMP_KNEE2">
+		<bitfield name="PMAX_COMP_KNEE">
+			<long_desc>Compander Pmax knee point</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="HDR_MC_CTRL9">
+		<bitfield name="S2_DLO_THRESHOLD">
+			<long_desc>DLO Threshold level for end point of noise filter weighting transfer function.</long_desc>
+		</bitfield>
+		<bitfield name="S12_DLO_RANGE">
+			<long_desc>DLO Range of code values for the noise filter weighting transfer function  defined by s2_dlo - s1_dlo&#10;4&apos;b0000 = 1&#10;4&apos;b0001 = 2&#10;4&apos;b0010 = 4&#10;4&apos;b0011 = 8&#10;4&apos;b0100 = 16&#10;4&apos;b0101 = 32&#10;4&apos;b0110 = 64&#10;4&apos;b0111 = 128&#10;4&apos;b1000 = 256&#10;4&apos;b1001 = 512&#10;4&apos;b1010 = 1024&#10;4&apos;b1011 = 2048&#10;4&apos;b1100 = 4096&#10;&gt;= 4&apos;b1101 = 8192&#10;&#10;Setting the range to 8192 effectively sets s1 to -4095 and s2 to 4095.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="HDR_MC_CTRL10">
+		<bitfield name="S1_MC_THRESHOLD">
+			<long_desc>Motion Compensation separate S1 threshold (start of weighting function for smooth HDR pixel combination).</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="HDR_MC_CTRL11">
+		<bitfield name="NOISE_DLO_DIS_THRESHOLD">
+			<long_desc>DLO method, if either T1 data, T2 data or T3 data is greater than this threshold, noise filtering is turned off. Evaluated on a single pixel.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="HISPI_TIMING">
+		<long_desc>Bits (2:0)  = DLL delay setting for data &#10;lane 0&#10;Bits (5:3)  = DLL delay setting for data &#10;lane 1&#10;Bits (8:6)  = DLL delay setting for data &#10;lane 2&#10;Bits (11:9) = DLL delay setting for data &#10;lane 3&#10;Bits (14:12) = DLL delay setting for clock lane&#10;&#10;The delay setting selects a tap along a delay element. Each stage is 1/8 of a symbol period. When the delay is set to zero, the delay element is powered down.</long_desc>
+	</reg>
+	<reg name="HISPI_CONTROL_STATUS">
+		<long_desc>See descriptions in the bit fields.</long_desc>
+		<bitfield name="HISPI_CONTROL">
+			<long_desc>bit[0] =&gt; stream mode enable.&#10;bit[1] =&gt; Enable 3 lanes for compressed data&#10;bit[2:4]=&gt; test mode defined as: &#10;   000 =&gt; transmit constant 0 on all enabled  data lanes.&#10;   001 =&gt; transmit constant 1 on all enabled  data lanes.&#10;  010 =&gt; transmit  square wave at the half the potential serial data rate on all the enabled lanes.&#10; 011=&gt; transmit  square wave at the pixel data rate on all the enabled lanes.&#10; 100 =&gt; transmit a continuous, repeated, sequence of pseudo random data, with no SAV code, copied on all enabled data lanes.&#10; 101 =&gt; replace pixel data with a known sequence (PN9), copied on all the enabled data lanes.&#10;&#10;bit[5] =&gt; test mode enable&#10;bit[6]=&gt; io test enable&#10;bit[7] =&gt; frame wide checksum test enable</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="HDR_COMP">
+		<bitfield name="COMPAND_EN">
+			<long_desc>Enables companding</long_desc>
+		</bitfield>
+		<bitfield name="COMPAND_14BITS">
+			<long_desc>0 =&gt; compand to 12 bits.&#10;&#10;1=&gt; compand to 14 bits</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="I2C_WRT_CHECKSUM">
+		<long_desc>Checksum of I2C write operations.</long_desc>
+	</reg>
+	<reg name="PIX_DEF_ID">
+		<bitfield name="ENABLE">
+			<long_desc>Enable pixel defect correction.</long_desc>
+		</bitfield>
+		<bitfield name="CORRECTION_MODE">
+			<long_desc>Mode of pixel defect correction.&#10;0 = Tag bad pixels with the reserved value 0. &#10;1 = Correct bad pixels, using Micron&apos;s traditional 1D correction scheme.</long_desc>
+		</bitfield>
+		<bitfield name="TEST">
+			<long_desc>1: The pixel defect ID block is set in test mode. The contents of the defect RAMS can then be read at registers 0x31e2-3 and 0x31e4-5. To move to next entry, it is necessary to write to register bits 0x31e0-1[14:13]. &#10;This bit needs to be set to 0 before streaming.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="PIX_DEF_ID_BASE_RAM">
+		<long_desc>Data to be written to or read from the BASE RAM must be written to or read from this register.</long_desc>
+	</reg>
+	<reg name="PIX_DEF_ID_STREAM_RAM">
+		<long_desc>Data to be read from the STREAM RAM must be read from this register.</long_desc>
+	</reg>
+	<reg name="PIX_DEF_RAM_RD_ADDR">
+		<long_desc>The content of this register points to location in the BASE and/or STREAM RAM to be read by I2C transaction.&#10;There is no auto increment on read, This register must be updated before read.&#10;Bit [15] indicate if base_ram_end_addr should be updated with the address in bits [7]:[0]. No data will be written to BASE RAM when bit [15] is activated.</long_desc>
+	</reg>
+	<reg name="HORIZONTAL_CURSOR_POSITION">
+		<long_desc>Specify the start row for the test cursor.</long_desc>
+	</reg>
+	<reg name="VERTICAL_CURSOR_POSITION">
+		<long_desc>Specify the start column for the test cursor.</long_desc>
+	</reg>
+	<reg name="HORIZONTAL_CURSOR_WIDTH">
+		<long_desc>Specify the width, in rows, of the horizontal test cursor. A width of 0 disables the cursor.</long_desc>
+	</reg>
+	<reg name="VERTICAL_CURSOR_WIDTH">
+		<long_desc>Specify the width, in columns, of the vertical test cursor. A width of 0 disables the cursor.</long_desc>
+	</reg>
+	<reg name="FUSE_ID1">
+		<long_desc>Bits 15:0 of the fused chip ID. Read protected. Set reset_register[5] to get access to register. Before the fuses are programmed, this register will read 0x0000. After programming it will read back the programmed value. Read/Write (the programmed value can be over-written and will be restored on reset)</long_desc>
+	</reg>
+	<reg name="FUSE_ID2">
+		<long_desc>Bits 31:16 of the fused chip ID. Read protected. Set reset_register[5] to get access to register. Before the fuses are programmed, this register will read 0x0000. After programming it will read back the programmed value. Read/Write (the programmed value can be over-written and will be restored on reset)</long_desc>
+	</reg>
+	<reg name="FUSE_ID3">
+		<long_desc>Bits 47:32 of the fused chip ID. Read protected. Set reset_register[5] to get access to register. Before the fuses are programmed, this register will read 0x0000. After programming it will read back the programmed value. Read/Write (the programmed value can be over-written and will be restored on reset)</long_desc>
+	</reg>
+	<reg name="FUSE_ID4">
+		<long_desc>Bits 63:48 of the fused chip ID. Read protected. Set reset_register[5] to get access to register. Before the fuses are programmed, this register will read 0x0000. After programming it will read back the programmed value. Read/Write (the programmed value can be over-written and will be restored on reset)</long_desc>
+	</reg>
+	<reg name="I2C_IDS">
+		<long_desc>I2C addresses. Can be written only if x301A[3] Lock Reg=0.</long_desc>
+	</reg>
+	<reg name="DAC_LD_24_25">
+		<bitfield name="ANA_SREG_COL_AMP_GABS">
+			<long_desc>Absolute gain programming of column amplifier&#10;00:  0.50x&#10;01:  0.75x&#10;10:  1.00x&#10;11:  1.25x&#10;</long_desc>
+		</bitfield>
+	</reg>
+</registers>
+</sensor>

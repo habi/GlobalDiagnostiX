@@ -1,0 +1,744 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="sensor_data.xsl"?>
+<!--
+****************************************************************************************************
+*   If you are reading this, you are not taking advantage of the XML Stylesheet                    *
+*                                                                                                  *
+*   Instructions for viewing XML SDAT file can be found in:                                        *
+*   C:\Aptina Imaging [Dev]\sensor_data\!DevWare XML-formatted SDAT User Guide.pdf                 *
+****************************************************************************************************
+-->
+<sensor name="A-1000ERS"
+	part_number="AR0132"
+	version="6"
+	version_name="REV6"
+	width="1280"
+	height="964"
+	image_type="BAYER"
+	bits_per_clock="12"
+	clocks_per_pixel="1"
+	pixel_clock_polarity="1"
+	full_width="1280"
+	full_height="960"
+	reg_addr_size="16"
+	reg_data_size="8"
+	ship_base_address="0x20 0x30">
+	<demo_system>
+		<version_reg_write reg="RESET_REGISTER" mask="0x0020" value="1"></version_reg_write>
+		<version_reg_read reg="FUSE_ID4" mask="0x01E0" value="6"></version_reg_read>
+	</demo_system>
+	<addr_spaces>
+		<space name="PARAM" type="REG" value="1" desc="SMIA Parameter Limits"></space>
+		<space name="MFR" type="REG" value="3" desc="Manufacturer Specific"></space>
+	</addr_spaces>
+	<registers>
+		<reg  name="RESERVED_PARAM_1000" addr="0x1000" space="PARAM" span="2" confidential="Y" mask="0x0001" display_name="Reserved" range="0x0000 0x0001" default="0x0001" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1004" addr="0x1004" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0001"></reg>
+		<reg  name="RESERVED_PARAM_1006" addr="0x1006" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0001"></reg>
+		<reg  name="RESERVED_PARAM_1008" addr="0x1008" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0002"></reg>
+		<reg  name="RESERVED_PARAM_100A" addr="0x100A" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0384"></reg>
+		<reg  name="RESERVED_PARAM_1080" addr="0x1080" space="PARAM" span="2" confidential="Y" mask="0x0001" display_name="Reserved" range="0x0000 0x0001" default="0x0001" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1084" addr="0x1084" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0001" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1086" addr="0x1086" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x00FF" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1088" addr="0x1088" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0001" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1100" addr="0x1100" space="PARAM" span="4" confidential="Y" mask="0xFFFFFFFF" display_name="Reserved" range="0x00000000 0xFFFFFFFF" default="0x40000000" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1104" addr="0x1104" space="PARAM" span="4" confidential="Y" mask="0xFFFFFFFF" display_name="Reserved" range="0x00000000 0xFFFFFFFF" default="0x42800000" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1108" addr="0x1108" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0001" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_110A" addr="0x110A" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0040" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_110C" addr="0x110C" space="PARAM" span="4" confidential="Y" mask="0xFFFFFFFF" display_name="Reserved" range="0x00000000 0xFFFFFFFF" default="0x40800000" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1110" addr="0x1110" space="PARAM" span="4" confidential="Y" mask="0xFFFFFFFF" display_name="Reserved" range="0x00000000 0xFFFFFFFF" default="0x41C00000" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1114" addr="0x1114" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0020" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1116" addr="0x1116" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0180" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1118" addr="0x1118" space="PARAM" span="4" confidential="Y" mask="0xFFFFFFFF" display_name="Reserved" range="0x00000000 0xFFFFFFFF" default="0x43C00000" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_111C" addr="0x111C" space="PARAM" span="4" confidential="Y" mask="0xFFFFFFFF" display_name="Reserved" range="0x00000000 0xFFFFFFFF" default="0x44400000" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1120" addr="0x1120" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0001" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1122" addr="0x1122" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0010" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1124" addr="0x1124" space="PARAM" span="4" confidential="Y" mask="0xFFFFFFFF" display_name="Reserved" range="0x00000000 0xFFFFFFFF" default="0x41F00000" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1128" addr="0x1128" space="PARAM" span="4" confidential="Y" mask="0xFFFFFFFF" display_name="Reserved" range="0x00000000 0xFFFFFFFF" default="0x44390000" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_112C" addr="0x112C" space="PARAM" span="4" confidential="Y" mask="0xFFFFFFFF" display_name="Reserved" range="0x00000000 0xFFFFFFFF" default="0x40C00000" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1130" addr="0x1130" space="PARAM" span="4" confidential="Y" mask="0xFFFFFFFF" display_name="Reserved" range="0x00000000 0xFFFFFFFF" default="0x42948000" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1134" addr="0x1134" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0004" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1136" addr="0x1136" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0010" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1140" addr="0x1140" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x002A"></reg>
+		<reg  name="RESERVED_PARAM_1142" addr="0x1142" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0xFFFF"></reg>
+		<reg  name="RESERVED_PARAM_1144" addr="0x1144" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0672"></reg>
+		<reg  name="RESERVED_PARAM_1146" addr="0x1146" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0xFFFE"></reg>
+		<reg  name="RESERVED_PARAM_1148" addr="0x1148" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0172"></reg>
+		<reg  name="RESERVED_PARAM_114A" addr="0x114A" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x001A"></reg>
+		<reg  name="RESERVED_PARAM_1180" addr="0x1180" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1182" addr="0x1182" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1184" addr="0x1184" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0503" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1186" addr="0x1186" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x03CF" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_11C0" addr="0x11C0" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0001" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_11C2" addr="0x11C2" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0001" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_11C4" addr="0x11C4" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0001" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_11C6" addr="0x11C6" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x007F" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1200" addr="0x1200" space="PARAM" span="2" confidential="Y" mask="0x0003" display_name="Reserved" range="0x0000 0x0003" default="0x0002" rw="RO"></reg>
+		<reg  name="RESERVED_PARAM_1400" addr="0x1400" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_PARAM_1402" addr="0x1402" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_PARAM_1404" addr="0x1404" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_PARAM_1406" addr="0x1406" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_PARAM_1408" addr="0x1408" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_PARAM_140A" addr="0x140A" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_PARAM_140C" addr="0x140C" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_PARAM_140E" addr="0x140E" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_PARAM_1410" addr="0x1410" space="PARAM" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="CHIP_VERSION_REG" addr="0x3000" space="MFR" span="2" mask="0xFFFF" display_name="chip_version_reg" range="0x0000 0xFFFF" default="0x2400"><detail>Read-only. Can be made read/write by clearing R0x301A-B[3].</detail></reg>
+		<reg  name="Y_ADDR_START" addr="0x3002" space="MFR" span="2" mask="0x03FF" display_name="y_addr_start" range="0x0000 0x03FF" default="0x0002"></reg>
+		<reg  name="X_ADDR_START" addr="0x3004" space="MFR" span="2" mask="0x07FF" display_name="x_addr_start" range="0x0000 0x07FF"></reg>
+		<reg  name="Y_ADDR_END" addr="0x3006" space="MFR" span="2" mask="0x03FF" display_name="y_addr_end" range="0x0000 0x03FF" default="0x03C5"><detail>The last row of visible pixels to be read out.</detail></reg>
+		<reg  name="X_ADDR_END" addr="0x3008" space="MFR" span="2" mask="0x07FF" display_name="x_addr_end" range="0x0000 0x07FF" default="0x0503"><detail>The last column of visible pixels to be read out.</detail></reg>
+		<reg  name="FRAME_LENGTH_LINES" addr="0x300A" space="MFR" span="2" mask="0xFFFF" display_name="frame_length_lines" range="0x0000 0xFFFF" default="0x03DE"></reg>
+		<reg  name="LINE_LENGTH_PCK" addr="0x300C" space="MFR" span="2" mask="0xFFFE" display_name="line_length_pck" range="0x0000 0xFFFE" default="0x0672"></reg>
+		<reg  name="REVISION_NUMBER" addr="0x300E" space="MFR" mask="0xFF" display_name="revision_number" default="0x50"></reg>
+		<reg  name="LOCK_CONTROL" addr="0x3010" space="MFR" span="2" mask="0xFFFF" display_name="lock_control" range="0x0000 0xFFFF" default="0xBEEF"></reg>
+		<reg  name="COARSE_INTEGRATION_TIME" addr="0x3012" space="MFR" span="2" mask="0xFFFF" display_name="coarse_integration_time" range="0x0000 0xFFFF" default="0x0010"><detail>Integration time specified in multiples of line_length_pck_.</detail></reg>
+		<reg  name="FINE_INTEGRATION_TIME" addr="0x3014" space="MFR" span="2" mask="0xFFFF" display_name="fine_integration_time" range="0x0000 0xFFFF"></reg>
+		<reg  name="COARSE_INTEGRATION_TIME_CB" addr="0x3016" space="MFR" span="2" mask="0xFFFF" display_name="coarse_integration_time_cb" range="0x0000 0xFFFF" default="0x0010"><detail>Coarse integration time in context B.</detail></reg>
+		<reg  name="FINE_INTEGRATION_TIME_CB" addr="0x3018" space="MFR" span="2" mask="0xFFFF" display_name="fine_integration_time_cb" range="0x0000 0xFFFF"><detail>Fine integration time in context B.</detail></reg>
+		<reg  name="RESET_REGISTER" addr="0x301A" space="MFR" span="2" mask="0x9FFF" display_name="reset_register" range="0x0000 0x97FF" default="0x10D8">
+			<bitfield  name="RESET" mask="0x0001" display_name="0: reset" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="RESTART" mask="0x0002" display_name="1: restart" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="STREAM" mask="0x0004" display_name="2: stream" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="LOCK_REG" mask="0x0008" display_name="3: lock_reg" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="STDBY_EOF" mask="0x0010" display_name="4: stdby_eof" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="REG_RD_EN" mask="0x0020" display_name="5: reg_rd_en" range="0x0000 0x0001"><detail>Enable signal to allow read from fuse ID registers.</detail></bitfield>
+			<bitfield  name="DRIVE_PINS" mask="0x0040" display_name="6: drive_pins" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="PARALLEL_EN" mask="0x0080" display_name="7: parallel_en" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="GPI_EN" mask="0x0100" display_name="8: gpi_en" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="MASK_BAD" mask="0x0200" display_name="9: mask_bad" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="RESTART_BAD" mask="0x0400" display_name="10: restart_bad" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="FORCED_PLL_ON" mask="0x0800" display_name="11: forced_pll_on"><detail>1: enables the PLL immediately.</detail></bitfield>
+			<bitfield  name="SMIA_SERIALISER_DIS" mask="0x1000" display_name="12: smia_serialiser_dis" range="0x0000 0x0001"><detail>This bit disables the serial (HISPI) interface</detail></bitfield>
+			<bitfield  name="GROUPED_PARAMETER_HOLD" mask="0x8000" display_name="15: grouped_parameter_hold" range="0x0000 0x0001"><detail>Must be set to 0.</detail></bitfield></reg>
+		<reg  name="IMAGE_MODE" addr="0x301C" space="MFR" span="2" mask="0x0103" display_name="image_mode" range="0x0000 0x0103"><detail>IMAGE_MODE</detail>
+			<bitfield  name="MIRROR_COL" mask="0x0001" display_name="0: mirror_col" range="0x0000 0x0001"><detail>IMAGE_MODE_MIRROR_COL</detail></bitfield>
+			<bitfield  name="MIRROR_ROW" mask="0x0002" display_name="1: mirror_row" range="0x0000 0x0001"><detail>IMAGE_MODE_MIRROR_ROW</detail></bitfield>
+			<bitfield  name="STREAM" mask="0x0100" display_name="8: stream" range="0x0000 0x0001"><detail>IMAGE_MODE_STREAM</detail></bitfield></reg>
+		<reg  name="DATA_PEDESTAL" addr="0x301E" space="MFR" span="2" mask="0x0FFF" display_name="data_pedestal" range="0x0000 0x0FFF" default="0x00C8"></reg>
+		<reg  name="GROUP_HOLD" addr="0x3022" space="MFR" span="2" mask="0x0101" display_name="group_hold" range="0x0000 0x0101"><detail>GROUP_HOLD</detail>
+			<bitfield  name="MASK_BAD" mask="0x0001" display_name="0: mask_bad" range="0x0000 0x0001"><detail>GROUP_HOLD_MASK_BAD</detail></bitfield>
+			<bitfield  name="GROUPED_PARAMETER_HOLD" mask="0x0100" display_name="8: grouped_parameter_hold" range="0x0000 0x0001"><detail>GROUP_HOLD_GROUPED_PARAMETER_HOLD</detail></bitfield></reg>
+		<reg  name="GPI_STATUS" addr="0x3026" space="MFR" span="2" mask="0x000F" display_name="gpi_status" range="0x0000 0x000F" rw="RO">
+			<bitfield  name="SADDR" mask="0x0001" display_name="0: saddr" range="0x0000 0x0001" rw="RO"></bitfield>
+			<bitfield  name="OE_N" mask="0x0002" display_name="1: oe_n" range="0x0000 0x0001" rw="RO"></bitfield>
+			<bitfield  name="TRIGGER" mask="0x0004" display_name="2: trigger" range="0x0000 0x0001" rw="RO"></bitfield>
+			<bitfield  name="STANDBY" mask="0x0008" display_name="3: standby" range="0x0000 0x0001" rw="RO"></bitfield></reg>
+		<reg  name="ROW_SPEED" addr="0x3028" space="MFR" span="2" mask="0x0070" display_name="row_speed" range="0x0000 0x0070" default="0x0010"></reg>
+		<reg  name="VT_PIX_CLK_DIV" addr="0x302A" space="MFR" span="2" mask="0x00FF" display_name="vt_pix_clk_div" default="0x0006"></reg>
+		<reg  name="VT_SYS_CLK_DIV" addr="0x302C" space="MFR" span="2" mask="0x001F" display_name="vt_sys_clk_div" default="0x0001"></reg>
+		<reg  name="PRE_PLL_CLK_DIV" addr="0x302E" space="MFR" span="2" mask="0x003F" display_name="pre_pll_clk_div" default="0x0002"><detail>shows the n+1 value.</detail></reg>
+		<reg  name="PLL_MULTIPLIER" addr="0x3030" space="MFR" span="2" mask="0x00FF" display_name="pll_multiplier" default="0x002C"><detail>PLL_MULTIPLIER: shows 2m value.</detail></reg>
+		<reg  name="DIGITAL_BINNING" addr="0x3032" space="MFR" span="2" mask="0x0033" display_name="digital_binning">
+			<bitfield  name="DIGITAL_BINNING_CA" mask="0x0003" display_name="0-1: digital_binning_ca"></bitfield>
+			<bitfield  name="DIGITAL_BINNING_CB" mask="0x0030" display_name="4-5: digital_binning_cb"></bitfield></reg>
+		<reg  name="FRAME_COUNT" addr="0x303A" space="MFR" span="2" mask="0xFFFF" display_name="frame_count" range="0x0000 0xFFFF" default="0xFFFF"></reg>
+		<reg  name="FRAME_STATUS" addr="0x303C" space="MFR" span="2" mask="0x0003" display_name="frame_status" range="0x0000 0x0003" rw="RO"><detail>Standby and framesync status</detail>
+			<bitfield  name="FRAMESYNC" mask="0x0001" display_name="0: framesync" range="0x0000 0x0001" rw="RO"><detail>Set on register write and reset on frame synchronization.</detail></bitfield>
+			<bitfield  name="STANDBY_STATUS" mask="0x0002" display_name="1: standby_status" range="0x0000 0x0001" rw="RO"><detail>Chip is in standby state.</detail></bitfield></reg>
+		<reg  name="READ_MODE" addr="0x3040" space="MFR" span="2" mask="0xC000" display_name="read_mode" range="0x0000 0xC000">
+			<bitfield  name="HORIZ_MIRROR" mask="0x4000" display_name="14: horiz_mirror" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="VERT_FLIP" mask="0x8000" display_name="15: vert_flip" range="0x0000 0x0001"></bitfield></reg>
+		<reg  name="DARK_CONTROL" addr="0x3044" space="MFR" span="2" mask="0x1E84" display_name="dark_control" range="0x0000 0x1E84" default="0x0404">
+			<bitfield  name="CANCEL_TX_COL_CORR" mask="0x0004" display_name="2: cancel_tx_col_corr"></bitfield>
+			<bitfield  name="SHOW_ZEBRA_TEST_ROWS" mask="0x0080" display_name="7: show_zebra_test_rows" range="0x0000 0x0001"><detail>DARK_CONTROL_show_zebra_test_rows</detail></bitfield>
+			<bitfield  name="SHOW_DARK_COLS" mask="0x0200" display_name="9: show_dark_cols" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="ROW_NOISE_CORRECTION_EN" mask="0x0400" display_name="10: row_noise_correction_en"></bitfield>
+			<bitfield  name="SHOW_DARK_EXTRA_ROWS" mask="0x0800" display_name="11: show_dark_extra_rows" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="SHOW_COLCORR_ROWS" mask="0x1000" display_name="12: show_colcorr_rows" range="0x0000 0x0001"></bitfield></reg>
+		<reg  name="FLASH" addr="0x3046" space="MFR" span="2" mask="0xC180" display_name="flash" range="0x0000 0xC180">
+			<bitfield  name="INVERT_FLASH" mask="0x0080" display_name="7: invert_flash" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="EN_FLASH" mask="0x0100" display_name="8: en_flash" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="TRIGGERED" mask="0x4000" display_name="14: triggered" range="0x0000 0x0001" rw="RO"></bitfield>
+			<bitfield  name="STROBE" mask="0x8000" display_name="15: strobe" range="0x0000 0x0001" rw="RO"></bitfield></reg>
+		<reg  name="RESERVED_MFR_304A" addr="0x304A" space="MFR" span="2" confidential="Y" mask="0x0377" display_name="Reserved" range="0x0000 0x0377"></reg>
+		<reg  name="RESERVED_MFR_304C" addr="0x304C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0200"></reg>
+		<reg  name="RESERVED_MFR_304E" addr="0x304E" space="MFR" span="2" confidential="Y" mask="0x07FF" display_name="Reserved" range="0x0000 0x07FF"></reg>
+		<reg  name="RESERVED_MFR_3050" addr="0x3050" space="MFR" span="2" confidential="Y" mask="0xFFF7" display_name="Reserved" range="0x0000 0xFFF7"></reg>
+		<reg  name="RESERVED_MFR_3052" addr="0x3052" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0xA174"></reg>
+		<reg  name="RESERVED_MFR_3054" addr="0x3054" space="MFR" span="2" confidential="Y" mask="0xEF0F" display_name="Reserved" range="0x0000 0xEF0F"></reg>
+		<reg  name="GREEN1_GAIN" addr="0x3056" space="MFR" span="2" mask="0x00FF" display_name="green1_gain" range="0x0000 0x00FF" default="0x0020"><detail>Digital gain for green1 (Gr) pixels, in format of xxx.yyyyy.</detail></reg>
+		<reg  name="BLUE_GAIN" addr="0x3058" space="MFR" span="2" mask="0x00FF" display_name="blue_gain" range="0x0000 0x00FF" default="0x0020"><detail>Digital gain for Blue pixels, in format of xxx.yyyyy.</detail></reg>
+		<reg  name="RED_GAIN" addr="0x305A" space="MFR" span="2" mask="0x00FF" display_name="red_gain" range="0x0000 0x00FF" default="0x0020"><detail>Digital gain for Red pixels,  in format of xxx.yyyyy.</detail></reg>
+		<reg  name="GREEN2_GAIN" addr="0x305C" space="MFR" span="2" mask="0x00FF" display_name="green2_gain" range="0x0000 0x00FF" default="0x0020"><detail>Digital gain for green2 (Gb) pixels in format of xxx.yyyyy.</detail></reg>
+		<reg  name="GLOBAL_GAIN" addr="0x305E" space="MFR" span="2" mask="0x00FF" display_name="global_gain" range="0x0000 0x00FF" default="0x0020"><detail>xxx.yyyyy&#10;The x&apos;s represent a 3-bit integer value.&#10;The five y&apos;s represent the values &#189;, &#188;, 1/8, 1/16, 1/32, respectively.&#10;For instance, to get a gain of 6.75x you need the value 0b11011000.&#10;</detail></reg>
+		<reg  name="EMBEDDED_DATA_CTRL" addr="0x3064" space="MFR" span="2" mask="0x1F8F" display_name="embedded_data_ctrl" range="0x0000 0x1F8F" default="0x1982">
+			<bitfield  name="BITS_0_3" confidential="Y" mask="0x000F" display_name="0-3: Reserved" range="0x0000 0x000F"></bitfield>
+			<bitfield  name="EMBEDDED_STATS_EN" mask="0x0080" display_name="7: embedded_stats_en" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="EMBEDDED_DATA" mask="0x0100" display_name="8: embedded_data"></bitfield>
+			<bitfield  name="BIT_9" confidential="Y" mask="0x0200" display_name="9: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="BITS_10_11" confidential="Y" mask="0x0C00" display_name="10-11: Reserved" range="0x0000 0x0003"></bitfield>
+			<bitfield  name="BIT_12" confidential="Y" mask="0x1000" display_name="12: Reserved"></bitfield></reg>
+		<reg  name="RESERVED_MFR_306C" addr="0x306C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x1000" rw="RO"></reg>
+		<reg  name="DATAPATH_SELECT" addr="0x306E" space="MFR" span="2" mask="0xFF13" display_name="datapath_select" range="0x0000 0xFF13" default="0x9210">
+			<bitfield  name="SPECIAL_LINE_VALID" mask="0x0003" display_name="0-1: special_line_valid" range="0x0000 0x0003"></bitfield>
+			<bitfield  name="TRUE_BAYER" mask="0x0010" display_name="4: true_bayer" range="0x0000 0x0001"><detail>Enables true Bayer scaling mode.</detail></bitfield>
+			<bitfield  name="POSTSCALER_DATA_SEL" mask="0x0100" display_name="8: postscaler_data_sel"></bitfield>
+			<bitfield  name="HIGH_VCM" mask="0x0200" display_name="9: high_vcm" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="SLEW_RATE_CTRL_PIXCLK" mask="0x1C00" display_name="10-12: slew_rate_ctrl_pixclk" range="0x0000 0x0007"></bitfield>
+			<bitfield  name="SLEW_RATE_CTRL_PARALLEL" mask="0xE000" display_name="13-15: slew_rate_ctrl_parallel" range="0x0000 0x0007"></bitfield></reg>
+		<reg  name="TEST_PATTERN_MODE" addr="0x3070" space="MFR" span="2" mask="0x0107" display_name="test_pattern_mode" range="0x0000 0x0107"></reg>
+		<reg  name="TEST_DATA_RED" addr="0x3072" space="MFR" span="2" mask="0x0FFF" display_name="test_data_red" range="0x0000 0x0FFF"></reg>
+		<reg  name="TEST_DATA_GREENR" addr="0x3074" space="MFR" span="2" mask="0x0FFF" display_name="test_data_greenr" range="0x0000 0x0FFF"></reg>
+		<reg  name="TEST_DATA_BLUE" addr="0x3076" space="MFR" span="2" mask="0x0FFF" display_name="test_data_blue" range="0x0000 0x0FFF"></reg>
+		<reg  name="TEST_DATA_GREENB" addr="0x3078" space="MFR" span="2" mask="0x0FFF" display_name="test_data_greenb" range="0x0000 0x0FFF"></reg>
+		<reg  name="RESERVED_MFR_307A" addr="0x307A" space="MFR" span="2" confidential="Y" mask="0x0003" display_name="Reserved" range="0x0000 0x0003"></reg>
+		<reg  name="EXPOSURE_T2" addr="0x307C" space="MFR" span="2" mask="0xFFFF" display_name="exposure_t2" rw="RO"><detail>T2 exposure time in rows.</detail></reg>
+		<reg  name="RESERVED_MFR_307E" addr="0x307E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x012C"></reg>
+		<reg  name="EXPOSURE_T3" addr="0x3080" space="MFR" span="2" mask="0xFFFF" display_name="exposure_t3" rw="RO"><detail>Actual T3 time in pixel clocks. Read only.</detail></reg>
+		<reg  name="OPERATION_MODE_CTRL" addr="0x3082" space="MFR" span="2" mask="0x003F" display_name="operation_mode_ctrl" range="0x0000 0x003F" default="0x0029">
+			<bitfield  name="OPERATION_MODE" mask="0x0003" display_name="0-1: operation_mode" range="0x0000 0x0003"></bitfield>
+			<bitfield  name="RATIO_T1_T2" mask="0x000C" display_name="2-3: ratio_t1_t2"></bitfield>
+			<bitfield  name="RATIO_T2_T3" mask="0x0030" display_name="4-5: ratio_t2_t3"></bitfield></reg>
+		<reg  name="OPERATION_MODE_CTRL_CB" addr="0x3084" space="MFR" span="2" mask="0x003C" display_name="operation_mode_ctrl_cb" range="0x0000 0x003C" default="0x0028">
+			<bitfield  name="RATIO_T1_T2_CB" mask="0x000C" display_name="2-3: ratio_t1_t2_cb"><detail>RATIO_T1_T2_CB</detail></bitfield>
+			<bitfield  name="RATIO_T2_T3_CB" mask="0x0030" display_name="4-5: ratio_t2_t3_cb"><detail>RATIO_T2_T3_CB</detail></bitfield></reg>
+		<reg  name="SEQ_DATA_PORT" addr="0x3086" space="MFR" span="2" mask="0xFFFF" display_name="seq_data_port"><detail>Register used to write to or read from the sequencer RAM.</detail></reg>
+		<reg  name="SEQ_CTRL_PORT" addr="0x3088" space="MFR" span="2" mask="0xC3FF" display_name="seq_ctrl_port" range="0x0000 0xC3FF" default="0xC000"><detail>Register controlling the read and write to sequencer RAM.</detail>
+			<bitfield  name="ACCESS_ADDRESS" mask="0x03FF" display_name="0-9: access_address" range="0x0000 0x03FF"></bitfield>
+			<bitfield  name="AUTO_INC_ON_READ" mask="0x4000" display_name="14: auto_inc_on_read" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="SEQUENCER_STOPPED" mask="0x8000" display_name="15: sequencer_stopped" range="0x0000 0x0001" rw="RO"></bitfield></reg>
+		<reg  name="X_ADDR_START_CB" addr="0x308A" space="MFR" span="2" mask="0x07FF" display_name="x_addr_start_cb" range="0x0000 0x07FF"><detail>x_address_start context B</detail></reg>
+		<reg  name="Y_ADDR_START_CB" addr="0x308C" space="MFR" span="2" mask="0x03FF" display_name="y_addr_start_cb" range="0x0000 0x03FF" default="0x0002"><detail>Y_ADDR_START for context B</detail></reg>
+		<reg  name="X_ADDR_END_CB" addr="0x308E" space="MFR" span="2" mask="0x07FF" display_name="x_addr_end_cb" range="0x0000 0x07FF" default="0x0503"><detail>X_ADDR_END for context B</detail></reg>
+		<reg  name="Y_ADDR_END_CB" addr="0x3090" space="MFR" span="2" mask="0x03FF" display_name="y_addr_end_cb" range="0x0000 0x03FF" default="0x03C5"><detail>Y_ADDR_END for context B</detail></reg>
+		<reg  name="ERS_PROG_START_ADDR" addr="0x309E" space="MFR" span="2" mask="0x01FF" display_name="ers_prog_start_addr" default="0x0196"></reg>
+		<reg  name="X_EVEN_INC" addr="0x30A0" space="MFR" span="2" mask="0x0001" display_name="x_even_inc" range="0x0000 0x0001" default="0x0001" rw="RO"><detail>Read-only.</detail></reg>
+		<reg  name="X_ODD_INC" addr="0x30A2" space="MFR" span="2" mask="0x0001" display_name="x_odd_inc" range="0x0000 0x0001" default="0x0001"><detail>Not used. Do not change.</detail></reg>
+		<reg  name="Y_EVEN_INC" addr="0x30A4" space="MFR" span="2" mask="0x0001" display_name="y_even_inc" range="0x0000 0x0001" default="0x0001" rw="RO"><detail>Read-only.</detail></reg>
+		<reg  name="Y_ODD_INC" addr="0x30A6" space="MFR" span="2" mask="0x007F" display_name="y_odd_inc" range="0x0000 0x007F" default="0x0001"><detail>Not supported. Do not change.</detail></reg>
+		<reg  name="Y_ODD_INC_CB" addr="0x30A8" space="MFR" span="2" mask="0x007F" display_name="y_odd_inc_cb" range="0x0000 0x007F" default="0x0001"><detail>Y_ODD_INC context B</detail></reg>
+		<reg  name="FRAME_LENGTH_LINES_CB" addr="0x30AA" space="MFR" span="2" mask="0xFFFF" display_name="frame_length_lines_cb" range="0x0000 0xFFFF" default="0x03DE"><detail>FRAME_LENGTH_LINES context B.&#10;See description for R0x3012</detail></reg>
+		<reg  name="EXPOSURE_T1" addr="0x30AC" space="MFR" span="2" mask="0xFFFF" display_name="exposure_t1" rw="RO"></reg>
+		<reg  name="DIGITAL_TEST" addr="0x30B0" space="MFR" span="2" mask="0xFFF6" display_name="digital_test" range="0x0000 0xBFF0" default="0x1300">
+			<bitfield  name="NO_SH_JUMP_LIMIT" mask="0x0002" display_name="1: no_sh_jump_limit" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="BIT_2" confidential="Y" mask="0x0004" display_name="2: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="COL_GAIN" mask="0x0030" display_name="4-5: col_gain"><detail>Column gain:&#10;00 = 1 &#10;01 = 2&#10;10 = 4&#10;11 = 8</detail></bitfield>
+			<bitfield  name="BIT_6" confidential="Y" mask="0x0040" display_name="6: Reserved"></bitfield>
+			<bitfield  name="MONO_CHROME" mask="0x0080" display_name="7: mono_chrome" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="COL_GAIN_CB" mask="0x0300" display_name="8-9: col_gain_cb"><detail>Column gain for Context B</detail></bitfield>
+			<bitfield  name="BITS_10_12" confidential="Y" mask="0x1C00" display_name="10-12: Reserved"></bitfield>
+			<bitfield  name="CONTEXT_B" mask="0x2000" display_name="13: context_b"><detail>0 = Use context A&#10;1 = Use Context B</detail></bitfield>
+			<bitfield  name="PLL_COMPLETE_BYPASS" mask="0x4000" display_name="14: pll_complete_bypass"></bitfield>
+			<bitfield  name="BIT_15" confidential="Y" mask="0x8000" display_name="15: Reserved"></bitfield></reg>
+		<reg  name="TEMPSENS_DATA" addr="0x30B2" space="MFR" span="2" mask="0x03FF" display_name="tempsens_data"><detail>Output value from temperature sensor.</detail></reg>
+		<reg  name="TEMPSENS_CTRL" addr="0x30B4" space="MFR" span="2" mask="0x003F" display_name="tempsens_ctrl"><detail>Control register for temperature sensor</detail>
+			<bitfield  name="TEMPSENS_POWER_ON" mask="0x0001" display_name="0: tempsens_power_on"><detail>tempsens_power_on</detail></bitfield>
+			<bitfield  name="TEMPSENS_TEST_CTRL" mask="0x000E" display_name="1-3: tempsens_test_ctrl"></bitfield>
+			<bitfield  name="TEMP_START_CONVERSION" mask="0x0010" display_name="4: temp_start_conversion"></bitfield>
+			<bitfield  name="TEMP_CLEAR_VALUE" mask="0x0020" display_name="5: temp_clear_value"><detail>Clear data register (sanity check).</detail></bitfield></reg>
+		<reg  name="SPARE_REGISTER1" addr="0x30B6" space="MFR" span="2" mask="0xFFFF" display_name="spare_register1" range="0x0000 0xFFFF"><detail>SPARE_REGISTER1</detail></reg>
+		<reg  name="SPARE_REGISTER2" addr="0x30B8" space="MFR" span="2" mask="0xFFFF" display_name="spare_register2" range="0x0000 0xFFFF"><detail>SPARE_REGISTER2</detail></reg>
+		<reg  name="DIGITAL_CTRL" addr="0x30BA" space="MFR" span="2" mask="0x000F" display_name="digital_ctrl" range="0x0000 0x000F" default="0x0008">
+			<bitfield  name="ENABLE_DCG_COLCORR_RETRIGG" mask="0x0001" display_name="0: enable_dcg_colcorr_retrigg"></bitfield>
+			<bitfield  name="ENABLE_AGS_COLCORR_RETRIGG" mask="0x0002" display_name="1: enable_ags_colcorr_retrigg"></bitfield>
+			<bitfield  name="BIT_2" confidential="Y" mask="0x0004" display_name="2: Reserved"></bitfield>
+			<bitfield  name="COLCORR_CORRECT_ALWAYS" mask="0x0008" display_name="3: colcorr_correct_always" range="0x0000 0x0001"></bitfield></reg>
+		<reg  name="GREEN1_GAIN_CB" addr="0x30BC" space="MFR" span="2" mask="0x00FF" display_name="green1_gain_cb" range="0x0000 0x00FF" default="0x0020"><detail>Digital gain green1 context B</detail></reg>
+		<reg  name="BLUE_GAIN_CB" addr="0x30BE" space="MFR" span="2" mask="0x00FF" display_name="blue_gain_cb" range="0x0000 0x00FF" default="0x0020"><detail>digital gain blue context B</detail></reg>
+		<reg  name="RED_GAIN_CB" addr="0x30C0" space="MFR" span="2" mask="0x00FF" display_name="red_gain_cb" range="0x0000 0x00FF" default="0x0020"><detail>digital gain red context B</detail></reg>
+		<reg  name="GREEN2_GAIN_CB" addr="0x30C2" space="MFR" span="2" mask="0x00FF" display_name="green2_gain_cb" range="0x0000 0x00FF" default="0x0020"><detail>digital gain green 2 context B</detail></reg>
+		<reg  name="GLOBAL_GAIN_CB" addr="0x30C4" space="MFR" span="2" mask="0x00FF" display_name="global_gain_cb" range="0x0000 0x00FF" default="0x0020"><detail>global digital gain context B</detail></reg>
+		<reg  name="TEMPSENS_CALIB1" addr="0x30C6" space="MFR" span="2" mask="0xFFFF" display_name="tempsens_calib1" default="0x0123"></reg>
+		<reg  name="TEMPSENS_CALIB2" addr="0x30C8" space="MFR" span="2" mask="0xFFFF" display_name="tempsens_calib2" default="0x4567"></reg>
+		<reg  name="TEMPSENS_CALIB3" addr="0x30CA" space="MFR" span="2" mask="0xFFFF" display_name="tempsens_calib3" default="0x89AB"></reg>
+		<reg  name="TEMPSENS_CALIB4" addr="0x30CC" space="MFR" span="2" mask="0xFFFF" display_name="tempsens_calib4" default="0xCDEF"></reg>
+		<reg  name="COLUMN_CORRECTION" addr="0x30D4" space="MFR" span="2" mask="0xE00F" display_name="column_correction" range="0x0000 0xE00F" default="0xE007"><detail>Column correction control</detail>
+			<bitfield  name="COLCORR_ROWS" mask="0x000F" display_name="0-3: colcorr_rows"><detail>value showing the number of column correction rows - 1.</detail></bitfield>
+			<bitfield  name="DOUBLE_SAMPLES" mask="0x2000" display_name="13: double_samples" range="0x0000 0x0001"><detail>Makes the column correction use 128 rows instead of 64.</detail></bitfield>
+			<bitfield  name="DOUBLE_RANGE" mask="0x4000" display_name="14: double_range"><detail>Double the range of the algorithm. Halves the presision.</detail></bitfield>
+			<bitfield  name="ENABLE" mask="0x8000" display_name="15: enable" range="0x0000 0x0001"><detail>Enable column correction.</detail></bitfield></reg>
+		<reg  name="RESERVED_MFR_30D6" addr="0x30D6" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x8000"></reg>
+		<reg  name="RESERVED_MFR_30D8" addr="0x30D8" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0800"></reg>
+		<reg  name="RESERVED_MFR_30DE" addr="0x30DE" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x5454"></reg>
+		<reg  name="RESERVED_MFR_30E0" addr="0x30E0" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x5470"></reg>
+		<reg  name="RESERVED_MFR_30E2" addr="0x30E2" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x7253"></reg>
+		<reg  name="RESERVED_MFR_30E4" addr="0x30E4" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x6372"></reg>
+		<reg  name="RESERVED_MFR_30E6" addr="0x30E6" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0xC4CC"></reg>
+		<reg  name="RESERVED_MFR_30E8" addr="0x30E8" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x8050"></reg>
+		<reg  name="RESERVED_MFR_30EA" addr="0x30EA" space="MFR" span="2" confidential="Y" mask="0xFDFF" display_name="Reserved" range="0x0000 0xFDFF" default="0x0C00"></reg>
+		<reg  name="RESERVED_MFR_30EC" addr="0x30EC" space="MFR" span="2" confidential="Y" mask="0x0FFF" display_name="Reserved" range="0x0000 0x0FFF"></reg>
+		<reg  name="RESERVED_MFR_30EE" addr="0x30EE" space="MFR" span="2" confidential="Y" mask="0x0FFF" display_name="Reserved" range="0x0000 0x0FFF"></reg>
+		<reg  name="RESERVED_MFR_30F0" addr="0x30F0" space="MFR" span="2" confidential="Y" mask="0x07FF" display_name="Reserved" range="0x0000 0x07FF" default="0x0080"></reg>
+		<reg  name="RESERVED_MFR_30F4" addr="0x30F4" space="MFR" span="2" confidential="Y" mask="0x0FFF" display_name="Reserved" range="0x0000 0x0FFF"></reg>
+		<reg  name="RESERVED_MFR_30F6" addr="0x30F6" space="MFR" span="2" confidential="Y" mask="0x0FFF" display_name="Reserved" range="0x0000 0x0FFF" default="0x03FF"></reg>
+		<reg  name="RESERVED_MFR_30F8" addr="0x30F8" space="MFR" span="2" confidential="Y" mask="0x0FFF" display_name="Reserved" range="0x0000 0x0FFF"></reg>
+		<reg  name="RESERVED_MFR_30FA" addr="0x30FA" space="MFR" span="2" confidential="Y" mask="0x0FFF" display_name="Reserved"></reg>
+		<reg  name="AE_CTRL_REG" addr="0x3100" space="MFR" span="2" mask="0x00FF" display_name="ae_ctrl_reg" range="0x0000 0x00FF">
+			<bitfield  name="AE_ENABLE" mask="0x0001" display_name="0: ae_enable"><detail>1 =&gt; enables the on-chip AE algorithm</detail></bitfield>
+			<bitfield  name="AUTO_AG_EN" mask="0x0002" display_name="1: auto_ag_en"><detail>1: enables the automatic ae control of analogue gain.</detail></bitfield>
+			<bitfield  name="DCG_MANUAL_SET" mask="0x0004" display_name="2: dcg_manual_set"></bitfield>
+			<bitfield  name="AUTO_DCG_ENABLE" mask="0x0008" display_name="3: auto_dcg_enable"><detail>Enables automatic (AE controlled) DCG control.</detail></bitfield>
+			<bitfield  name="AUTO_DG_EN" mask="0x0010" display_name="4: auto_dg_en"><detail>Automatic control of digital gain by AE is enabled.</detail></bitfield>
+			<bitfield  name="MIN_ANA_GAIN" mask="0x0060" display_name="5-6: min_ana_gain"></bitfield>
+			<bitfield  name="DCG_MANUAL_SET_CB" mask="0x0080" display_name="7: dcg_manual_set_cb"><detail>Manual dcg value used in context B.</detail></bitfield></reg>
+		<reg  name="AE_LUMA_TARGET_REG" addr="0x3102" space="MFR" span="2" mask="0xFFFF" display_name="ae_luma_target_reg" range="0x0000 0xFFFF" default="0x0666"></reg>
+		<reg  name="AE_HIST_TARGET_REG" addr="0x3104" space="MFR" span="2" mask="0xFFFF" display_name="ae_hist_target_reg" range="0x0000 0xFFFF" default="0xC000"><detail>Histogram high end target / 16</detail></reg>
+		<reg  name="AE_HYSTERESIS_REG" addr="0x3106" space="MFR" span="2" mask="0xFFFF" display_name="ae_hysteresis_reg" range="0x0000 0xFFFF" default="0x7333"></reg>
+		<reg  name="AE_MIN_EV_STEP_REG" addr="0x3108" space="MFR" span="2" mask="0x00FF" display_name="ae_min_ev_step_reg" range="0x0000 0x00FF" default="0x0002"></reg>
+		<reg  name="AE_MAX_EV_STEP_REG" addr="0x310A" space="MFR" span="2" mask="0x00FF" display_name="ae_max_ev_step_reg" range="0x0000 0x00FF" default="0x0002"></reg>
+		<reg  name="AE_DAMP_OFFSET_REG" addr="0x310C" space="MFR" span="2" mask="0xFFFF" display_name="ae_damp_offset_reg" range="0x0000 0xFFFF" default="0x0010"><detail>Adjusts step size and settling speed.&#10;</detail></reg>
+		<reg  name="AE_DAMP_GAIN_REG" addr="0x310E" space="MFR" span="2" mask="0xFFFF" display_name="ae_damp_gain_reg" range="0x0000 0xFFFF" default="0x0010"><detail>Adjusts step size and settling speed.</detail></reg>
+		<reg  name="AE_DAMP_MAX_REG" addr="0x3110" space="MFR" span="2" mask="0xFFFF" display_name="ae_damp_max_reg" range="0x0000 0xFFFF" default="0x00E0"></reg>
+		<reg  name="AE_DCG_EXPOSURE_HIGH_REG" addr="0x3112" space="MFR" span="2" mask="0xFFFF" display_name="ae_dcg_exposure_high_reg" range="0x0000 0xFFFF" default="0x029F"></reg>
+		<reg  name="AE_DCG_EXPOSURE_LOW_REG" addr="0x3114" space="MFR" span="2" mask="0xFFFF" display_name="ae_dcg_exposure_low_reg" range="0x0000 0xFFFF" default="0x008C"></reg>
+		<reg  name="AE_DCG_GAIN_FACTOR_REG" addr="0x3116" space="MFR" span="2" mask="0xFFFF" display_name="ae_dcg_gain_factor_reg" range="0x0000 0xFFFF" default="0x02CA"></reg>
+		<reg  name="AE_DCG_GAIN_FACTOR_INV_REG" addr="0x3118" space="MFR" span="2" mask="0xFFFF" display_name="ae_dcg_gain_factor_inv_reg" range="0x0000 0xFFFF" default="0x005B"></reg>
+		<reg  name="AE_MAX_EXPOSURE_REG" addr="0x311C" space="MFR" span="2" mask="0xFFFF" display_name="ae_max_exposure_reg" range="0x0000 0xFFFF" default="0x03C0"></reg>
+		<reg  name="AE_MIN_EXPOSURE_REG" addr="0x311E" space="MFR" span="2" mask="0xFFFF" display_name="ae_min_exposure_reg" range="0x0000 0xFFFF" default="0x0001"></reg>
+		<reg  name="AE_LOW_MEAN_TARGET_REG" addr="0x3120" space="MFR" span="2" mask="0xFFFF" display_name="ae_low_mean_target_reg" range="0x0000 0xFFFF" default="0x0064"></reg>
+		<reg  name="AE_HIST_LOW_THRESH_REG" addr="0x3122" space="MFR" span="2" mask="0xFFFF" display_name="ae_hist_low_thresh_reg" range="0x0000 0xFFFF" default="0x0F5C"></reg>
+		<reg  name="AE_DARK_CUR_THRESH_REG" addr="0x3124" space="MFR" span="2" mask="0xFFFF" display_name="ae_dark_cur_thresh_reg" range="0x0000 0xFFFF" default="0x7FFF"></reg>
+		<reg  name="AE_ALPHA_V1_REG" addr="0x3126" space="MFR" span="2" mask="0xFFFF" display_name="ae_alpha_v1_reg" range="0x0000 0xFFFF" default="0x0080"><detail>Alpha V1 coefficient weighting of mean and hist end targets.</detail></reg>
+		<reg  name="AE_ALPHA_COEF_REG" addr="0x3128" space="MFR" span="2" mask="0xFFFF" display_name="ae_alpha_coef_reg" range="0x0000 0xFFFF" default="0x04EC"></reg>
+		<reg  name="AE_CURRENT_GAINS" addr="0x312A" space="MFR" span="2" mask="0x07FF" display_name="ae_current_gains" default="0x0020" rw="RO"><detail>Shows the gain settings decided by AE.</detail>
+			<bitfield  name="AE_DIG_GAIN" mask="0x00FF" display_name="0-7: ae_dig_gain" rw="RO"></bitfield>
+			<bitfield  name="AE_ANA_GAIN" mask="0x0300" display_name="8-9: ae_ana_gain" rw="RO"></bitfield>
+			<bitfield  name="AE_CONV_GAIN" mask="0x0400" display_name="10: ae_conv_gain" rw="RO"></bitfield></reg>
+		<reg  name="RESERVED_MFR_3130" addr="0x3130" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0F1F"></reg>
+		<reg  name="RESERVED_MFR_3132" addr="0x3132" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0F1F"></reg>
+		<reg  name="RESERVED_MFR_3134" addr="0x3134" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x1818"></reg>
+		<reg  name="RESERVED_MFR_3136" addr="0x3136" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x3131"></reg>
+		<reg  name="RESERVED_MFR_3138" addr="0x3138" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x4431"></reg>
+		<reg  name="RESERVED_MFR_313A" addr="0x313A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_313C" addr="0x313C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_313E" addr="0x313E" space="MFR" span="2" confidential="Y" mask="0x00FF" display_name="Reserved"></reg>
+		<reg  name="AE_ROI_X_START_OFFSET" addr="0x3140" space="MFR" span="2" mask="0x07FE" display_name="ae_roi_x_start_offset" range="0x0000 0x07FE"></reg>
+		<reg  name="AE_ROI_Y_START_OFFSET" addr="0x3142" space="MFR" span="2" mask="0x03FE" display_name="ae_roi_y_start_offset" range="0x0000 0x03FE"><detail>Number of rows into each frame before the ROI starts</detail></reg>
+		<reg  name="AE_ROI_X_SIZE" addr="0x3144" space="MFR" span="2" mask="0x07FE" display_name="ae_roi_x_size" range="0x0000 0x07FE" default="0x0504"><detail>Number of columns in the ROI</detail></reg>
+		<reg  name="AE_ROI_Y_SIZE" addr="0x3146" space="MFR" span="2" mask="0x03FE" display_name="ae_roi_y_size" range="0x0000 0x03FE" default="0x03C4"><detail>Number of  rows in the ROI</detail></reg>
+		<reg  name="AE_HIST_BEGIN_PERC" addr="0x3148" space="MFR" span="2" mask="0xFFFF" display_name="ae_hist_begin_perc" range="0x0000 0xFFFF" default="0x0290"></reg>
+		<reg  name="AE_HIST_END_PERC" addr="0x314A" space="MFR" span="2" mask="0xFFFF" display_name="ae_hist_end_perc" range="0x0000 0xFFFF" default="0xFFF8"></reg>
+		<reg  name="AE_HIST_DIV" addr="0x314C" space="MFR" span="2" mask="0xFFFF" display_name="ae_hist_div" range="0x0000 0xFFFF" default="0x0100"></reg>
+		<reg  name="AE_NORM_WIDTH_MIN" addr="0x314E" space="MFR" span="2" mask="0xFFFF" display_name="ae_norm_width_min" range="0x0000 0xFFFF" default="0x0020"></reg>
+		<reg  name="AE_MEAN_H" addr="0x3150" space="MFR" span="2" mask="0x000F" display_name="ae_mean_h" rw="RO"><detail>The true mean of all Gr pixels in the ROI (higher bits)</detail></reg>
+		<reg  name="AE_MEAN_L" addr="0x3152" space="MFR" span="2" mask="0xFFFF" display_name="ae_mean_l" rw="RO"></reg>
+		<reg  name="AE_HIST_BEGIN_H" addr="0x3154" space="MFR" span="2" mask="0x000F" display_name="ae_hist_begin_h" rw="RO"></reg>
+		<reg  name="AE_HIST_BEGIN_L" addr="0x3156" space="MFR" span="2" mask="0xFFFF" display_name="ae_hist_begin_l" rw="RO"></reg>
+		<reg  name="AE_HIST_END_H" addr="0x3158" space="MFR" span="2" mask="0x000F" display_name="ae_hist_end_h" rw="RO"></reg>
+		<reg  name="AE_HIST_END_L" addr="0x315A" space="MFR" span="2" mask="0xFFFF" display_name="ae_hist_end_l" rw="RO"></reg>
+		<reg  name="AE_HIST_END_MEAN_H" addr="0x315C" space="MFR" span="2" mask="0x000F" display_name="ae_hist_end_mean_h" rw="RO"></reg>
+		<reg  name="AE_HIST_END_MEAN_L" addr="0x315E" space="MFR" span="2" mask="0xFFFF" display_name="ae_hist_end_mean_l" rw="RO"></reg>
+		<reg  name="AE_PERC_LOW_END" addr="0x3160" space="MFR" span="2" mask="0xFFFF" display_name="ae_perc_low_end" rw="RO"></reg>
+		<reg  name="AE_NORM_ABS_DEV" addr="0x3162" space="MFR" span="2" mask="0xFFFF" display_name="ae_norm_abs_dev" rw="RO"></reg>
+		<reg  name="AE_COARSE_INTEGRATION_TIME" addr="0x3164" space="MFR" span="2" mask="0xFFFF" display_name="ae_coarse_integration_time" default="0x0001" rw="RO"><detail>The integration time decided by AE.</detail></reg>
+		<reg  name="AE_AG_EXPOSURE_HI" addr="0x3166" space="MFR" span="2" mask="0xFFFF" display_name="ae_ag_exposure_hi" default="0x029F"></reg>
+		<reg  name="AE_AG_EXPOSURE_LO" addr="0x3168" space="MFR" span="2" mask="0xFFFF" display_name="ae_ag_exposure_lo" range="0x0000 0xFFFF" default="0x0118"></reg>
+		<reg  name="AE_AG_GAIN1" addr="0x316A" space="MFR" span="2" mask="0xFFFF" display_name="ae_ag_gain1" default="0x0200"><detail>Real gain ratio between analog gain 0 and 1.</detail></reg>
+		<reg  name="AE_AG_GAIN2" addr="0x316C" space="MFR" span="2" mask="0xFFFF" display_name="ae_ag_gain2" default="0x0200"><detail>The real gain ratio between analog gain 2 and 1.</detail></reg>
+		<reg  name="AE_AG_GAIN3" addr="0x316E" space="MFR" span="2" mask="0xFFFF" display_name="ae_ag_gain3" default="0x0200"><detail>The real gain ratio between analog gain2 and gain3.</detail></reg>
+		<reg  name="AE_INV_AG_GAIN1" addr="0x3170" space="MFR" span="2" mask="0xFFFF" display_name="ae_inv_ag_gain1" default="0x0080"><detail>The real inverse gain ratio between  analog gain 0 and 1.</detail></reg>
+		<reg  name="AE_INV_AG_GAIN2" addr="0x3172" space="MFR" span="2" mask="0xFFFF" display_name="ae_inv_ag_gain2" default="0x0080"><detail>The real inverse gain ratio (1 to 2).</detail></reg>
+		<reg  name="AE_INV_AG_GAIN3" addr="0x3174" space="MFR" span="2" mask="0xFFFF" display_name="ae_inv_ag_gain3" default="0x0080"><detail>The real inverse gain ratio (2 to 3).</detail></reg>
+		<reg  name="DELTA_DK_CONTROL" addr="0x3180" space="MFR" span="2" mask="0xF000" display_name="delta_dk_control" range="0x0000 0xF000" default="0x8000">
+			<bitfield  name="BIT_12" confidential="Y" mask="0x1000" display_name="12: Reserved"></bitfield>
+			<bitfield  name="DELTA_DK_CLIP_EN" mask="0x2000" display_name="13: delta_dk_clip_en"></bitfield>
+			<bitfield  name="DELTA_DK_EVERY_FRAME" mask="0x4000" display_name="14: delta_dk_every_frame"></bitfield>
+			<bitfield  name="DELTA_DK_SUB_EN" mask="0x8000" display_name="15: delta_dk_sub_en"><detail>Enabling the delta dark correction.</detail></bitfield></reg>
+		<reg  name="DELTA_DK_CLIP" addr="0x3182" space="MFR" span="2" mask="0xFFFF" display_name="delta_dk_clip" range="0x0000 0xFFFF" default="0x7FFF"><detail>Clip level for measured dark level.</detail></reg>
+		<reg  name="DELTA_DK_T1" addr="0x3184" space="MFR" span="2" mask="0xFFFF" display_name="delta_dk_t1" rw="RO"><detail>Measured dark current for exposure T1</detail></reg>
+		<reg  name="DELTA_DK_T2" addr="0x3186" space="MFR" span="2" mask="0xFFFF" display_name="delta_dk_t2" rw="RO"><detail>Measured dark current for exposure T2</detail></reg>
+		<reg  name="DELTA_DK_T3" addr="0x3188" space="MFR" span="2" mask="0xFFFF" display_name="delta_dk_t3" rw="RO"><detail>Measured dark current for exposure T3</detail></reg>
+		<reg  name="HDR_MC_CTRL1" addr="0x318A" space="MFR" span="2" mask="0x0FFF" display_name="hdr_mc_ctrl1" range="0x0000 0x0FFF" default="0x0FA0">
+			<bitfield  name="S2_MC_THRESHOLD" mask="0x0FFF" display_name="0-11: s2_mc_threshold"><detail>Motion Compensation S2 threshold</detail></bitfield></reg>
+		<reg  name="HDR_MC_CTRL2" addr="0x318C" space="MFR" span="2" mask="0xFFFF" display_name="hdr_mc_ctrl2" range="0x0000 0xFFFF" default="0x0040">
+			<bitfield  name="MC_DIFF_THRESHOLD" mask="0x0FFF" display_name="0-11: mc_diff_threshold"><detail>Motion Compensation difference threshold</detail></bitfield>
+			<bitfield  name="BYPASS_PIX_COMB" mask="0x3000" display_name="12-13: bypass_pix_comb"></bitfield>
+			<bitfield  name="MOTION_CORRECTION_EN" mask="0x4000" display_name="14: motion_correction_en"></bitfield>
+			<bitfield  name="MC_NOISE_FILTER_EN" mask="0x8000" display_name="15: mc_noise_filter_en"><detail>Motion Compensation noise filter enable</detail></bitfield></reg>
+		<reg  name="HDR_MC_CTRL3" addr="0x318E" space="MFR" span="2" mask="0xF3FF" display_name="hdr_mc_ctrl3" range="0x0000 0x001F" default="0x0110">
+			<bitfield  name="MC_COUNT_THRESHOLD" mask="0x00FF" display_name="0-7: mc_count_threshold"><detail>Motion Compensation count threshold</detail></bitfield>
+			<bitfield  name="MOTION_CORRECT_2D_EN" mask="0x0100" display_name="8: motion_correct_2d_en"></bitfield>
+			<bitfield  name="MOTION2_EN" mask="0x0200" display_name="9: motion2_en"></bitfield>
+			<bitfield  name="PIXEL_BUILD_MODE" mask="0x3000" display_name="12-13: pixel_build_mode"></bitfield>
+			<bitfield  name="PIXEL_BUILD_MODE_CB" mask="0xC000" display_name="14-15: pixel_build_mode_cb"></bitfield></reg>
+		<reg  name="HDR_MC_CTRL4" addr="0x3190" space="MFR" span="2" mask="0xFFFF" display_name="hdr_mc_ctrl4" range="0x0000 0xFFFF" default="0x0BA0">
+			<bitfield  name="T2_NO_CORR_THRESHOLD" mask="0x0FFF" display_name="0-11: t2_no_corr_threshold"></bitfield>
+			<bitfield  name="MC_T1_SEL" mask="0x1000" display_name="12: mc_t1_sel" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="PIXEL_BUILD_DLO" mask="0x2000" display_name="13: pixel_build_dlo"></bitfield>
+			<bitfield  name="NOISE_FILTER_DLO_EN" mask="0x4000" display_name="14: noise_filter_dlo_en" range="0x0000 0x0001"><detail>DLO noise filtering enable.</detail></bitfield>
+			<bitfield  name="NOISE_FILTER_DLO_QUAD" mask="0x8000" display_name="15: noise_filter_dlo_quad" range="0x0000 0x0001"></bitfield></reg>
+		<reg  name="HDR_MC_CTRL5" addr="0x3192" space="MFR" span="2" mask="0x1FFF" display_name="hdr_mc_ctrl5" range="0x0000 0x1FFF" default="0x0400">
+			<bitfield  name="S12_MC_RANGE" mask="0x1FFF" display_name="0-12: s12_mc_range" range="0x0000 0x1FFF"><detail>Motion Compensation S12 range</detail></bitfield></reg>
+		<reg  name="HDR_MC_CTRL6" addr="0x3194" space="MFR" span="2" mask="0x0FFF" display_name="hdr_mc_ctrl6" range="0x0000 0x0FFF" default="0x0BB8">
+			<bitfield  name="T1_DLO_BARRIER" mask="0x0FFF" display_name="0-11: t1_dlo_barrier" range="0x0000 0x0FFF"><detail>DLO Barrier for clipping T1 data.</detail></bitfield></reg>
+		<reg  name="HDR_MC_CTRL7" addr="0x3196" space="MFR" span="2" mask="0x0FFF" display_name="hdr_mc_ctrl7" range="0x0000 0x0FFF" default="0x0DAC">
+			<bitfield  name="T2_DLO_BARRIER" mask="0x0FFF" display_name="0-11: t2_dlo_barrier" range="0x0000 0x0FFF"><detail>DLO Barrier for clipping T2 data.</detail></bitfield></reg>
+		<reg  name="HDR_MC_CTRL8" addr="0x3198" space="MFR" span="2" mask="0x0FFF" display_name="hdr_mc_ctrl8" range="0x0000 0x0FFF" default="0x0FA0">
+			<bitfield  name="T3_DLO_BARRIER" mask="0x0FFF" display_name="0-11: t3_dlo_barrier" range="0x0000 0x0FFF"><detail>DLO Barrier for clipping T3 data.</detail></bitfield></reg>
+		<reg  name="HDR_COMP_KNEE1" addr="0x319A" space="MFR" span="2" mask="0x1F1F" display_name="hdr_comp_knee1" range="0x0000 0x1F1F" default="0x100B" rw="RO">
+			<bitfield  name="P1_COMP_KNEE" mask="0x001F" display_name="0-4: p1_comp_knee" rw="RO"><detail>Compander P1 knee point</detail></bitfield>
+			<bitfield  name="P2_COMP_KNEE" mask="0x1F00" display_name="8-12: p2_comp_knee" rw="RO"><detail>Compander P2 knee point</detail></bitfield></reg>
+		<reg  name="HDR_COMP_KNEE2" addr="0x319C" space="MFR" span="2" mask="0x001F" display_name="hdr_comp_knee2" range="0x0000 0x001F" default="0x0014" rw="RO">
+			<bitfield  name="PMAX_COMP_KNEE" mask="0x001F" display_name="0-4: pmax_comp_knee" rw="RO"><detail>Compander Pmax knee point</detail></bitfield></reg>
+		<reg  name="HDR_MC_CTRL9" addr="0x319E" space="MFR" span="2" mask="0xFFFF" display_name="hdr_mc_ctrl9" range="0x0000 0xFFFF" default="0x5040">
+			<bitfield  name="S2_DLO_THRESHOLD" mask="0x0FFF" display_name="0-11: s2_dlo_threshold" range="0x0000 0x0FFF"></bitfield>
+			<bitfield  name="S12_DLO_RANGE" mask="0xF000" display_name="12-15: s12_dlo_range" range="0x0000 0x000F"></bitfield></reg>
+		<reg  name="HDR_MC_CTRL10" addr="0x31A0" space="MFR" span="2" mask="0x0FFF" display_name="hdr_mc_ctrl10" range="0x0000 0x0FFF" default="0x0BA0">
+			<bitfield  name="S1_MC_THRESHOLD" mask="0x0FFF" display_name="0-11: s1_mc_threshold" range="0x0000 0x0FFF"></bitfield></reg>
+		<reg  name="HDR_MC_CTRL11" addr="0x31A2" space="MFR" span="2" mask="0x0FFF" display_name="hdr_mc_ctrl11" range="0x0000 0x0FFF" default="0x0BB8">
+			<bitfield  name="NOISE_DLO_DIS_THRESHOLD" mask="0x0FFF" display_name="0-11: noise_dlo_dis_threshold" range="0x0000 0x0FFF"></bitfield></reg>
+		<reg  name="HISPI_TIMING" addr="0x31C0" space="MFR" span="2" mask="0x7FFF" display_name="hispi_timing" range="0x0000 0x7FFF"></reg>
+		<reg  name="HISPI_CONTROL_STATUS" addr="0x31C6" space="MFR" span="2" mask="0xC3FC" display_name="hispi_control_status" range="0x0000 0xC3FC" default="0x8000"><detail>See descriptions in the bit fields.</detail>
+			<bitfield  name="HISPI_CONTROL" mask="0x03FC" display_name="2-9: hispi_control"></bitfield>
+			<bitfield  name="HISPI_STATUS" mask="0xC000" display_name="14-15: hispi_status" rw="RO"><detail>bit[0] =&gt; frame wide checksum test complete flag.&#10;&#10;bit[1] =&gt; HISPI idle flag.</detail></bitfield></reg>
+		<reg  name="HISPI_CRC_0" addr="0x31C8" space="MFR" span="2" mask="0xFFFF" display_name="hispi_crc_0" range="0x0000 0xFFFF" default="0xFFFF" rw="RO"></reg>
+		<reg  name="HISPI_CRC_1" addr="0x31CA" space="MFR" span="2" mask="0xFFFF" display_name="hispi_crc_1" range="0x0000 0xFFFF" default="0xFFFF" rw="RO"></reg>
+		<reg  name="HISPI_CRC_2" addr="0x31CC" space="MFR" span="2" mask="0xFFFF" display_name="hispi_crc_2" range="0x0000 0xFFFF" default="0xFFFF" rw="RO"></reg>
+		<reg  name="HISPI_CRC_3" addr="0x31CE" space="MFR" span="2" mask="0xFFFF" display_name="hispi_crc_3" range="0x0000 0xFFFF" default="0xFFFF" rw="RO"></reg>
+		<reg  name="HDR_COMP" addr="0x31D0" space="MFR" span="2" mask="0x0003" display_name="hdr_comp" range="0x0000 0x0003" default="0x0001">
+			<bitfield  name="COMPAND_EN" mask="0x0001" display_name="0: compand_en"><detail>Enables companding</detail></bitfield>
+			<bitfield  name="COMPAND_14BITS" mask="0x0002" display_name="1: compand_14bits"><detail>0 =&gt; compand to 12 bits.&#10;&#10;1=&gt; compand to 14 bits</detail></bitfield></reg>
+		<reg  name="STAT_FRAME_ID" addr="0x31D2" space="MFR" span="2" mask="0xFFFF" display_name="stat_frame_id" range="0x0000 0xFFFF"></reg>
+		<reg  name="I2C_WRT_CHECKSUM" addr="0x31D6" space="MFR" span="2" mask="0xFFFF" display_name="i2c_wrt_checksum" range="0x0000 0xFFFF" default="0xFFFF"><detail>Checksum of I2C write operations.</detail></reg>
+		<reg  name="RESERVED_MFR_31DA" addr="0x31DA" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_31DC" addr="0x31DC" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_31DE" addr="0x31DE" space="MFR" span="2" confidential="Y" mask="0x00FF" display_name="Reserved" range="0x0000 0x00FF"></reg>
+		<reg  name="PIX_DEF_ID" addr="0x31E0" space="MFR" span="2" mask="0x8003" display_name="pix_def_id" range="0x0000 0x8003">
+			<bitfield  name="ENABLE" mask="0x0001" display_name="0: enable" range="0x0000 0x0001"><detail>Enable pixel defect correction.</detail></bitfield>
+			<bitfield  name="CORRECTION_MODE" mask="0x0002" display_name="1: correction_mode" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="TEST" mask="0x8000" display_name="15: test"></bitfield></reg>
+		<reg  name="PIX_DEF_ID_BASE_RAM" addr="0x31E2" space="MFR" span="2" mask="0x1FFF" display_name="pix_def_id_base_ram" range="0x0000 0x1FFF"></reg>
+		<reg  name="PIX_DEF_ID_STREAM_RAM" addr="0x31E4" space="MFR" span="2" mask="0x1FFF" display_name="pix_def_id_stream_ram" range="0x0000 0x1FFF"></reg>
+		<reg  name="PIX_DEF_RAM_RD_ADDR" addr="0x31E6" space="MFR" span="2" mask="0x80FF" display_name="pix_def_ram_rd_addr" range="0x0000 0x80FF"></reg>
+		<reg  name="HORIZONTAL_CURSOR_POSITION" addr="0x31E8" space="MFR" span="2" mask="0x03FF" display_name="horizontal_cursor_position" range="0x0000 0x03FF"><detail>Specify the start row for the test cursor.</detail></reg>
+		<reg  name="VERTICAL_CURSOR_POSITION" addr="0x31EA" space="MFR" span="2" mask="0x07FF" display_name="vertical_cursor_position" range="0x0000 0x07FF"><detail>Specify the start column for the test cursor.</detail></reg>
+		<reg  name="HORIZONTAL_CURSOR_WIDTH" addr="0x31EC" space="MFR" span="2" mask="0x03FF" display_name="horizontal_cursor_width" range="0x0000 0x03FF"></reg>
+		<reg  name="VERTICAL_CURSOR_WIDTH" addr="0x31EE" space="MFR" span="2" mask="0x07FF" display_name="vertical_cursor_width" range="0x0000 0x07FF"></reg>
+		<reg  name="FUSE_ID1" addr="0x31F4" space="MFR" span="2" mask="0xFFFF" display_name="fuse_id1" range="0x0000 0xFFFF"></reg>
+		<reg  name="FUSE_ID2" addr="0x31F6" space="MFR" span="2" mask="0xFFFF" display_name="fuse_id2" range="0x0000 0xFFFF"></reg>
+		<reg  name="FUSE_ID3" addr="0x31F8" space="MFR" span="2" mask="0xFFFF" display_name="fuse_id3" range="0x0000 0xFFFF"></reg>
+		<reg  name="FUSE_ID4" addr="0x31FA" space="MFR" span="2" mask="0xFFFF" display_name="fuse_id4" range="0x0000 0xFFFF"></reg>
+		<reg  name="I2C_IDS" addr="0x31FC" space="MFR" span="2" mask="0xFFFF" display_name="i2c_ids" range="0x0000 0xFFFF" default="0x3020"><detail>I2C addresses</detail></reg>
+		<reg  name="RESERVED_MFR_31FE" addr="0x31FE" space="MFR" span="2" confidential="Y" mask="0x007F" display_name="Reserved" range="0x0000 0x007F" rw="RO"></reg>
+		<reg  name="RESERVED_MFR_3800" addr="0x3800" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3802" addr="0x3802" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3804" addr="0x3804" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3806" addr="0x3806" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3808" addr="0x3808" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_380A" addr="0x380A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_380C" addr="0x380C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_380E" addr="0x380E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3810" addr="0x3810" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3812" addr="0x3812" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3814" addr="0x3814" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3816" addr="0x3816" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3818" addr="0x3818" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_381A" addr="0x381A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_381C" addr="0x381C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_381E" addr="0x381E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3820" addr="0x3820" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3822" addr="0x3822" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3824" addr="0x3824" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3826" addr="0x3826" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3828" addr="0x3828" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_382A" addr="0x382A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_382C" addr="0x382C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_382E" addr="0x382E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3830" addr="0x3830" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3832" addr="0x3832" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3834" addr="0x3834" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3836" addr="0x3836" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3838" addr="0x3838" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_383A" addr="0x383A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_383C" addr="0x383C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_383E" addr="0x383E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3840" addr="0x3840" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3842" addr="0x3842" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3844" addr="0x3844" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3846" addr="0x3846" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3848" addr="0x3848" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_384A" addr="0x384A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_384C" addr="0x384C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_384E" addr="0x384E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3850" addr="0x3850" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3852" addr="0x3852" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3854" addr="0x3854" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3856" addr="0x3856" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3858" addr="0x3858" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_385A" addr="0x385A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_385C" addr="0x385C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_385E" addr="0x385E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3860" addr="0x3860" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3862" addr="0x3862" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3864" addr="0x3864" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3866" addr="0x3866" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3868" addr="0x3868" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_386A" addr="0x386A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_386C" addr="0x386C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_386E" addr="0x386E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3870" addr="0x3870" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3872" addr="0x3872" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3874" addr="0x3874" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3876" addr="0x3876" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3878" addr="0x3878" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_387A" addr="0x387A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_387C" addr="0x387C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_387E" addr="0x387E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3880" addr="0x3880" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3882" addr="0x3882" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3884" addr="0x3884" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3886" addr="0x3886" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3888" addr="0x3888" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_388A" addr="0x388A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_388C" addr="0x388C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_388E" addr="0x388E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3890" addr="0x3890" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3892" addr="0x3892" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3894" addr="0x3894" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3896" addr="0x3896" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3898" addr="0x3898" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_389A" addr="0x389A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_389C" addr="0x389C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_389E" addr="0x389E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38A0" addr="0x38A0" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38A2" addr="0x38A2" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38A4" addr="0x38A4" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38A6" addr="0x38A6" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38A8" addr="0x38A8" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38AA" addr="0x38AA" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38AC" addr="0x38AC" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38AE" addr="0x38AE" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38B0" addr="0x38B0" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38B2" addr="0x38B2" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38B4" addr="0x38B4" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38B6" addr="0x38B6" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38B8" addr="0x38B8" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38BA" addr="0x38BA" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38BC" addr="0x38BC" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38BE" addr="0x38BE" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38C0" addr="0x38C0" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38C2" addr="0x38C2" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38C4" addr="0x38C4" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38C6" addr="0x38C6" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38C8" addr="0x38C8" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38CA" addr="0x38CA" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38CC" addr="0x38CC" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38CE" addr="0x38CE" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38D0" addr="0x38D0" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38D2" addr="0x38D2" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38D4" addr="0x38D4" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38D6" addr="0x38D6" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38D8" addr="0x38D8" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38DA" addr="0x38DA" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38DC" addr="0x38DC" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38DE" addr="0x38DE" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38E0" addr="0x38E0" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38E2" addr="0x38E2" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38E4" addr="0x38E4" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38E6" addr="0x38E6" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38E8" addr="0x38E8" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38EA" addr="0x38EA" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38EC" addr="0x38EC" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38EE" addr="0x38EE" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38F0" addr="0x38F0" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38F2" addr="0x38F2" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38F4" addr="0x38F4" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38F6" addr="0x38F6" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38F8" addr="0x38F8" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38FA" addr="0x38FA" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38FC" addr="0x38FC" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_38FE" addr="0x38FE" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3900" addr="0x3900" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3902" addr="0x3902" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3904" addr="0x3904" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3906" addr="0x3906" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3908" addr="0x3908" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_390A" addr="0x390A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_390C" addr="0x390C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_390E" addr="0x390E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3910" addr="0x3910" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3912" addr="0x3912" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3914" addr="0x3914" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3916" addr="0x3916" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3918" addr="0x3918" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_391A" addr="0x391A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_391C" addr="0x391C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_391E" addr="0x391E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3920" addr="0x3920" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3922" addr="0x3922" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3924" addr="0x3924" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3926" addr="0x3926" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3928" addr="0x3928" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_392A" addr="0x392A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_392C" addr="0x392C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_392E" addr="0x392E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3930" addr="0x3930" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3932" addr="0x3932" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3934" addr="0x3934" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3936" addr="0x3936" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3938" addr="0x3938" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_393A" addr="0x393A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_393C" addr="0x393C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_393E" addr="0x393E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3940" addr="0x3940" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3942" addr="0x3942" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3944" addr="0x3944" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3946" addr="0x3946" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3948" addr="0x3948" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_394A" addr="0x394A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_394C" addr="0x394C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_394E" addr="0x394E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3950" addr="0x3950" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3952" addr="0x3952" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3954" addr="0x3954" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3956" addr="0x3956" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3958" addr="0x3958" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_395A" addr="0x395A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_395C" addr="0x395C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_395E" addr="0x395E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3960" addr="0x3960" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3962" addr="0x3962" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3964" addr="0x3964" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3966" addr="0x3966" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3968" addr="0x3968" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_396A" addr="0x396A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_396C" addr="0x396C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_396E" addr="0x396E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3970" addr="0x3970" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3972" addr="0x3972" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3974" addr="0x3974" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3976" addr="0x3976" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3978" addr="0x3978" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_397A" addr="0x397A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_397C" addr="0x397C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_397E" addr="0x397E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3980" addr="0x3980" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3982" addr="0x3982" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3984" addr="0x3984" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3986" addr="0x3986" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3988" addr="0x3988" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_398A" addr="0x398A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_398C" addr="0x398C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_398E" addr="0x398E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3990" addr="0x3990" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3992" addr="0x3992" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3994" addr="0x3994" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3996" addr="0x3996" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3998" addr="0x3998" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_399A" addr="0x399A" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_399C" addr="0x399C" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_399E" addr="0x399E" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39A0" addr="0x39A0" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39A2" addr="0x39A2" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39A4" addr="0x39A4" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39A6" addr="0x39A6" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39A8" addr="0x39A8" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39AA" addr="0x39AA" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39AC" addr="0x39AC" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39AE" addr="0x39AE" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39B0" addr="0x39B0" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39B2" addr="0x39B2" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39B4" addr="0x39B4" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39B6" addr="0x39B6" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39B8" addr="0x39B8" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39BA" addr="0x39BA" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39BC" addr="0x39BC" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39BE" addr="0x39BE" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39C0" addr="0x39C0" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39C2" addr="0x39C2" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39C4" addr="0x39C4" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39C6" addr="0x39C6" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39C8" addr="0x39C8" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39CA" addr="0x39CA" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39CC" addr="0x39CC" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39CE" addr="0x39CE" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39D0" addr="0x39D0" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39D2" addr="0x39D2" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39D4" addr="0x39D4" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39D6" addr="0x39D6" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39D8" addr="0x39D8" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39DA" addr="0x39DA" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39DC" addr="0x39DC" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39DE" addr="0x39DE" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39E0" addr="0x39E0" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39E2" addr="0x39E2" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39E4" addr="0x39E4" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39E6" addr="0x39E6" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39E8" addr="0x39E8" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39EA" addr="0x39EA" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39EC" addr="0x39EC" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39EE" addr="0x39EE" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39F0" addr="0x39F0" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39F2" addr="0x39F2" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39F4" addr="0x39F4" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39F6" addr="0x39F6" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39F8" addr="0x39F8" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39FA" addr="0x39FA" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39FC" addr="0x39FC" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_39FE" addr="0x39FE" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3ECC" addr="0x3ECC" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0010"></reg>
+		<reg  name="RESERVED_MFR_3ECE" addr="0x3ECE" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x1010"></reg>
+		<reg  name="RESERVED_MFR_3ED0" addr="0x3ED0" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x1000"></reg>
+		<reg  name="RESERVED_MFR_3ED2" addr="0x3ED2" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3ED4" addr="0x3ED4" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3ED6" addr="0x3ED6" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x00BD"></reg>
+		<reg  name="RESERVED_MFR_3ED8" addr="0x3ED8" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x01EF"></reg>
+		<reg  name="RESERVED_MFR_3EDA" addr="0x3EDA" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0F03"></reg>
+		<reg  name="RESERVED_MFR_3EDC" addr="0x3EDC" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x0070"></reg>
+		<reg  name="RESERVED_MFR_3EDE" addr="0x3EDE" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0xC007"></reg>
+		<reg  name="RESERVED_MFR_3EE0" addr="0x3EE0" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0x067D"></reg>
+		<reg  name="RESERVED_MFR_3EE2" addr="0x3EE2" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF" default="0xA46B"></reg>
+		<reg  name="DAC_LD_24_25" addr="0x3EE4" space="MFR" span="2" mask="0xFFFF" display_name="dac_ld_24_25" range="0x0000 0xFFFF" default="0xD208">
+			<bitfield  name="BITS_0_3" confidential="Y" mask="0x000F" display_name="0-3: Reserved" range="0x0000 0x000F"></bitfield>
+			<bitfield  name="BIT_4" confidential="Y" mask="0x0010" display_name="4: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="BIT_5" confidential="Y" mask="0x0020" display_name="5: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="ANA_SREG_COL_AMP_GABS" mask="0x0300" display_name="8-9: ana_sreg_col_amp_gabs" range="0x0000 0x0003"></bitfield>
+			<bitfield  name="BIT_10" confidential="Y" mask="0x0400" display_name="10: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="BIT_11" confidential="Y" mask="0x0800" display_name="11: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="BIT_12" confidential="Y" mask="0x1000" display_name="12: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="BIT_13" confidential="Y" mask="0x2000" display_name="13: Reserved" range="0x0000 0x0001"></bitfield>
+			<bitfield  name="BITS_14_15" confidential="Y" mask="0xC000" display_name="14-15: Reserved"></bitfield></reg>
+		<reg  name="RESERVED_MFR_3EE6" addr="0x3EE6" space="MFR" span="2" confidential="Y" mask="0xDFFF" display_name="Reserved" range="0x0000 0xCFFF" default="0x8303"></reg>
+		<reg  name="RESERVED_MFR_3EE8" addr="0x3EE8" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3EEA" addr="0x3EEA" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" range="0x0000 0xFFFF"></reg>
+		<reg  name="RESERVED_MFR_3FD0" addr="0x3FD0" space="MFR" span="2" confidential="Y" mask="0x0FFF" display_name="Reserved" default="0x0F00"></reg>
+		<reg  name="RESERVED_MFR_3FD2" addr="0x3FD2" space="MFR" span="2" confidential="Y" mask="0x07FF" display_name="Reserved"></reg>
+		<reg  name="RESERVED_MFR_3FD4" addr="0x3FD4" space="MFR" span="2" confidential="Y" mask="0x7FFF" display_name="Reserved" rw="RO"></reg>
+		<reg  name="RESERVED_MFR_3FD6" addr="0x3FD6" space="MFR" span="2" confidential="Y" mask="0x07FF" display_name="Reserved" rw="RO"></reg>
+		<reg  name="RESERVED_MFR_3FD8" addr="0x3FD8" space="MFR" span="2" confidential="Y" mask="0x1FFF" display_name="Reserved" rw="RO"></reg>
+		<reg  name="RESERVED_MFR_3FDA" addr="0x3FDA" space="MFR" span="2" confidential="Y" mask="0x1FFF" display_name="Reserved" rw="RO"></reg>
+		<reg  name="RESERVED_MFR_3FE0" addr="0x3FE0" space="MFR" span="2" confidential="Y" mask="0xFFF7" display_name="Reserved"></reg>
+		<reg  name="RESERVED_MFR_3FE2" addr="0x3FE2" space="MFR" span="2" confidential="Y" mask="0x00F7" display_name="Reserved" rw="RO"></reg>
+		<reg  name="RESERVED_MFR_3FE4" addr="0x3FE4" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" rw="RO"></reg>
+		<reg  name="RESERVED_MFR_3FE6" addr="0x3FE6" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" rw="RO"></reg>
+		<reg  name="RESERVED_MFR_3FE8" addr="0x3FE8" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" rw="RO"></reg>
+		<reg  name="RESERVED_MFR_3FEA" addr="0x3FEA" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" rw="RO"></reg>
+		<reg  name="RESERVED_MFR_3FEC" addr="0x3FEC" space="MFR" span="2" confidential="Y" mask="0xFFFF" display_name="Reserved" rw="RO"></reg>
+
+
+
+	</registers>
+
+<copyright>
+  Copyright (c) 2013 Aptina Imaging Corporation.   All rights reserved.
+
+
+  No permission to use, copy, modify, or distribute this software and/or
+  its documentation for any purpose has been granted by Aptina Imaging Corporation.
+  If any such permission has been granted ( by separate agreement ), it
+  is required that the above copyright notice appear in all copies and
+  that both that copyright notice and this permission notice appear in
+  supporting documentation, and that the name of Aptina Imaging Corporation or any
+  of its trademarks may not be used in advertising or publicity pertaining
+  to distribution of the software without specific, written prior permission.
+
+
+  This software and any associated documentation are provided AS IS and
+  without warranty of any kind.   APTINA IMAGING CORPORATION EXPRESSLY DISCLAIMS
+  ALL WARRANTIES EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO, NONINFRINGEMENT
+  OF THIRD PARTY RIGHTS, AND ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
+  FOR A PARTICULAR PURPOSE.  APTINA DOES NOT WARRANT THAT THE FUNCTIONS CONTAINED
+  IN THIS SOFTWARE WILL MEET YOUR REQUIREMENTS, OR THAT THE OPERATION OF THIS SOFTWARE
+  WILL BE UNINTERRUPTED OR ERROR-FREE.  FURTHERMORE, APTINA DOES NOT WARRANT OR
+  MAKE ANY REPRESENTATIONS REGARDING THE USE OR THE RESULTS OF THE USE OF ANY
+  ACCOMPANYING DOCUMENTATION IN TERMS OF ITS CORRECTNESS, ACCURACY, RELIABILITY,
+  OR OTHERWISE.
+</copyright>
+<revision>
+// $Revision: 36008 $
+// $Date: 2013-05-22 08:54:47 -0700 (Wed, 22 May 2013) $
+//
+// product last modified: 2009-02-23 09:38:00   version last modified: 2012-03-07 13:39:32   register last modified: 2013-05-21 12:52:23 
+</revision>
+</sensor>
