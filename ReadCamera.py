@@ -3,7 +3,6 @@
 
 """
 Script to read out the TIScamera using python.
-Probably using a wrapper to interface to Mplayer
 """
 
 from optparse import OptionParser
@@ -25,7 +24,10 @@ parser.add_option("-c", "--camera", dest="camera",
                        "implemented yet... (default: %default)")
 parser.add_option("-e", "--exposure", dest="exposuretime",
                   metavar='125', type='float',
-                  help="Exposure time [ms] (?)")
+                  help="Exposure time [ms]")
+parser.add_option("-f", "--framerate", dest="framerate",
+                  metavar='30', type='int',
+                  help="Framerate of the ffmpeg-process at the end")
 parser.add_option("-i", "--images", dest="images",
                   default=5, type="int",
                   help="How many images should ffmpeg save at the end? "
@@ -157,32 +159,33 @@ if options.preview:
 # Save output to a file, load that and display it.
 # We save option.images images, since we often demand an image from the camera
 # while it is in the middle of a circle, thus it's a corrupted image...
-Runtime = str(int(time.time()))
+
+
+# Construct path
+FileSavePath = os.path.join('Images', options.camera, str(int(time.time())))
+if options.suffix:
+    FileSavePath += '_' + str(options.suffix)
+if options.exposuretime:
+    # Go back from 100 us units to real time
+    FileSavePath += '_' + str(options.exposuretime / 10) + 'ms'
+if options.framerate:
+    FileSavePath += '_' + str(options.framerate) + 'fps'
 try:
     # Generating necessary directories
-    if options.suffix:
-        os.makedirs(os.path.join('Images', options.camera,
-                    Runtime + '_' + options.suffix))
-    else:
-        os.makedirs(os.path.join('Images', options.camera, Runtime))
+    os.makedirs(FileSavePath)
 except:
-    print os.path.join('Images', options.camera, Runtime),\
-        'cannot be generated'
+    print FileSavePath, 'cannot be generated'
     sys.exit(1)
 
 # ffmpeg command based on http://askubuntu.com/a/102774
 print "Getting", options.images, "images from the camera"
-Hz = int(round(1 / (options.exposuretime / 10 / 1000)))
+# Hz = int(round(1 / (options.exposuretime / 10 / 1000)))
 ffmpegcommand = "ffmpeg -f video4linux2 -s " + str(CMOSwidth) + "x" +\
     str(CMOSheight) + " -i " + CameraPath + " -vframes " +\
-    str(options.images) + " -r " + str(Hz) + " "
-if options.suffix:
-    ffmpegcommand += os.path.join('Images', options.camera,
-                                  Runtime + '_' + options.suffix) +\
-        "/snapshot_%03d.jpg"
-else:
-    ffmpegcommand += os.path.join('Images', options.camera, Runtime) +\
-        "/snapshot_%03d.jpg"
+    str(options.images) + " "
+if options.framerate:
+    ffmpegcommand += "-r " + str(options.framerate) + " "
+ffmpegcommand += FileSavePath + "/snapshot_%03d.jpg"
 if options.verbose:
     print 'Saving images with'
     print
@@ -195,26 +198,14 @@ t1 = time.time()
 print "in", str(round(t1 - t0, 3)), "seconds (" +\
     str(round(options.images / (t1-t0), 3)) + " images per second)"
 
-if options.suffix:
-    filename = os.path.join('Images', options.camera,
-                            Runtime + '_' + options.suffix,
-                            "snapshot_%03d" % (int(round(options.images /
-                                                         2.0))) + ".jpg")
-else:
-    filename = os.path.join('Images', options.camera, Runtime,
-                            "snapshot_%03d" % (int(round(options.images /
-                                                         2.0))) + ".jpg")
+filename = os.path.join(FileSavePath,
+    "snapshot_%03d" % (int(round(options.images / 2.0))) + ".jpg")
+
 image = plt.imread(filename)
 plt.imshow(image, origin="lower")
 figuretitle = "Snapshot", str(int(round(options.images / 2.0))), "of",\
-    str(options.images), "from"
-if options.suffix:
-    #~ Add to title-tuple with comma: http://stackoverflow.com/a/4913789
-    figuretitle += os.path.join("Images", options.camera,
-                                Runtime + '_' + options.suffix),
-else:
-    figuretitle += os.path.join("Images", options.camera, Runtime),
-figuretitle += "\nwith an exposure time of", str(options.exposuretime), "ms",
+    str(options.images), "from", FileSavePath, "\nwith an exposure time of",\
+    str(options.exposuretime / 10), "ms",
 if options.preview:
     plt.axhspan(ymin=CMOSheight-previewheight, ymax=CMOSheight,
                 xmin=0, xmax=float(previewwidth)/CMOSwidth,
@@ -226,12 +217,6 @@ plt.title(' '.join(figuretitle))
 plt.show()
 
 print 'Images saved to',
-if options.suffix:
-    print os.path.abspath(os.path.join('Images', options.camera,
-                                       Runtime + '_' + options.suffix,
-                                       'snapshot*.jpg'))
-else:
-    print os.path.abspath(os.path.join('Images', options.camera, Runtime,
-                                       'snapshot*.jpg'))
+print os.path.abspath(os.path.join(FileSavePath, 'snapshot*.jpg'))
 print 80 * "-"
 print "done"
