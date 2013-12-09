@@ -160,7 +160,6 @@ if options.preview:
 # We save option.images images, since we often demand an image from the camera
 # while it is in the middle of a circle, thus it's a corrupted image...
 
-
 # Construct path
 FileSavePath = os.path.join('Images', options.camera, str(int(time.time())))
 if options.suffix:
@@ -177,15 +176,16 @@ except:
     print FileSavePath, 'cannot be generated'
     sys.exit(1)
 
-# ffmpeg command based on http://askubuntu.com/a/102774
+# Use ffmpeg to save video stream to lossless video, then extract single frames
+# from this video
 print "Getting", options.images, "images from the camera"
-# Hz = int(round(1 / (options.exposuretime / 10 / 1000)))
+VideoTime = options.images * options.exposuretime
+print 'Corresponding to', round(VideoTime), 'seconds of video'
+# Command based on https://trac.ffmpeg.org/wiki/x264EncodingGuide#LosslessH.264
+# ffmpeg -i input -c:v libx264 -preset ultrafast -qp 0 output.mkv
 ffmpegcommand = "ffmpeg -f video4linux2 -s " + str(CMOSwidth) + "x" +\
-    str(CMOSheight) + " -i " + CameraPath + " -vframes " +\
-    str(options.images) + " "
-if options.framerate:
-    ffmpegcommand += "-r " + str(options.framerate) + " "
-ffmpegcommand += FileSavePath + "/snapshot_%03d.jpg"
+    str(CMOSheight) + " -i " + CameraPath +  " -c:v libx264 -preset " +\
+    "ultrafast -qp 0 output.mkv -t 10"
 if options.verbose:
     print 'Saving images with'
     print
@@ -198,25 +198,27 @@ t1 = time.time()
 print "in", str(round(t1 - t0, 3)), "seconds (" +\
     str(round(options.images / (t1-t0), 3)) + " images per second)"
 
-filename = os.path.join(FileSavePath,
-    "snapshot_%03d" % (int(round(options.images / 2.0))) + ".jpg")
+#~ filename = os.path.join(FileSavePath,
+                        #~ "snapshot_%03d" % (int(round(options.images / 2.0))) +
+                        #~ ".jpg")
+#~ 
+#~ image = plt.imread(filename)
+#~ plt.imshow(image, origin="lower")
+#~ figuretitle = "Snapshot", str(int(round(options.images / 2.0))), "of",\
+    #~ str(options.images), "from", FileSavePath, "\nwith an exposure time of",\
+    #~ str(options.exposuretime / 10), "ms",
+#~ if options.preview:
+    #~ plt.axhspan(ymin=CMOSheight-previewheight, ymax=CMOSheight,
+                #~ xmin=0, xmax=float(previewwidth)/CMOSwidth,
+                #~ facecolor='r', alpha=0.5)
+    #~ plt.xlim([0, CMOSwidth])
+    #~ plt.ylim([0, CMOSheight])
+    #~ figuretitle += "\nred=preview area",
+#~ plt.title(' '.join(figuretitle))
+#~ plt.show()
+#~ 
+#~ print 'Images saved to',
+#~ print os.path.abspath(os.path.join(FileSavePath, 'snapshot*.jpg'))
 
-image = plt.imread(filename)
-plt.imshow(image, origin="lower")
-figuretitle = "Snapshot", str(int(round(options.images / 2.0))), "of",\
-    str(options.images), "from", FileSavePath, "\nwith an exposure time of",\
-    str(options.exposuretime / 10), "ms",
-if options.preview:
-    plt.axhspan(ymin=CMOSheight-previewheight, ymax=CMOSheight,
-                xmin=0, xmax=float(previewwidth)/CMOSwidth,
-                facecolor='r', alpha=0.5)
-    plt.xlim([0, CMOSwidth])
-    plt.ylim([0, CMOSheight])
-    figuretitle += "\nred=preview area",
-plt.title(' '.join(figuretitle))
-plt.show()
-
-print 'Images saved to',
-print os.path.abspath(os.path.join(FileSavePath, 'snapshot*.jpg'))
 print 80 * "-"
 print "done"
