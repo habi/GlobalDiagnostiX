@@ -8,6 +8,7 @@ Script to read out the TIScamera using python.
 from optparse import OptionParser
 import sys
 import os
+import shutil
 import subprocess
 import time
 import matplotlib.pylab as plt
@@ -25,19 +26,16 @@ parser.add_option("-c", "--camera", dest="camera",
 parser.add_option("-e", "--exposure", dest="exposuretime",
                   metavar='125', type='float',
                   help="Exposure time [ms]")
-parser.add_option("-f", "--framerate", dest="framerate",
-                  metavar='30', type='int',
-                  help="Framerate of the ffmpeg-process at the end")
-parser.add_option("-i", "--images", dest="images",
-                  default=5, type="int",
-                  help="How many images should ffmpeg save at the end? "
-                       "(default: %default)")
 parser.add_option("-p", "--preview", dest="preview",
                   action="store_true", default=False,
                   help="Preview image (default: %default)")
 parser.add_option("-s", "--suffix", dest="suffix",
-                  type='str', metavar='Suffix',
+                  type='str', metavar='SomeSuffix',
                   help="Suffix to add after the foldername")
+parser.add_option("-t", "--time", dest="videotime",
+                  default=5, type="float", metavar=12.3,
+                  help="How many seconds of video shall I record? "
+                  "(default: %default)")
 parser.add_option("-v", "--verbose", dest="verbose",
                   action="store_true", default=False,
                   help="Be chatty. (default: %default)")
@@ -107,9 +105,9 @@ if options.verbose:
     print 'The desired exposure time is', options.exposuretime, 'ms',
 else:
     print 'Setting exposure time to', options.exposuretime, 'ms'
-options.exposuretime = options.exposuretime * 10
+exposureunits = options.exposuretime * 10
 if options.verbose:
-    print '(corresponding to', int(options.exposuretime), '"100 µs units").'
+    print '(corresponding to', int(exposureunits), '"100 µs units").'
 
 if options.verbose:
     process = subprocess.Popen(['v4l2-ctl', '--device=' + CameraPath, '-L'],
@@ -123,7 +121,7 @@ if options.verbose:
 #~ Use 'v4l2-ctl -c exposure_absolute=time' to set exposure time
 process = subprocess.Popen(["v4l2-ctl", '--device=' + CameraPath,
                             "-c", "exposure_absolute=" +
-                            str(options.exposuretime)], stdout=subprocess.PIPE)
+                            str(exposureunits)], stdout=subprocess.PIPE)
 if options.verbose:
     process = subprocess.Popen(['v4l2-ctl', '--device=' + CameraPath, '-L'],
                                stdout=subprocess.PIPE)
@@ -145,7 +143,7 @@ if options.preview:
     mplayercommand = "mplayer tv:// -tv width=" + str(previewwidth) +\
         ":device=" + CameraPath + " -geometry 50%:50% -title 'Previewing" +\
         " top left edge (" + str(previewwidth) + "x" + str(previewwidth) +\
-        " px), with an exposure time of " + str(options.exposuretime / 10) +\
+        " px), with an exposure time of " + str(options.exposuretime) +\
         " ms' -nosound"
     if options.verbose:
         print 'Previewing images with'
@@ -165,10 +163,7 @@ FileSavePath = os.path.join('Images', options.camera, str(int(time.time())))
 if options.suffix:
     FileSavePath += '_' + str(options.suffix)
 if options.exposuretime:
-    # Go back from 100 us units to real time
-    FileSavePath += '_' + str(options.exposuretime / 10) + 'ms'
-if options.framerate:
-    FileSavePath += '_' + str(options.framerate) + 'fps'
+    FileSavePath += '_' + str(options.exposuretime) + 'ms'
 try:
     # Generating necessary directories
     os.makedirs(FileSavePath)
@@ -178,47 +173,80 @@ except:
 
 # Use ffmpeg to save video stream to lossless video, then extract single frames
 # from this video
-print "Getting", options.images, "images from the camera"
-VideoTime = options.images * options.exposuretime
-print 'Corresponding to', round(VideoTime), 'seconds of video'
+print 'Saving', options.videotime, 'seconds of video',
+# Exposure time in ms -> theoretical FPS
+TheoreticalFPS = 1000 / options.exposuretime
+print 'with (theoretically)', round(TheoreticalFPS,2), 'fps'
+if TheoreticalFPS > 7.5:
+	print 'According to "v4l2-ctl --list-formats-ext" we can reach 7.5 fps max.'
+
 # Command based on https://trac.ffmpeg.org/wiki/x264EncodingGuide#LosslessH.264
 # ffmpeg -i input -c:v libx264 -preset ultrafast -qp 0 output.mkv
-ffmpegcommand = "ffmpeg -f video4linux2 -s " + str(CMOSwidth) + "x" +\
-    str(CMOSheight) + " -i " + CameraPath +  " -c:v libx264 -preset " +\
-    "ultrafast -qp 0 output.mkv -t 10"
+ffmpegcommand = "ffmpeg -y -f video4linux2 -s " + str(CMOSwidth) + "x" +\
+    str(CMOSheight) + " -i " + CameraPath +  " -vcodec libx264 -preset " +\
+    "ultrafast -qp 0 -t " + str(options.videotime) + " " + \
+    os.path.join(FileSavePath,'video.mkv')
+
+# -preset ultrafast -qp 0 -> lossless
+# -t $time$ -> save $time$ seconds of video
+# -y overwrite always
 if options.verbose:
-    print 'Saving images with'
-    print
+    print 'Recording video with'
+    print 20 * '-'
     print ffmpegcommand
-    print
+    print 20 * '-'
+print 'Saving video now!'
+print 'Please stand by for at least', int(round(options.videotime)),\
+	'seconds...'
+print 'Press the trigger while doing this!'
 t0 = time.time()
 subprocess.call(ffmpegcommand, stdout=DEVNULL, stderr=subprocess.STDOUT,
                 shell=True)
 t1 = time.time()
-print "in", str(round(t1 - t0, 3)), "seconds (" +\
-    str(round(options.images / (t1-t0), 3)) + " images per second)"
+if t1 - t0 < options.videotime:
+	print
+	print 'It seems that I was saving faster than possible, the process',\
+		'probably failed'
+	print 'I am deleting',FileSavePath
+	print
+	print 'Please restart acquisition by repeating your last command.'
+	shutil.rmtree(FileSavePath)
+	sys.exit(1)
+print "Recording and saving the video took me", str(round(t1 - t0, 2)),\
+	"seconds"
 
-#~ filename = os.path.join(FileSavePath,
-                        #~ "snapshot_%03d" % (int(round(options.images / 2.0))) +
-                        #~ ".jpg")
-#~ 
-#~ image = plt.imread(filename)
-#~ plt.imshow(image, origin="lower")
-#~ figuretitle = "Snapshot", str(int(round(options.images / 2.0))), "of",\
-    #~ str(options.images), "from", FileSavePath, "\nwith an exposure time of",\
-    #~ str(options.exposuretime / 10), "ms",
-#~ if options.preview:
-    #~ plt.axhspan(ymin=CMOSheight-previewheight, ymax=CMOSheight,
-                #~ xmin=0, xmax=float(previewwidth)/CMOSwidth,
-                #~ facecolor='r', alpha=0.5)
-    #~ plt.xlim([0, CMOSwidth])
-    #~ plt.ylim([0, CMOSheight])
-    #~ figuretitle += "\nred=preview area",
-#~ plt.title(' '.join(figuretitle))
-#~ plt.show()
-#~ 
-#~ print 'Images saved to',
-#~ print os.path.abspath(os.path.join(FileSavePath, 'snapshot*.jpg'))
+# Converting above video to tiff-files
+convertcommand = "ffmpeg -i " + os.path.join(FileSavePath,'video.mkv') +\
+	" -pix_fmt gray " + os.path.join(FileSavePath,'frame_%05d.tif')
+if options.verbose:
+	print 'Converting video to images with'
+	print 20 * '-'
+	print convertcommand
+	print 20 * '-'
+
+print 'Converting the video into single frames'
+t0 = time.time()
+subprocess.call(convertcommand, stdout=DEVNULL, stderr=subprocess.STDOUT,
+                shell=True)
+t1 = time.time()
+print "Converting the video took me", str(round(t1 - t0, 2)), "seconds"
+     
+# Save 'Log'-file
+logfile = open(os.path.join(FileSavePath,'_log.txt'), "w")
+logfile.write('The files in this directory were generated by this command:\n')
+logfile.write(' '.join(sys.argv))
+logfile.close()
+
+print
+print 'In the directory', FileSavePath, 'you now have'
+print '    * a logfile (_log.txt)'
+print '    * the raw video from the camera (video.mkv)'
+# Count only certain files (http://stackoverflow.com/a/1321138)
+NumberOfFrames = len([f for f in os.listdir(FileSavePath)
+	if f.endswith('.tif') and os.path.isfile(os.path.join(FileSavePath, f))])
+print '    * and', NumberOfFrames, 'frames of the video (frame*.tif), thus',\
+	'a (calculated)', str(round(NumberOfFrames / options.videotime,2)), 'fps.' 
+print 'Have fun with this!'
 
 print 80 * "-"
 print "done"
