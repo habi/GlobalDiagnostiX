@@ -21,7 +21,6 @@
 .pki/
 .profile
 Desktop/
-*.*~
 Downloads/
 ImageJ-Elphel/
 *.pdf
@@ -37,4 +36,9 @@ tiscamera/gige/
 tiscamera/gst/
 tiscamera/tools/
 tiscamera/v4l2/
-snapshot_???.jpg
+aptina/DevWareX/
+aptina/README
+aptina/external/
+aptina/include/
+aptina/lib/
+aptina/samples/
