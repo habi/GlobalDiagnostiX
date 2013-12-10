@@ -184,8 +184,8 @@ if TheoreticalFPS > 7.5:
 # Command based on https://trac.ffmpeg.org/wiki/x264EncodingGuide#LosslessH.264
 # ffmpeg -i input -c:v libx264 -preset ultrafast -qp 0 output.mkv
 ffmpegcommand = "ffmpeg -y -f video4linux2 -s " + str(CMOSwidth) + "x" +\
-    str(CMOSheight) + " -i " + CameraPath + " -vcodec libx264 -preset " +\
-    "ultrafast -qp 0 -t " + str(options.videotime) + " " + \
+    str(CMOSheight) + " -i " + CameraPath + " -vcodec libx264 -vpre " +\
+    "ultrafast -crf 0 -t " + str(options.videotime) + " " + \
     os.path.join(FileSavePath, 'video.mkv')
 
 # -preset ultrafast -qp 0 -> lossless
@@ -244,7 +244,8 @@ print '    * a logfile (_log.txt)'
 print '    * the raw video from the camera (video.mkv)'
 # Count only certain files (http://stackoverflow.com/a/1321138)
 NumberOfFrames = len([f for f in os.listdir(FileSavePath)
-    if f.endswith('.tif') and os.path.isfile(os.path.join(FileSavePath, f))])
+                     if f.endswith('.tif') and
+                     os.path.isfile(os.path.join(FileSavePath, f))])
 print '    * and', NumberOfFrames, 'frames of the video (frame*.tif), thus',\
     'a (calculated)', str(round(NumberOfFrames / options.videotime, 2)), 'fps.'
 print 'Have fun with this!'
