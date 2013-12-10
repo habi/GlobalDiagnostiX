@@ -56,15 +56,23 @@ print 80 * "-"
 print "Hey ho, let's go!"
 
 # Check at which /dev/video we have a camera
-for device in range(5):
+for device in range(6):
     if os.path.exists('/dev/video' + str(device)):
         CameraPath = '/dev/video' + str(device)
-        if options.verbose:
-            print 'Found a camera on', CameraPath
         break
     else:
         if options.verbose:
             print 'Nothing found at /dev/video' + str(device)
+
+try:
+    CameraPath
+except NameError:
+    print 'I was not able to find a camera connected on any of /dev/video0..5'
+    print 'Please make sure the camera is connected and retry.'
+    sys.exit(1)
+else:
+    if options.verbose:
+        print 'Found a camera on', CameraPath
 
 if options.verbose:
     print "We are trying to work with the '" + options.camera + "' camera"
@@ -184,7 +192,7 @@ if TheoreticalFPS > 7.5:
 # Command based on https://trac.ffmpeg.org/wiki/x264EncodingGuide#LosslessH.264
 # ffmpeg -i input -c:v libx264 -preset ultrafast -qp 0 output.mkv
 ffmpegcommand = "ffmpeg -y -f video4linux2 -s " + str(CMOSwidth) + "x" +\
-    str(CMOSheight) + " -i " + CameraPath + " -vcodec libx264 -preset " +\
+    str(CMOSheight) + " -i " + CameraPath + " -vcodec libx264 -vpre " +\
     "ultrafast -qp 0 -t " + str(options.videotime) + " " + \
     os.path.join(FileSavePath, 'video.mkv')
 
@@ -244,7 +252,8 @@ print '    * a logfile (_log.txt)'
 print '    * the raw video from the camera (video.mkv)'
 # Count only certain files (http://stackoverflow.com/a/1321138)
 NumberOfFrames = len([f for f in os.listdir(FileSavePath)
-    if f.endswith('.tif') and os.path.isfile(os.path.join(FileSavePath, f))])
+                     if f.endswith('.tif') and
+                     os.path.isfile(os.path.join(FileSavePath, f))])
 print '    * and', NumberOfFrames, 'frames of the video (frame*.tif), thus',\
     'a (calculated)', str(round(NumberOfFrames / options.videotime, 2)), 'fps.'
 print 'Have fun with this!'
