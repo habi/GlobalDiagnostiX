@@ -23,6 +23,10 @@ parser.add_option("-c", "--camera", dest="camera",
                   help="Camera to use; at the moment 'tis', 'aptina' and "
                        "'awaiba', even when the two latter options are not "
                        "implemented yet... (default: %default)")
+parser.add_option("-d", "--display", dest="display",
+                  action="store_true", default=False,
+                  help="Display middle frame of the movie at the end. "
+                       "(default: %default)")
 parser.add_option("-e", "--exposure", dest="exposuretime",
                   metavar='125', type='float',
                   help="Exposure time [ms]")
@@ -249,6 +253,26 @@ NumberOfFrames = len([f for f in os.listdir(FileSavePath)
 print '    * and', NumberOfFrames, 'frames of the video (frame*.tif), thus',\
     'a (calculated)', str(round(NumberOfFrames / options.videotime, 2)), 'fps.'
 print 'Have fun with this!'
+
+if options.display:
+    # Get middle frame
+    filename = os.path.join(FileSavePath,
+        "frame_%05d" % (int(round(NumberOfFrames / 2.0))) + ".tif")
+    # Make image
+    image = plt.imread(filename)
+    plt.imshow(image, origin="lower", cmap=plt.cm.Greys_r)
+    figuretitle = "Snapshot", str(int(round(NumberOfFrames / 2.0))), "of",\
+        str(NumberOfFrames), "from", FileSavePath, "\nwith an exposure time",\
+        "of", str(options.exposuretime), "ms",
+    if options.preview:
+        plt.axhspan(ymin=CMOSheight - previewheight, ymax=CMOSheight,
+                    xmin=0, xmax=float(previewwidth) / CMOSwidth,
+                    facecolor='r', alpha=0.5)
+        plt.xlim([0, CMOSwidth])
+        plt.ylim([0, CMOSheight])
+        figuretitle += " ! red=preview area",
+    plt.title(' '.join(figuretitle))
+    plt.show()
 
 print 80 * "-"
 print "done"
