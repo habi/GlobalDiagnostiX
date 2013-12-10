@@ -55,7 +55,7 @@ if not options.exposuretime:
 print 80 * "-"
 print "Hey ho, let's go!"
 
-# Check at which /dev/video we have a camera
+# Check if and where (/dev/video0..5) we have a camera
 for device in range(6):
     if os.path.exists('/dev/video' + str(device)):
         CameraPath = '/dev/video' + str(device)
@@ -63,7 +63,7 @@ for device in range(6):
     else:
         if options.verbose:
             print 'Nothing found at /dev/video' + str(device)
-
+# If we didn't "CameraPath", there's no cam, thus exit.
 try:
     CameraPath
 except NameError:
