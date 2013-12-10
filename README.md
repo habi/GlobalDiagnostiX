@@ -1,15 +1,21 @@
-This repo tracks some stuff I've written as part of my work as a member of the [GlobalDiagnostiX](http://globaldiagnostix.org)-alliance
+# Develpopment Repository for OmmatiDiag
 
-I'm trying to work with an [Elphel](http://elphel.com)-camera connected to a [Raspberry Pi](http://raspberrypi.org), the code in this repo currently deals only with this.
+This repo tracks code (mostly Python) written while working on OmmatiDiag, the
+affordable, reliable and standard-compliant detector for the
+[GlobalDiagnostiX][GDX]-system.
 
-* /Dev/Elphel/CamReader.py: Script to read the camera and either save the images, show them or do a triggered exposure
-* /Dev/Elphel/elphel.py: First iteration of a script to read out the camera. First proof of concept experiments were performed with this
-* /Dev/Elphel/GPIO*.py: Smallish test-scripts to use the GPIO pins of the Raspberry Pi for input and output
-* /Dev/Elphel/TriggeredExposure.py: Script to use the internal clock of the camera to trigger the anode rotation, x-ray pulse and the exposure. Then read out the image
-* Info/*: Directory with some information and notes I made during development
-* LICENSE: (un)license
-* README.md: The file you're looking at now
-* SetupPi.md: HowTo for setting up a Raspberry Pi from scratch, to use with these scripts to download images from an Elphel camera and to trigger an x-ray exposure
-* Switch.py: Switch the network interface from DHCP to 192.168.0.9, for switching between PSI network and hooking up the Elphel camera
-* SyncToAFS.cmd: rsync all changes to the PSI AFS, so we have a backup on the PSI system.
+[GDX]: http://globaldiagnostix.org
 
+The files follow the [PEP 8 -- Style Guide for Python Code][pep8] and the
+[Git branching model described by Vincent Driessen][branching] as closely as
+possible.
+
+[pep8]: http://www.python.org/dev/peps/pep-0008/ 
+[branching]: http://nvie.com/posts/a-successful-git-branching-model/
+
+Since this is part of a scientific project and is depending on particular
+hardware, it doesn't make sense to make it closed source, the whole repository
+is covered by [an (un)license](LICENSE).
+[I]'m very grateful for pull requests, (better) ideas and tips!
+
+[I]: http://davidhaberthuer.ch/
