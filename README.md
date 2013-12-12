@@ -13,9 +13,11 @@ possible.
 [pep8]: http://www.python.org/dev/peps/pep-0008/ 
 [branching]: http://nvie.com/posts/a-successful-git-branching-model/
 
-Since this is part of a scientific project and is depending on particular
-hardware, it doesn't make sense to make it closed source, the whole repository
-is covered by [an (un)license](LICENSE).
-[I]'m very grateful for pull requests, (better) ideas and tips!
+Since this repository is part of a scientific project and is depending on
+a particular set of hardware, it seems silly to make it closed source, the whole
+thing is covered by [an (un)license](LICENSE).
+
+[I, the author] of those files am very grateful for pull requests, (better)
+ideas on how to implement certain things and tips!
 
 [I]: http://davidhaberthuer.ch/
