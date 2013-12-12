@@ -14,6 +14,7 @@ This should be the 'best' exposed image of all the exposures.
 import glob
 import os
 from pylab import *
+import shutil
 
 StartingFolder = '/afs/psi.ch/user/h/haberthuer/EssentialMed/Dev/Images/tis'
 #~ StartingFolder = '/afs/psi.ch/project/EssentialMed/Images/' +\
@@ -28,7 +29,8 @@ Exposures = [glob.glob(os.path.join(Folder, '*.jpg'))
 
 # os.walk includes the base directory, thus go from 1 to end...
 for i in range(1, len(Exposures)):
-    print 20 * '-'
+    plt.figure()
+    print 20 * '-', i, '/', len(Exposures), 20 * '-'
     print 'Getting the mean of', len(Exposures[i]), 'Images from',\
         os.path.basename(ListOfFolders[i])
     #~ Min = [ plt.imread(Image).min() for Image in Exposures[i]]
@@ -36,12 +38,11 @@ for i in range(1, len(Exposures)):
     #~ Max = [ plt.imread(Image).max() for Image in Exposures[i]]
     print 'MeanValue of images vary between', round(min(MeanValue), 2), 'and',\
         round(max(MeanValue), 2)
-    print 'The maximum is found in image', MeanValue.index(max(MeanValue)),\
-        'which corresponds to',\
+    print 'A maximum of', round(max(MeanValue), 2), 'was found in image',\
+        MeanValue.index(max(MeanValue)), 'which corresponds to',\
         os.path.basename(Exposures[i][MeanValue.index(max(MeanValue))])
-
     plt.plot(MeanValue)
-    plt.title(' '.join(['MeanValue value of', str(len(Exposures[i])),
+    plt.title(' '.join(['Mean value of', str(len(Exposures[i])),
                         'images in', str(os.path.basename(ListOfFolders[i])),
                         '\nmaximal value found in',
                         str(os.path.basename(
@@ -51,3 +52,26 @@ for i in range(1, len(Exposures)):
     plt.savefig(os.path.join(StartingFolder,
                              os.path.basename(ListOfFolders[i]) + '.png'))
     #~ plt.show()
+    # Delete unnecessary files
+    # Proceed with caution!
+    # Go through all the files, if they are *not* close to the selected one,
+    # then delete them. But only do this if we've found the 'best' exposure not
+    # in the first or last five images AND the mean is a meaningful value (>2)
+    Delete = True
+    if max(MeanValue) < 5:
+        print 'None of the images has a mean larger than 5,',
+        if Delete:
+            print 'deleting the whole directory...'
+            shutil.rmtree(ListOfFolders[i])
+        else:
+            print 'one could delete', ListOfFolders[i]
+    if (MeanValue.index(max(MeanValue)) > 5 or (len(Exposures[i]) - MeanValue.index(max(MeanValue))) > 5) and max(MeanValue) > 2:
+        for k in Exposures[i]:
+            if k not in Exposures[i][MeanValue.index(max(MeanValue))-4:
+                                     MeanValue.index(max(MeanValue))+5]:
+                if Delete:
+                    os.remove(k)
+                else:
+                    print 'I would remove', k
+        if not Delete:
+            print 'if you set Delete=True on line 59 of the script.'
