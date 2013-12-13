@@ -16,9 +16,9 @@ import os
 from pylab import *
 import shutil
 
-StartingFolder = '/afs/psi.ch/user/h/haberthuer/EssentialMed/Dev/Images/tis'
-#~ StartingFolder = '/afs/psi.ch/project/EssentialMed/Images/' +\
-    #~ '12-GOTTHARD_and_TIS/TIS/'
+#~ StartingFolder = '/afs/psi.ch/user/h/haberthuer/EssentialMed/Dev/Images/tis'
+StartingFolder = '/afs/psi.ch/project/EssentialMed/Images/' +\
+    '12-GOTTHARD_and_TIS/TIS/'
 
 # Get list of (only) directories in StartingFolder
 # http://stackoverflow.com/a/973488
@@ -30,7 +30,7 @@ Exposures = [glob.glob(os.path.join(Folder, '*.jpg'))
 # os.walk includes the base directory, thus go from 1 to end...
 for i in range(1, len(Exposures)):
     plt.figure()
-    print 20 * '-', i, '/', len(Exposures), 20 * '-'
+    print 20 * '-', i, '/', len(Exposures)-1, 20 * '-'
     print 'Getting the mean of', len(Exposures[i]), 'Images from',\
         os.path.basename(ListOfFolders[i])
     #~ Min = [ plt.imread(Image).min() for Image in Exposures[i]]
@@ -44,7 +44,8 @@ for i in range(1, len(Exposures)):
     plt.plot(MeanValue)
     plt.title(' '.join(['Mean value of', str(len(Exposures[i])),
                         'images in', str(os.path.basename(ListOfFolders[i])),
-                        '\nmaximal value found in',
+                        '\nmaximal value of', str(round(max(MeanValue),2)),
+                        'found in',
                         str(os.path.basename(
                             Exposures[i][MeanValue.index(max(MeanValue))]))]))
     plt.savefig(os.path.join(StartingFolder,
@@ -57,7 +58,7 @@ for i in range(1, len(Exposures)):
     # Go through all the files, if they are *not* close to the selected one,
     # then delete them. But only do this if we've found the 'best' exposure not
     # in the first or last five images AND the mean is a meaningful value (>2)
-    Delete = True
+    Delete = False
     if max(MeanValue) < 5:
         print 'None of the images has a mean larger than 5,',
         if Delete:
@@ -74,4 +75,4 @@ for i in range(1, len(Exposures)):
                 else:
                     print 'I would remove', k
         if not Delete:
-            print 'if you set Delete=True on line 59 of the script.'
+            print 'if you set Delete=True on line 6159 of the script.'

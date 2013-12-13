@@ -24,13 +24,14 @@ parser.add_option('-v', '--kv', dest='kV',
                   help='Tube peak voltage [kV] you would like to calcuate the '
                        'dose for. The script only accepts voltages that are '
                        'in the specs (and tells you if you set others). '
-                       'Defaults to 90 kV.')
+                       'Defaults to %default kV, which is the WHO setting for '
+                       'lumbar spine.')
 parser.add_option('-m', '--mas', dest='mAs',
                   type='float',
                   metavar='1.6',
                   default=125,
-                  help='mAs settings. Defaults to 125 mAs, which with the '
-                       'default 90 kV is the setting for lumbar spine.')
+                  help='mAs settings. Defaults to %default mAs, which is the '
+                       'WHO setting for lumbar spine.')
 parser.add_option('-e', '--exposuretime', dest='Exposuretime',
                   type='float',
                   metavar='100',
@@ -42,18 +43,20 @@ parser.add_option('-d', '--distance', dest='Distance',
                   type='float',
                   metavar='100',
                   default=140,
-                  help='Source-Detector distance [cm]. Defaults to 1.4 m')
+                  help='Source-Detector distance [cm]. Defaults to %default'
+                       'cm')
 parser.add_option('-l', '--length', dest='Length',
                   type='float',
                   metavar='15',
-                  default=20,
-                  help='Length of the (square) FOV [cm]. Defaults to 20 cm.')
+                  default=43.,
+                  help='Length of the (square) FOV [cm]. Defaults to %default '
+                       'cm.')
 parser.add_option('-t', '--thickness', dest='Thickness',
                   type='float',
                   metavar='13',
-                  default=20.,
+                  default=15.,
                   help='Patient or sample thickness [cm]. Used to calculate '
-                       'attenuation. Defaults to 20 cm.')
+                       'attenuation. Defaults to %default cm.')
 parser.add_option('-c', '--chatty', dest='chatty',
                   default=False, action='store_true',
                   help='Be chatty. Default: Tell us only the relevant stuff.')
@@ -135,17 +138,25 @@ N0 = SED / PhotonEnergy
 print 'A SED of', '%.3e' % (SED / 1000), 'Gy (mJ/kg) corresponds to',\
     '%.3e' % N0, 'absorbed photons per kg (with a photon',\
     'energy of', '%.3e' % PhotonEnergy, 'J per photon).'
+print 'This SED can be calculated back to a number of photons with',\
+    'N=(UI/E)*eta*(Area/4πr²) and corresponds to',
+
+eta = 1e-9  # *ZV
+# Calculate the number of photons from the tube to the sample
+#~ N0 = (VI/E)*eta*(A/4Pir²)
+N0 = (options.kV * ((options.mAs * 1000) / (options.Exposuretime/1000))) /\
+    PhotonEnergy * eta *\
+    ((options.Length ** 2) / (4 * np.pi * options.Distance ** 2))
+print '%.4e' % N0, 'photons with a mean energy of,', PhotonEnergy
+
 print 'We assume these photons are all the photons that reached the patient,',\
     'and thus can calculate the photon flux from this.'
 
-# Flux
 Flux = N0 / (options.Exposuretime / 1000)
 print 'With an exposure time of', options.Exposuretime, 'ms the',\
     'aforementioned number of photons corresponds to a photon flux of',\
     '%.3e' % Flux, 'photons per second (from the source to the patient',\
     'surface.'
-
-
 
 # Attenuation in Patient
 AttenuationCoefficient = 0.5  # For calculation we just simply assume 50%.
@@ -162,12 +173,9 @@ print '   *', '%.3e' % N, 'photons after the xrays have passed the patient'
 print '   * thus', '%.3e' % (N0 - N), 'photons were absorbed'
 print '   * the intensity dropped to', round((N/N0)*100, 2), '%'
 
-
-
 print
 print
 print 'Use nist-attenuation-scraper.py to get the correct attenuation!'
-
 
 exit()
 
