@@ -6,7 +6,6 @@ from pylab import *
 import os
 import glob
 
-# http://stackoverflow.com/a/11249430/323100
 Spectrapath = '/afs/psi.ch/user/h/haberthuer/EssentialMed/Images/12-GOTTHARD_and_TIS/GOTTHARD'
 Spectra = sort(glob.glob(os.path.join(Spectrapath, '*.txt')))
 
@@ -36,7 +35,13 @@ print 'Plotting Spectra, Logplot and Difference for'
 for i in range(int(len(Spectra)/2)):
     plt.figure(figsize=(16, 9))
     k = i + int(len(Spectra)/2)
-    print '    * ' + DataName[i] + '/' + DataName[k]    
+    print '    * ' + DataName[i], 'vs.', DataName[k]
+    print '        * for', DataName[i], 'we recorded',\
+        '%.3e' % int(np.sum(Data[i][:, 1])), 'photons.'
+    print '        * for', DataName[k], 'we recorded',\
+        '%.3e' % int(np.sum(Data[k][:, 1])), 'photons.'
+    print '        * the difference is',\
+        '%.3e' % int(np.sum(Data[i][:, 1]) - np.sum(Data[k][:, 1])), 'photons'
     plt.subplot(1, 3, 1)
     plt.plot(Data[i][:, 0], Data[i][:, 1], label=DataName[i], color='k')
     plt.plot(Data[k][:, 0], Data[k][:, 1], label=DataName[k], color='g')
@@ -69,8 +74,10 @@ for i in range(int(len(Spectra)/2)):
                 transparent=True)
     plt.savefig(os.path.join('img', 'Full_' + DataName[i] + '.pdf'),
                 transparent=True)
-    #~ plt.show()
+    plt.show()
 
+
+exit()
 
 print
 print 'Plotting'
