@@ -15,6 +15,52 @@ print 'This is', int(round(ScintillatorArea/GOTTHARDArea)), 'times smaller',\
 
 SiliconAttenuation = np.loadtxt('Si_Attenuation.dat')
 SiliconTransmission = np.loadtxt('Si_Transmission.dat')
+SiliconDensity = 2.329  # g/cm³
+SiliconThickness = 320  # um
+
+plt.figure()
+hold(True)
+plt.subplot(1, 2, 1)
+plt.plot(SiliconAttenuation[:, 0]*1000,
+         1- (np.exp(1) ** - (SiliconAttenuation[:, 1] * SiliconDensity *
+                          SiliconThickness / 10000 )), color='k')
+plt.xlabel('Photon Energy [keV]')
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+plt.ylabel(r'Attenuation coefficient $\frac{\mu}{\rho}$ [cm2/g]')
+plt.title('Attenuation')
+plt.xlim([0, 120])
+plt.ylim([0, 1])
+
+from scipy import interpolate
+x = SiliconAttenuation[:, 0] * 1000
+y = (np.exp(- (SiliconAttenuation[:, 1] * SiliconDensity * SiliconThickness / 10000 )))
+f1 = interpolate.interp1d(x,y)
+f2 = interpolate.interp1d(x, y, kind='cubic')
+
+xnew = np.arange(1,120,0.1)
+
+plt.subplot(1, 2, 2)
+plt.plot(SiliconTransmission[:, 0]/1000,
+         SiliconTransmission[:, 1],
+         color='k', label='from Anna')
+plt.plot(SiliconAttenuation[:, 0]*1000,
+         (np.exp(- (SiliconAttenuation[:, 1] * SiliconDensity * SiliconThickness / 10000 ))),
+         'gD', label='from NIST (1-Attenuation)')         
+plt.plot(xnew,f1(xnew)+0.1,'r',label='Int')
+plt.plot(xnew,f2(xnew)+0.2,'b',label='Int')
+#~ plt.legend(loc='best')
+plt.xlabel('Photon Energy [keV]')
+plt.ylabel('Tranmission')
+plt.title('Transmission for a thickness of 320 um')
+plt.xlim([0, 120])
+#~ plt.ylim([0, 1])
+
+# plt.savefig('Si_Attenuation_Transmission.pdf')
+plt.show()
+
+exit()
+
 
 Spectrapath = '/afs/psi.ch/user/h/haberthuer/EssentialMed/Images/12-GOTTHARD_and_TIS/GOTTHARD'
 Spectra = sort(glob.glob(os.path.join(Spectrapath, '*.txt')))
@@ -35,37 +81,3 @@ Frames = [open(item).readlines()[0].split()[1] for item in Spectra]
 BinCenter = [open(item).readlines()[1].split()[0] for item in Spectra]
 Photons = [open(item).readlines()[1].split()[1] for item in Spectra]
 PhotonsPerFrame = [open(item).readlines()[1].split()[2] for item in Spectra]
-
-for Sample in range(len(Spectra)):
-    print 'For', Modality[Sample]
-    print '    * with', Energy[Sample], 'kV and,', mAs[Sample],\
-        'mAs we recorded'
-    print '    * a total of', '%.3e' % np.sum(Data[Sample][:, 1]),\
-        'photons over an area of', int(GOTTHARDArea), 'mm².'
-    print '    * which are',\
-        '%.3e' % (np.sum(Data[Sample][:, 1]) *
-                  (ScintillatorArea/GOTTHARDArea)),\
-        'photons over the full scintillator area (43 x 43 cm²)'
-
-exit()
-
-plt.figure()
-hold(True)
-plt.subplot(1, 2, 1)
-plt.semilogy(SiliconAttenuation[:, 0]*1000, SiliconAttenuation[:, 1], 'r')
-plt.xlabel('Photon Energy [keV]')
-plt.rc('text', usetex=True)
-plt.rc('font', family='serif')
-plt.ylabel(r'Attenuation coefficient $\frac{\mu}{\rho}$ [cm2/g]')
-plt.title('Attenuation')
-plt.xlim([0, 120])
-
-plt.subplot(1, 2, 2)
-plt.plot(SiliconTransmission[:, 0]/1000, SiliconTransmission[:, 1], 'g')
-plt.xlabel('Photon Energy [keV]')
-plt.ylabel('Tranmission')
-plt.title('Transmission for a thickness of 320 um')
-plt.xlim([0, 120])
-
-plt.savefig('Si_Attenuation_Transmission.pdf')
-plt.show()
