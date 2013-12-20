@@ -44,7 +44,7 @@ for i in range(1, len(Exposures)):
     plt.plot(MeanValue)
     plt.title(' '.join(['Mean value of', str(len(Exposures[i])),
                         'images in', str(os.path.basename(ListOfFolders[i])),
-                        '\nmaximal value of', str(round(max(MeanValue),2)),
+                        '\nmaximal value of', str(round(max(MeanValue), 2)),
                         'found in',
                         str(os.path.basename(
                             Exposures[i][MeanValue.index(max(MeanValue))]))]))
@@ -52,7 +52,7 @@ for i in range(1, len(Exposures)):
                              os.path.basename(ListOfFolders[i]) + '.pdf'))
     plt.savefig(os.path.join(StartingFolder,
                              os.path.basename(ListOfFolders[i]) + '.png'))
-    #~ plt.show()
+    plt.show()
     # Delete unnecessary files
     # Proceed with caution!
     # Go through all the files, if they are *not* close to the selected one,
@@ -60,19 +60,36 @@ for i in range(1, len(Exposures)):
     # in the first or last five images AND the mean is a meaningful value (>2)
     Delete = False
     if max(MeanValue) < 5:
+        print
         print 'None of the images has a mean larger than 5,',
         if Delete:
             print 'deleting the whole directory...'
             shutil.rmtree(ListOfFolders[i])
         else:
             print 'one could delete', ListOfFolders[i]
+        print
     if (MeanValue.index(max(MeanValue)) > 5 or (len(Exposures[i]) - MeanValue.index(max(MeanValue))) > 5) and max(MeanValue) > 2:
         for k in Exposures[i]:
-            if k not in Exposures[i][MeanValue.index(max(MeanValue))-4:
-                                     MeanValue.index(max(MeanValue))+5]:
+            NumberoOfImagesToKeep = 5
+            if k not in Exposures[i][MeanValue.index(max(MeanValue))-NumberoOfImagesToKeep-1:
+                                     MeanValue.index(max(MeanValue))+NumberoOfImagesToKeep]:
                 if Delete:
                     os.remove(k)
                 else:
                     print 'I would remove', k
         if not Delete:
-            print 'if you set Delete=True on line 6159 of the script.'
+            print 'if you set Delete=True on line 61 of the script.'
+
+    # Open remaining images as stack in ImageJ
+    # First check if the folder still exists or we deleted it above. Then open
+    # ImageJ with all the files in the folder as a stack, scaled to 25%
+    if os.path.isdir(ListOfFolders[i]):
+        viewcommand = 'imagej -e "run(\\"Image Sequence...\\", \\"open=' +\
+            os.path.abspath(ListOfFolders[i]) + ' scale=25\\");"'
+        print 'Starting ImageJ with the command'
+        print '---'
+        print viewcommand
+        print '---'
+        print 'Quit ImageJ to proceed!'
+        os.system(viewcommand)
+
