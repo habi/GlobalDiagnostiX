@@ -54,9 +54,6 @@ plt.xlabel('Photon Energy [keV]')
 plt.ylabel('Tranmission')
 plt.savefig('1_Si_Transmission.pdf', transparent=True)
 
-plt.show()
-sys.exit()
-
 # Plot transmission-zoom
 plt.figure(figsize=FigureSize)
 for i in reversed(range(5000,20250,500)):
@@ -108,7 +105,7 @@ plt.ylabel('Tranmission')
 plt.xlim([0,120])
 plt.ylim([0,1])
 plt.savefig('2_Si_Transmission_limits.pdf', transparent=True)
-#~ plt.show()
+plt.show()
 
 # Plot interpolated transmission
 x = SiliconAttenuation[:, 0] * 1000
@@ -134,6 +131,8 @@ for i in range(int(len(Spectra)/2)):
     plt.plot(Data[i][:, 0], Data[i][:, 1], label=Label[i], color='k')
     plt.plot(Data[k][:, 0], Data[k][:, 1], label=Label[k], color='g')
     plt.legend(loc=1)
+    plt.xlabel('BinCenter [adc]')
+    plt.ylabel('Photons [count]')
     plt.xlim([0,5000])
     plt.ylim(ymin=0)
     plt.savefig('4_' + DataName[i] + '.pdf', transparent=True)
@@ -149,6 +148,8 @@ for i in range(int(len(Spectra)/2)):
     plt.plot(xnew * 5000 / 120, interpolated(xnew) * Data[k][:, 1], color='g',
              label=Label[k])
     plt.legend(loc=1)
+    plt.xlabel('BinCenter [adc]')
+    plt.ylabel('Photons [count]')
     plt.xlim([0,5000])
     plt.ylim(ymin=0)
     plt.savefig('5_' + DataName[i] + 'corrected.pdf', transparent=True)
@@ -163,6 +164,8 @@ for i in range(int(len(Spectra)/2)):
              label=Label[i])
     plt.semilogy(xnew * 5000 / 120, interpolated(xnew) * Data[k][:, 1], color='g',
              label=Label[k])
+    plt.xlabel('BinCenter [adc]')
+    plt.ylabel('Photons [count]')
     plt.legend(loc=1)
     plt.xlim([0,5000])
     plt.ylim(ymin=1)
@@ -226,8 +229,7 @@ for i in range(int(len(Spectra)/2)):
                 transparent=True)
     plt.savefig(os.path.join('img', 'Full_' + DataName[i] + '.pdf'),
                 transparent=True)
-    plt.show()
-
+    # plt.show()
 
 exit()
 
