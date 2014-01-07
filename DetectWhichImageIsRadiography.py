@@ -14,6 +14,7 @@ This should be the 'best' exposed image of all the exposures.
 from __future__ import division
 import glob
 import os
+import subprocess
 from pylab import *
 import shutil
 
@@ -31,7 +32,7 @@ StartingFolder = '/afs/psi.ch/project/EssentialMed/Images/' +\
 # http://stackoverflow.com/a/973488
 ListOfFolders = [x[0] for x in os.walk(StartingFolder)]
 
-Exposures = [glob.glob(os.path.join(Folder, '*.jpg'))
+Exposures = [sort(glob.glob(os.path.join(Folder, '*.jpg')))
              for Folder in ListOfFolders]
 
 # os.walk includes the base directory, thus go from 1 to end...
@@ -49,21 +50,25 @@ for i in range(1, len(Exposures)):
     plt.subplot(1, 2, 1)
     plt.plot(MeanValue, label='Mean Value', marker='o')
     plt.axhline(y=max(MeanValue), color='g',
-                label=''.join(['Max@', str(int(round(max(MeanValue))))]))
+                label=''.join(['Max@', str(round(max(MeanValue), 2))]))
     plt.axhline(y=sort(MeanValue)[1] * (1 + Threshold / 100), color='r',
                 label=''.join(['Deletion<',
-                               str(int(round(sort(MeanValue)[1] *
-                                             (1 + Threshold / 100))))]))
-    plt.legend()
+                               str(round(sort(MeanValue)[1] *
+                                             (1 + Threshold / 100), 2))]))
+    plt.legend(loc='best')
     plt.xlabel('Mean')
     plt.ylabel('Image index')
     plt.title(' '.join(['Mean of', str(len(Exposures[i])),
                         'images in\n',
                         str(os.path.basename(ListOfFolders[i]))]))
-    plt.ylim([0, 256])
+    #~ plt.ylim([0, 256])
     plt.subplot(3, 2, 2)
-    plt.imshow(plt.imread(Exposures[i][MeanValue.index(max(MeanValue)) - 1]),
-               origin='lower')
+    try:
+        plt.imshow(plt.imread(Exposures[i][MeanValue.index(max(MeanValue)) -
+                                           1]), origin='lower')
+    except:
+        print os.path.basename(Exposures[i][MeanValue.index(max(MeanValue))]),\
+            '-1 could not be loaded'
     plt.title(' '.join(['maximal value of', str(round(max(MeanValue), 2)),
                         '\nfound in',
                         str(os.path.basename(
@@ -73,61 +78,64 @@ for i in range(1, len(Exposures)):
     plt.imshow(plt.imread(Exposures[i][MeanValue.index(max(MeanValue))]),
                origin='lower')
     plt.subplot(3, 2, 6)
-    plt.imshow(plt.imread(Exposures[i][MeanValue.index(max(MeanValue)) + 1]),
-               origin='lower')
+    try:
+        plt.imshow(plt.imread(Exposures[i][MeanValue.index(max(MeanValue)) +
+                                           1]), origin='lower')
+    except:
+        print os.path.basename(Exposures[i][MeanValue.index(max(MeanValue))]),\
+            '+1 could not be loaded'
     plt.savefig(os.path.join(StartingFolder,
                              os.path.basename(ListOfFolders[i]) + '.pdf'))
-    plt.show()
+    #~ plt.show()
 
-    # Delete unnecessary files -> Proceed with caution!
+    # Delete unnecessary files, if we have more than 20 inages in the folder
     # 	* Delete the whole image directory if *all* images are below "Threshold"
     # 	  threhold
     # 	* Delete the whole image directory if the darkest and brightest image
     #     have a difference of less than "Threshold"
     #   * Delete all images with are not "Threhold"-% brighter than the
     #     *second*-darkest image
-    Delete = True
+    if len(Exposures[i]) > 20:
+        Delete = True
+    else:
+        Delete = False
     if max(MeanValue) < Threshold:
         print
         print 'None of the images has a mean larger than the threshold of',\
-            Threshold
-        if Delete:
-            print 'I am thus deleting the whole directory...'
-            shutil.rmtree(ListOfFolders[i])
-        else:
-            print 'One could thus delete', ListOfFolders[i]
-        print
+            str(Threshold) + '.'
+        print 'I am thus deleting the whole directory...'
+        shutil.rmtree(ListOfFolders[i])
     elif (max(MeanValue) - min(MeanValue)) < Threshold:
         print
         print 'The mean of the brightest (' + str(round(max(MeanValue), 2)) +\
             ') and the darkest image (' + str(round(min(MeanValue), 2)) +\
-            ') have a difference smaller than', Threshold
+            ') have a difference smaller than', str(Threshold) + '.'
         if Delete:
             print 'I am thus deleting the whole directory...'
             shutil.rmtree(ListOfFolders[i])
         else:
-            print 'One could thus delete', ListOfFolders[i]
+            print 'One could thus delete', ListOfFolders[i],\
+                'but maybe we have less than 20 images left'
         print
     else:
         print 'Looking for images with a mean value between the minimum (' +\
             str(round(min(MeanValue), 2)) + ') and', 100 + Threshold,\
             '% of the second-brightest image (' +\
             str(round(sort(MeanValue)[1] * (1 + Threshold / 100), 2)) + ')'
-        for DeletionCandidate in range(len(Exposures[i])):
-            if MeanValue[DeletionCandidate] < sort(MeanValue)[1] * (1 +
-                                                                    Threshold /
-                                                                    100):
-                print os.path.basename(Exposures[i][DeletionCandidate]),\
-                    'has a mean of', round(MeanValue[DeletionCandidate], 2),
+        # Create a list of which file can be deleted
+        Deletion = [Mean < sort(MeanValue)[1] * (1 + Threshold / 100)
+                    for Mean in MeanValue]
+        for File in range(len(Exposures[i])):
+            print os.path.basename(Exposures[i][File]),\
+                'has a mean of', round(MeanValue[File], 2), 'and',
+            if Deletion[File]:
                 if Delete:
-                    print 'I am thus deleting it.'
-                    os.remove(Exposures[i][DeletionCandidate])
+                    print 'is deleted'
+                    os.remove(Exposures[i][File])
                 else:
-                    print 'One could thus delete it'
+                    print 'could be deleted'
             else:
-                print os.path.basename(Exposures[i][DeletionCandidate]),\
-                    'has a mean of', round(MeanValue[DeletionCandidate], 2),\
-                    'thus keeping it.'
+                print 'is kept'
 
     # Open remaining images as stack in ImageJ
     # First check if the folder still exists or we deleted it above. Then open
@@ -135,11 +143,15 @@ for i in range(1, len(Exposures)):
     ShowStack = True
     if ShowStack:
         if os.path.isdir(ListOfFolders[i]):
-            viewcommand = 'imagej -e "run(\\"Image Sequence...\\", \\"open=' +\
-                os.path.abspath(ListOfFolders[i]) + ' scale=25\\");"'
-            print 'Starting ImageJ with the command'
+            viewcommand = '/scratch/Fiji.app/ImageJ-linux32 -eval' +\
+                ' "run(\\"Image Sequence...\\", \\"open=' +\
+                os.path.abspath(ListOfFolders[i]) + ' scale=25 convert\\");"'
+            print 'Starting Fiji with the command'
             print '---'
             print viewcommand
             print '---'
-            print 'Quit ImageJ to proceed!'
-            os.system(viewcommand)
+            print 'Quit Fiji to proceed...'
+
+            with open(os.devnull, 'wb') as devnull:
+                subprocess.call(viewcommand, stdout=devnull,
+                                stderr=subprocess.STDOUT, shell=True)
