@@ -55,7 +55,7 @@ dirac = np.zeros(N)
 dirac[:N / 2] = 1
 
 # Filter edge
-sigma = [0.4, 0.6, 0.8]
+sigma = [0.4, 0.6, 1]
 gauss_1 = scipy.ndimage.gaussian_filter(dirac, sigma=sigma[0])
 gauss_2 = scipy.ndimage.gaussian_filter(dirac, sigma=sigma[1])
 gauss_3 = scipy.ndimage.gaussian_filter(dirac, sigma=sigma[2])
@@ -70,6 +70,7 @@ gauss_1_noise = gauss_1 + noise_sigma * randn(len(dirac))
 gauss_2_noise = gauss_2 + noise_sigma * randn(len(dirac))
 gauss_3_noise = gauss_3 + noise_sigma * randn(len(dirac))
 
+
 '''
 Save the plots in a dictionary, so we can iterate through it afterwards. See
 http://stackoverflow.com/a/2553532/323100 and http://is.gd/d008ai for reference
@@ -79,22 +80,15 @@ plots = dict((name, eval(name)) for name in ['dirac',
                                              'gauss_2', 'gauss_2_noise',
                                              'gauss_3', 'gauss_3_noise'])
 
-
-def getter(lst, key, value):
-    for i, dic in enumerate(lst):
-        if dic[key] == value:
-            return i
-    return -1
-
 plt.figure(figsize=(16, 16))
 counter = 0
-ShowRegion = 40
+ShowRegion = 10
 for name, data in sorted(plots.iteritems()):
     counter += 1
     plt.subplot(4, len(plots), counter)
     plt.plot(data)
     plt.ylim(-0.1, 1.1)
-    plt.xlim(len(dirac)/2-ShowRegion/2, len(dirac)/2+ShowRegion/2)
+    #~ plt.xlim(len(dirac) / 2 - ShowRegion / 2, len(dirac) / 2 + ShowRegion / 2)
     if name == 'dirac':
         plt.ylabel('Edge response')
     plt.title(name)
@@ -105,51 +99,52 @@ for name, data in sorted(plots.iteritems()):
     if name == 'gauss_3':
         plt.title(name + '\nSigma=' + str(sigma[2]))
 
-    plt.subplot(4, len(plots), counter+len(plots))
+    plt.subplot(4, len(plots), counter + len(plots))
     plt.plot(LSF(data))
     plt.ylim(-0.1, 1.1)
     if name == 'dirac':
         plt.ylabel('Edge response')
 
-    plt.subplot(4, len(plots), counter+2*len(plots))
+    plt.subplot(4, len(plots), counter + 2 * len(plots))
     plt.plot(MTF(data))
-    plt.plot(np.ones(N)*MTF(data)[len(dirac)/2])
+    plt.plot(np.ones(N) * MTF(data)[len(dirac) / 2])
     plt.ylim(-0.1, 1.1)
-    plt.xlim(0, len(dirac)/2)
+    plt.xlim(0, len(dirac) / 2)
     if name == 'dirac':
         plt.ylabel('MTF @ Nyquist')
-    plt.text(0.618*len(dirac)/2, MTF(data)[len(dirac)/2] - 0.1,
-             ' '.join([str(np.round(MTF(data)[len(dirac)/2], 3)*100), '%']),
+    plt.text(0.618 * len(dirac) / 2, MTF(data)[len(dirac) / 2] - 0.1,
+             ' '.join([str(np.round(MTF(data)[len(dirac) / 2], 3) * 100),
+                       '%']),
              fontsize=12, backgroundcolor='w')
 
-    plt.subplot(4, len(plots), counter+3*len(plots))
+    plt.subplot(4, len(plots), counter + 3 * len(plots))
     plt.plot(MTF(data), label='orig')
     #~ for degree in range(10,25):
         #~ plt.plot(polynomialfit(MTF(data), degree), label=str(degree))
     #~ plt.legend()
     degree = 4
     plt.plot(polynomialfit(MTF(data), degree), label=str(degree), color='r')
-    plt.plot(np.ones(N)*polynomialfit(MTF(data), degree)[len(dirac)/2],
+    plt.plot(np.ones(N) * polynomialfit(MTF(data), degree)[len(dirac) / 2],
              color='g')
     plt.ylim(-0.1, 1.1)
-    plt.xlim(0, len(dirac)/2)
+    plt.xlim(0, len(dirac) / 2)
     if name == 'dirac':
         plt.ylabel(' '.join(['polynomial fit of order', str(degree),
                              '\nfitted MTF @ Nyquist']))
-    plt.text(0.618*len(dirac)/2, MTF(data)[len(dirac)/2] - 0.1,
+    plt.text(0.618 * len(dirac) / 2, MTF(data)[len(dirac) / 2] - 0.1,
              ' '.join([str(np.round(polynomialfit(MTF(data),
-                                                  degree)[len(dirac)/2],
-                                    3)*100), '%']),
+                                                  degree)[len(dirac) / 2],
+                                    3) * 100), '%']),
              fontsize=12, backgroundcolor='w')
 
 plt.subplot(4, len(plots), 1)
 plt.plot(dirac, 'b')
 plt.ylim(-0.1, 1.1)
-plt.axvspan(len(dirac)/2-ShowRegion/2, len(dirac)/2+ShowRegion/2,
+plt.axvspan(len(dirac) / 2 - ShowRegion / 2, len(dirac) / 2 + ShowRegion / 2,
             facecolor='r', alpha=0.5)
 plt.title('Ideal knife edge\n red zoom-region\n is shown right')
 
 if SaveFigure:
-    plt.savefig('MTF_' + str(int(time.time()*10)) + '.png')
+    plt.savefig('MTF_' + str(int(time.time() * 10)) + '.png')
 else:
     plt.show()

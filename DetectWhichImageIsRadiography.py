@@ -21,16 +21,16 @@ import shutil
 
 # Setup
 # Show the plot with the means. The plot is saved regardless of this setting
-ShowPlot = False
+ShowPlot = True
 # Load the images as a stack in Fiji
-ShowStack = False
+ShowStack = True
 # Threshold X to delete folders
 #   * with images with a mean smaller than X,
 #   * where the darkest and brightest image differ by only X grey levels
 #   * and images which are darker than 10X % of the second darkest image
 Threshold = 5
 # Delete Images or not
-Delete = True
+Delete = False
 
 StartingFolder = ('/afs/psi.ch/project/EssentialMed/Images/' +
     '12-GOTTHARD_and_TIS/TIS/')
