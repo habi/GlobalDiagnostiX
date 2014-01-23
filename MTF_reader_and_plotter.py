@@ -14,17 +14,13 @@ ion()
 SelectStartPointManually = False
 SelectEdgeManually = False
 PolynomialOrder = 5
-RunningOnPi = False
 
 # Images
-if RunningOnPi:
-    ImagePath = '/home/pi/Images'
-else:
-    ImagePath = '/afs/psi.ch/project/EssentialMed/Images'
+ImagePath = '/afs/psi.ch/project/EssentialMed/Images'
 ImageDir = '11-MTF'
 
-#~ Camera = 'iPhone'
-Camera = 'tiscam'
+Camera = 'iPhone'
+#~ Camera = 'tiscam'
 #~ Camera = 'Elphel'
 
 if Camera == 'iPhone':
@@ -52,6 +48,27 @@ elif Camera == 'Elphel':
 else:
     print 'I do not know what to do, exiting'
     exit()
+
+
+def rgb2gray(rgb):
+    '''
+    convert an image from rgb to grayscale
+    http://stackoverflow.com/a/12201744/323100
+    '''
+    return np.dot(rgb[..., :3], [0.299, 0.587, 0.144])
+
+ImageToLoad = os.path.join(ImagePath, ImageDir, Camera, ImageFile)
+
+ImageRGB = plt.imread(ImageToLoad)
+Image = rgb2gray(ImageRGB)
+
+
+plt.imshow(np.fft.fft2(Image))
+#~ plt.imshow(Image)
+ioff()
+plt.show()
+
+sys.exit('done')
 
 
 def MTF(edgespreadfunction):

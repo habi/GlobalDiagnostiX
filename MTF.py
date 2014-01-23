@@ -10,7 +10,6 @@ line spread function. And some wikipedia lookup.
 import numpy as np
 import scipy
 import scipy.ndimage
-import scipy.fftpack
 from pylab import *
 import time
 
