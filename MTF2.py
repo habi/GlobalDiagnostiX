@@ -11,76 +11,122 @@ import matplotlib.mlab as mlab
 import numpy
 import scipy
 from scipy import ndimage
+import sys
 
 print "Let's go"
 
-# http://stackoverflow.com/a/12201744
 
-# Generate random image
-PatternSize = 256
-#~ Image = numpy.floor(numpy.random.random((PatternSize, PatternSize)) + .5)
-#~ Image = (numpy.random.random((PatternSize, PatternSize)) * 256).astype('uint8')
-Image = plt.imread('Dose1.png')[:,:,2]
-#~ scipy.misc.imsave('_random.png', Image)
-ImageGaussianFiltered = ndimage.gaussian_filter(Image, sigma=1)
+def rgb2gray(rgb):
+    '''
+    convert an image from rgb to grayscale
+    http://stackoverflow.com/a/12201744/323100
+    '''
+    return numpy.dot(rgb[..., :3], [0.299, 0.587, 0.144])
 
-# Power spectral density according to MATLAB: http://is.gd/YSUOeG
-# imagesc( log10(abs(fftshift(fft2(Picture))).^2 ))
 
-# According to http://stackoverflow.com/a/15541995 we calculate the FFT, shift
-# it so that the low spatial freqencies are in the center. The power spectral
-# density is the square of the absolute of the FFT
-ImagePSD = numpy.abs(numpy.fft.fftshift(numpy.fft.fft2(Image))) ** 2
-ImageGaussPSD = numpy.abs(numpy.fft.fftshift(numpy.fft.fft2(ImageGaussianFiltered))) ** 2
+def gaussfilter(InputImage, sigma=5):
+    '''
+    Apply gauss filter to input image, with a default sigma of 0.8, or an
+    user-supplied sigma
+    '''
+    return ndimage.gaussian_filter(InputImage, sigma)
 
-# Show Image
-plt.subplot(3, 2, 1)
-plt.imshow(Image, cmap='gray', interpolation='nearest')
-plt.title('Random image')
-plt.grid(True, ls="-", color='r')
 
-plt.subplot(3, 2, 2)
-plt.imshow(ImageGaussianFiltered, cmap='gray', interpolation='nearest')
-plt.title('Gaussian filtered')
+def psd(InputImage, Exponent=0.1):
+    '''
+    According to http://stackoverflow.com/a/15541995 we calculate the FFT,
+    shift it so that the low spatial freqencies are in the center. The power
+    spectral density is the square of the absolute of the FFT.
+    Power spectral density according to MATLAB: http://is.gd/YSUOeG
+    "imagesc( log10(abs(fftshift(fft2(Picture))).^2 ))"
+    '''
+    FFTImg = numpy.fft.fft2(InputImage)
+    FFTShift = numpy.fft.fftshift(FFTImg)
+    return numpy.abs(FFTShift) ** Exponent
 
-# Plot the histogram of the images, with PatternSize bins
-plt.subplot(3, 2, 3)
-histogram = plt.hist(Image.flatten(),PatternSize)
-plt.title('Histogram of\nRandom image')
-plt.xlim([0,256])
+# Generate image with random black/white pixels
+PatternSize = 260
+# Random int(0:1)
+ImageRandom = numpy.floor(numpy.random.random((PatternSize, PatternSize)) + .5)
+# Random 0:1
+#~ ImageRandom = (numpy.random.random((PatternSize, PatternSize)) *
+               #~ 256).astype('uint8')
+scipy.misc.imsave('MTF_random.png', ImageRandom)
 
-plt.subplot(3, 2, 4)
-plt.hist(ImageGaussianFiltered.flatten(),PatternSize)
-plt.title('Histogram of\nGaussian filtered image')
-plt.xlim([0,256])
+# Generate image with comb structure
+ImageComb = numpy.zeros([PatternSize, PatternSize])
+for i in range(PatternSize / 10 / 2):
+    ImageComb[:, 20 * i:20 * i + 10] = 1
+scipy.misc.imsave('MTF_comb.png', ImageComb)
 
-# Power spectral density
-plt.subplot(3, 3, 7)
-plt.imshow(ImagePSD, cmap='gray', interpolation='nearest')
-plt.title('PSD of image')
+# Load "real" image
+ImageReal = rgb2gray(plt.imread('Dose1.png'))
+scipy.misc.imsave('MTF_real.png', ImageComb)
 
-plt.subplot(3, 3, 8)
-plt.imshow(ImagePSD - ImageGaussPSD, cmap='gray', interpolation='nearest')
-plt.title('PSD difference')
+plt.figure('Images', figsize=(10, 10))
+# Show the original images
+plt.subplot(3, 4, 1)
+plt.title('Original')
+plt.imshow(ImageRandom, cmap='gray', interpolation='none')
+plt.hlines(PatternSize / 2, 0, PatternSize, 'b')
+plt.subplot(3, 4, 5)
+plt.imshow(ImageComb, cmap='gray', interpolation='none')
+plt.hlines(PatternSize / 2, 0, PatternSize, 'b')
+plt.subplot(3, 4, 9)
+plt.imshow(ImageReal, cmap='gray', interpolation='none')
+plt.hlines(ImageReal.shape[0] / 2, 0, ImageReal.shape[1], 'b')
 
-plt.subplot(3, 3, 9)
-plt.imshow(ImageGaussPSD, cmap='gray', interpolation='nearest')
-plt.title('PSD of gaussian filtered image')
+# Show them gaussfiltered
+plt.subplot(3, 4, 1 + 1)
+plt.title('Gaussfiltered\nsigma=0.8')
+plt.imshow(gaussfilter(ImageRandom), cmap='gray', interpolation='none')
+plt.hlines(PatternSize / 2, 0, PatternSize, 'r')
+plt.subplot(3, 4, 5 + 1)
+plt.imshow(gaussfilter(ImageComb), cmap='gray', interpolation='none')
+plt.hlines(PatternSize / 2, 0, PatternSize, 'r')
+plt.subplot(3, 4, 9 + 1)
+plt.imshow(gaussfilter(ImageReal), cmap='gray', interpolation='none')
+plt.hlines(ImageReal.shape[0] / 2, 0, ImageReal.shape[1], 'r')
+
+HistogramBins = 10
+# Show the line-plots and histograms
+plt.subplot(6, 4, 1 + 2)
+plt.title('Lineplot & Histograms')
+plt.plot(ImageRandom[PatternSize / 2, :], 'b', label='Original')
+plt.plot(gaussfilter(ImageRandom)[PatternSize / 2, :], 'r', label='Original')
+plt.xlim([0, PatternSize])
+plt.subplot(6, 8, 1 + 12)
+plt.hist(ImageRandom.flatten(), HistogramBins)
+plt.subplot(6, 8, 1 + 13)
+plt.hist(gaussfilter(ImageRandom).flatten(), HistogramBins)
+
+plt.subplot(6, 4, 1 + 10)
+plt.plot(ImageRandom[PatternSize / 2, :], 'b', label='Original')
+plt.plot(gaussfilter(ImageRandom)[PatternSize / 2, :], 'r', label='Original')
+plt.xlim([0, PatternSize])
+plt.subplot(6, 8, 1 + 28)
+plt.hist(ImageComb.flatten(), HistogramBins)
+plt.subplot(6, 8, 1 + 29)
+plt.hist(gaussfilter(ImageComb).flatten(), HistogramBins)
+
+plt.subplot(6, 4, 1 + 18)
+plt.plot(ImageReal[ImageReal.shape[0] / 2, :], 'b', label='Original')
+plt.plot(gaussfilter(ImageReal)[ImageReal.shape[0] / 2, :], 'r',
+    label='Original')
+plt.xlim([0, ImageReal.shape[1]])
+plt.subplot(6, 8, 1 + 44)
+plt.hist(ImageReal.flatten(), HistogramBins)
+plt.subplot(6, 8, 1 + 45)
+plt.hist(gaussfilter(ImageReal).flatten(), HistogramBins)
+
+# Show the 2D FFT and/or Power spectral density
+plt.subplot(3, 4, 1 + 3)
+plt.title('Power spectral density')
+plt.imshow(psd(ImageRandom), cmap='gray', interpolation='none')
+plt.subplot(3, 4, 5 + 3)
+plt.imshow(psd(ImageComb), cmap='gray', interpolation='none')
+plt.subplot(3, 4, 9 + 3)
+plt.imshow(psd(ImageReal), cmap='gray', interpolation='none')
 
 plt.show()
 sys.exit('done')
-
-
-
-# add a 'best fit' line for the normal PDF
-#~ y = mlab.normpdf(bins, mu, sigma)
-#~ plt.plot(bins, y, 'r--', linewidth=5)
-plt.grid(True)
-
-plt.xlabel('Smarts')
-plt.ylabel('Probability')
-#ax.set_title(r'$\mathrm{Histogram\ of\ IQ:}\ \mu=100,\ \sigma=15$')
-
-#~ ax.grid(True)
-
-plt.show()
