@@ -15,6 +15,14 @@ import sys
 
 print "Let's go"
 
+# Setup
+# Image size for the random and comb-pattern
+PatternSize = [111, 111]
+
+# 6 colors according to http://tools.medialab.sciences-po.fr/iwanthue/
+Hues = ["#C56447", "#A2C747", "#AB5CB2", "#96A8BF", "#543E3F", "#80B17D"]
+Hues = ['r', 'g', 'b', 'c', 'm', 'y']
+
 
 def rgb2gray(rgb):
     '''
@@ -24,7 +32,19 @@ def rgb2gray(rgb):
     return numpy.dot(rgb[..., :3], [0.299, 0.587, 0.144])
 
 
-def gaussfilter(InputImage, sigma=0.8):
+def padImage(InputImage, width=5, paditwith=256):
+    '''
+    Pad the input image with 'width' voxels of white (default), to minimize
+    edge-effects
+    '''
+    InputImage[:width, :] = paditwith
+    InputImage[-width:, :] = paditwith
+    InputImage[:, :width] = paditwith
+    InputImage[:, -width:] = paditwith
+    return InputImage
+
+
+def gaussfilter(InputImage, sigma=50):
     '''
     Apply gauss filter to input image, with a default sigma of 0.8, or an
     user-supplied sigma
@@ -32,60 +52,94 @@ def gaussfilter(InputImage, sigma=0.8):
     return ndimage.gaussian_filter(InputImage, sigma)
 
 
-def psd(InputImage, Exponent=0.1):
+def psd(InputImage, Exponent=0.2):
     '''
     According to http://stackoverflow.com/a/15541995 we calculate the FFT,
     shift it so that the low spatial freqencies are in the center. The power
     spectral density is the square of the absolute of the FFT.
     Power spectral density according to MATLAB: http://is.gd/YSUOeG
     "imagesc( log10(abs(fftshift(fft2(Picture))).^2 ))"
+    According to Peter it's good if we first get rid of the DC-component of the
+    image, which means to delete the mean of the image from itself
     '''
+    #~ InputImage -= numpy.mean(InputImage)
     FFTImg = numpy.fft.fft2(InputImage)
     FFTShift = numpy.fft.fftshift(FFTImg)
     return numpy.abs(FFTShift) ** Exponent
 
 
-def averagerows(Image):
+def showImage(InputImage, height=0.618, color=Hues[0]):
     '''
-    Average over the rows of the '''
-    Average = []
-    # Average rows and collapse them into an averaged column
-    for row in range(Image.shape[0]):
-        Average.append(numpy.mean(Image[row, :]))
-    return Average
+    Display the image given as input in gray-scale, plot a 'color' line on
+    it at a given 'height'
+    '''
+    plt.imshow(InputImage, cmap='gray', interpolation='none')
+    plt.hlines(InputImage.shape[0] * height, 0, InputImage.shape[1],
+               linewidth=5, color=color, alpha=0.5)
 
 
-# Generate image with random black/white pixels
-PatternSize = 100
-if PatternSize < 11:
-    PatternSize = 11
+def showFFT(InputImage, colorh=Hues[2], colorv=Hues[3]):
+    '''
+    Show the FFT of the image and overlay a horizontal and vertical line from
+    the middle of the image to the border (with colors 'colorh' and 'colorv'
+    '''
+    plt.imshow(psd(InputImage), cmap='gray', interpolation='none')
+    plt.hlines(InputImage.shape[0] / 2, InputImage.shape[1] / 2,
+               InputImage.shape[1], linewidth=5, color=colorh, alpha=0.5)
+    plt.vlines(InputImage.shape[1] / 2, InputImage.shape[0] / 2,
+               InputImage.shape[0], linewidth=5, color=colorv, alpha=0.5)
+
+
+def plotFFT(InputImage, colorh=Hues[2], colorv=Hues[3], colorgaussh=Hues[4],
+            colorgaussv=Hues[5]):
+    plt.plot(psd(InputImage)[InputImage.shape[0] / 2,
+                             InputImage.shape[0] / 2:InputImage.shape[0]],
+             '--', linewidth=5, color=colorh, alpha=0.5)
+    plt.plot(psd(gaussfilter(InputImage))[InputImage.shape[0] / 2,
+                                          InputImage.shape[0] / 2:InputImage.shape[0]],
+             '.', linewidth=5, color=colorgaussh, alpha=0.5)
+    plt.plot(psd(InputImage)[InputImage.shape[1] / 2,
+                             InputImage.shape[1] / 2:InputImage.shape[1]],
+             '--', linewidth=5, color=colorv, alpha=0.5)
+    plt.plot(psd(gaussfilter(InputImage))[InputImage.shape[1] / 2,
+                                          InputImage.shape[1] / 2:InputImage.shape[1]],
+             '.', linewidth=5, color=colorgaussv, alpha=0.5)
+
+if PatternSize[0] < 11:
+    PatternSize[0] = 11
     print 'We cannot work with a length of images smaller than 11. Thus', \
         'setting it to that...'
-if PatternSize % 2 ==0:
-    print 'The synthetic images (random/comb) need to have an odd length,', \
-        'increasing sidelength of', PatternSize, 'by one'
-    PatternSize += 1
-    
-# Random int(0:1)
-ImageRandom = numpy.floor(numpy.random.random((PatternSize, PatternSize)) + .5) * 256
-# Get rid of DC-component, i.e. subtract the mean of the image
-# Random 0:1
-#~ ImageRandom = (numpy.random.random((PatternSize, PatternSize)) *
-               #~ 256).astype('uint8')
+if PatternSize[0] % 2 == 0:
+    print 'The synthetic images (random/comb) need to have an odd width,', \
+        'increasing', PatternSize[0], 'to',
+    PatternSize[0] += 1
+    print PatternSize[0]
+if PatternSize[1] % 2 == 0:
+    print 'The synthetic images (random/comb) need to have an odd width,', \
+        'increasing', PatternSize[1], 'to',
+    PatternSize[1] += 1
+    print PatternSize[1]
+
+# Generate random image
+#~ ImageRandom = numpy.floor(numpy.random.random(PatternSize) + .5) * 256
+ImageRandom = numpy.random.randint(2, size=PatternSize) * 256
+ImageRandom = padImage(ImageRandom)
 scipy.misc.imsave('MTF_random.png', ImageRandom)
 
 # Generate image with comb structure
 # Make empty image
-ImageComb = numpy.zeros([PatternSize, PatternSize])
-# Go through all the colums, and set them to one so that we have a 10-comb
-# structure at the end
-for i in range(PatternSize):
-    if numpy.floor(i / (PatternSize / 10.0)) % 2:
+ImageComb = numpy.zeros(PatternSize)
+# Go through all the colums, and set them to one so that we have 10 line-pairs
+for i in range(PatternSize[1]):
+    if numpy.floor(i / (PatternSize[1] / 20)) % 2:
         ImageComb[:, i] = 256
+#~ ImageComb = padImage(ImageComb)
 scipy.misc.imsave('MTF_comb.png', ImageComb)
 
-# Load "real" image
-ImageReal = rgb2gray(plt.imread('Dose1.png'))
+# Load "real" image and reverse it instantly, so we don't have to use
+# origin=lower all over the place :)
+ImageReal = rgb2gray(plt.imread('aptina_test.jpg')[::-1])
+#~ ImageReal = padImage(ImageReal,5,-1)
 scipy.misc.imsave('MTF_real.png', ImageComb)
 
 # Set up figure using gridspec (http://matplotlib.org/users/gridspec.html)
@@ -93,113 +147,78 @@ gs = gridspec.GridSpec(6, 12)
 plt.figure('Images', figsize=(16, 9))
 
 # Show the original images
-plt.subplot(gs[0:2,0:2])
+plt.subplot(gs[0:2, 0:2])
 plt.title('Original')
-plt.imshow(ImageRandom, cmap='gray', interpolation='none')
-plt.hlines(PatternSize * 0.618, 0, PatternSize, linewidth=2, color='b', alpha=0.5)
-plt.subplot(gs[2:4,0:2])
-plt.imshow(ImageComb, cmap='gray', interpolation='none')
-plt.hlines(PatternSize * 0.618, 0, PatternSize, linewidth=2, color='b', alpha=0.5)
-plt.subplot(gs[4:6,0:2])
-plt.imshow(ImageReal, cmap='gray', interpolation='none')
-plt.hlines(ImageReal.shape[0] * 0.618, 0, ImageReal.shape[1], linewidth=2, color='b', alpha=0.5)
+showImage(ImageRandom)
+plt.subplot(gs[2:4, 0:2])
+showImage(ImageComb)
+plt.subplot(gs[4:6, 0:2])
+showImage(ImageReal)
 
 # Show them gaussfiltered
-plt.subplot(gs[0:2,2:4])
+plt.subplot(gs[0:2, 2:4])
 plt.title('Gaussfiltered\nsigma=0.8')
-plt.imshow(gaussfilter(ImageRandom), cmap='gray', interpolation='none')
-plt.hlines(PatternSize * 0.618, 0, PatternSize, linewidth=2, color='r', alpha=0.5)
-plt.subplot(gs[2:4,2:4])
-plt.imshow(gaussfilter(ImageComb), cmap='gray', interpolation='none')
-plt.hlines(PatternSize * 0.618, 0, PatternSize, linewidth=2, color='r', alpha=0.5)
-plt.subplot(gs[4:6,2:4])
-plt.imshow(gaussfilter(ImageReal), cmap='gray', interpolation='none')
-plt.hlines(ImageReal.shape[0] * 0.618, 0, ImageReal.shape[1], linewidth=2, color='r', alpha=0.5)
+showImage(gaussfilter(ImageRandom), color=Hues[1])
+plt.subplot(gs[2:4, 2:4])
+showImage(gaussfilter(ImageComb), color=Hues[1])
+plt.subplot(gs[4:6, 2:4])
+showImage(gaussfilter(ImageReal), color=Hues[1])
 
-HistogramBins = PatternSize / 10
+HistogramBins = PatternSize[1] / 10
 # Show the line-plots and histograms
-plt.subplot(gs[0,4:6])
+plt.subplot(gs[0, 4:6])
 plt.title('Lineplot & Histograms')
-plt.plot(ImageRandom[PatternSize * 0.618, :], 'b', label='Original')
-plt.plot(gaussfilter(ImageRandom)[PatternSize * 0.618, :], 'r', label='Original')
-plt.xlim([0, PatternSize])
-plt.subplot(gs[1,4])
+plt.plot(ImageRandom[PatternSize[0] * 0.618, :], color=Hues[0])
+plt.plot(gaussfilter(ImageRandom)[PatternSize[0] * 0.618, :], color=Hues[1])
+plt.xlim([0, PatternSize[1]])
+plt.subplot(gs[1, 4])
 plt.hist(ImageRandom.flatten(), HistogramBins)
-plt.subplot(gs[1,5])
+plt.subplot(gs[1, 5])
 plt.hist(gaussfilter(ImageRandom).flatten(), HistogramBins)
-
-plt.subplot(gs[2,4:6])
-plt.plot(ImageComb[PatternSize * 0.618, :], 'b', label='Original')
-plt.plot(gaussfilter(ImageComb)[PatternSize * 0.618, :], 'r', label='Original')
-plt.xlim([0, PatternSize])
-plt.subplot(gs[3,4])
+plt.subplot(gs[2, 4:6])
+plt.plot(ImageComb[PatternSize[0] * 0.618, :], color=Hues[0])
+plt.plot(gaussfilter(ImageComb)[PatternSize[0] * 0.618, :], color=Hues[1])
+plt.xlim([0, PatternSize[1]])
+plt.subplot(gs[3, 4])
 plt.hist(ImageComb.flatten(), HistogramBins)
-plt.subplot(gs[3,5])
+plt.subplot(gs[3, 5])
 plt.hist(gaussfilter(ImageComb).flatten(), HistogramBins)
-
-plt.subplot(gs[4,4:6])
-plt.plot(ImageReal[ImageReal.shape[0] * 0.618, :], 'b', label='Original')
-plt.plot(gaussfilter(ImageReal)[ImageReal.shape[0] * 0.618, :], 'r',
-    label='Original')
+plt.subplot(gs[4, 4:6])
+plt.plot(ImageReal[ImageReal.shape[0] * 0.618, :], color=Hues[0])
+plt.plot(gaussfilter(ImageReal)[ImageReal.shape[0] * 0.618, :], color=Hues[1])
 plt.xlim([0, ImageReal.shape[1]])
-plt.subplot(gs[5,4])
+plt.subplot(gs[5, 4])
 plt.hist(ImageReal.flatten(), HistogramBins)
-#~ plt.gca().yaxis.set_ticks([])
-plt.subplot(gs[5,5])
-plt.hist(gaussfilter(ImageReal).flatten(), HistogramBins)
-#~ plt.gca().yaxis.set_ticks([])
+plt.subplot(gs[5, 5])
+plt.hist(gaussfilter(ImageReal.flatten()), HistogramBins)
 
 # Show the 2D FFT of the original image
-plt.subplot(gs[0:2,6:8])
+plt.subplot(gs[0:2, 6:8])
 plt.title('2D FFT')
-plt.imshow(psd(ImageRandom), cmap='gray', interpolation='none')
-plt.hlines(PatternSize/2, PatternSize/2, PatternSize, linewidth=2, color='y', alpha=0.5)
-plt.vlines(PatternSize/2, PatternSize/2, PatternSize, linewidth=2, color='g', alpha=0.5)
-plt.subplot(gs[2:4,6:8])
-plt.imshow(psd(ImageComb), cmap='gray', interpolation='none')
-plt.hlines(PatternSize/2, PatternSize/2, PatternSize, linewidth=2, color='y', alpha=0.5)
-plt.vlines(PatternSize/2, PatternSize/2, PatternSize, linewidth=2, color='g', alpha=0.5)
-plt.subplot(gs[4:6,6:8])
-plt.imshow(psd(ImageReal), cmap='gray', interpolation='none')
-plt.hlines(ImageReal.shape[0]/2, ImageReal.shape[1]/2, ImageReal.shape[1], linewidth=2, color='y', alpha=0.5)
-plt.vlines(ImageReal.shape[1]/2, ImageReal.shape[0]/2, ImageReal.shape[0], linewidth=2, color='g', alpha=0.5)
+showFFT(ImageRandom)
+plt.subplot(gs[2:4, 6:8])
+showFFT(ImageComb)
+plt.subplot(gs[4:6, 6:8])
+showFFT(ImageReal)
 
 # Show the 2D FFT of the gauss-filtered image
-plt.subplot(gs[0:2,8:10])
+plt.subplot(gs[0:2, 8:10])
 plt.title('2D FFT of gauss-\nfiltered image')
-plt.imshow(psd(gaussfilter(ImageRandom)), cmap='gray', interpolation='none')
-plt.hlines(PatternSize/2, PatternSize/2, PatternSize, linewidth=2, color='c', alpha=0.5)
-plt.vlines(PatternSize/2, PatternSize/2, PatternSize, linewidth=2, color='m', alpha=0.5)
-plt.subplot(gs[2:4,8:10])
-plt.imshow(psd(gaussfilter(ImageComb)), cmap='gray', interpolation='none')
-plt.hlines(PatternSize/2, PatternSize/2, PatternSize, linewidth=2, color='c', alpha=0.5)
-plt.vlines(PatternSize/2, PatternSize/2, PatternSize, linewidth=2, color='m', alpha=0.5)
-plt.subplot(gs[4:6,8:10])
-plt.imshow(psd(gaussfilter(ImageReal)), cmap='gray', interpolation='none')
-plt.hlines(ImageReal.shape[0]/2, ImageReal.shape[1]/2, ImageReal.shape[1], linewidth=2, color='c', alpha=0.5)
-plt.vlines(ImageReal.shape[1]/2, ImageReal.shape[0]/2, ImageReal.shape[0], linewidth=2, color='m', alpha=0.5)
+showFFT(gaussfilter(ImageRandom), colorh=Hues[4], colorv=Hues[5])
+plt.subplot(gs[2:4, 8:10])
+showFFT(gaussfilter(ImageComb), colorh=Hues[4], colorv=Hues[5])
+plt.subplot(gs[4:6, 8:10])
+showFFT(gaussfilter(ImageReal), colorh=Hues[4], colorv=Hues[5])
 
-# PSD as plots of average over rows of image 
-# See \cite{Daniels1995}: The output image data are then captured by a frame
-# grabber and processed to yield the output PSD as the abs(FFT)^2 of the output
-# image data, averaged over the rows of the image
-
-plt.subplot(gs[0:2,10:12])
+# Show the horizontal and vertical plot from the middle of the 2D FFT. From
+# this we can assess the MTF
+plt.subplot(gs[0:2, 10:12])
 plt.title('MTF')
-plt.plot(psd(ImageRandom)[PatternSize/2,PatternSize/2:], linewidth=2, color='y',alpha=0.5)
-plt.plot(psd(ImageRandom)[PatternSize/2:PatternSize,PatternSize/2], linewidth=2, color='g',alpha=0.5)
-plt.plot(psd(gaussfilter(ImageRandom))[PatternSize/2,PatternSize/2:], linewidth=2, color='c',alpha=0.5)
-plt.plot(psd(gaussfilter(ImageRandom))[PatternSize/2:PatternSize,PatternSize/2], linewidth=2, color='m',alpha=0.5)
-plt.subplot(gs[2:4,10:12])
-plt.plot(psd(ImageComb)[PatternSize/2,PatternSize/2:], linewidth=2, color='y',alpha=0.5)
-plt.plot(psd(ImageComb)[PatternSize/2:PatternSize,PatternSize/2], linewidth=2, color='g',alpha=0.5)
-plt.plot(psd(gaussfilter(ImageComb))[PatternSize/2,PatternSize/2:], linewidth=2, color='c',alpha=0.5)
-plt.plot(psd(gaussfilter(ImageComb))[PatternSize/2:PatternSize,PatternSize/2], linewidth=2, color='m',alpha=0.5)
-plt.subplot(gs[4:6,10:12])
-plt.plot(psd(ImageReal)[ImageReal.shape[0]/2,ImageReal.shape[0]/2:], linewidth=2, color='y')
-plt.plot(psd(ImageReal)[ImageReal.shape[1]/2:ImageReal.shape[1],ImageReal.shape[1]/2], linewidth=2, color='g')
-plt.plot(psd(gaussfilter(ImageReal))[ImageReal.shape[0]/2,ImageReal.shape[0]/2:], linewidth=2, color='c')
-plt.plot(psd(gaussfilter(ImageReal))[ImageReal.shape[1]/2:ImageReal.shape[1],ImageReal.shape[1]/2], linewidth=2, color='m')
+plotFFT(ImageRandom)
+plt.subplot(gs[2:4, 10:12])
+plotFFT(ImageComb)
+plt.subplot(gs[4:6, 10:12])
+plotFFT(ImageReal)
 
 plt.show()
 sys.exit('done')
