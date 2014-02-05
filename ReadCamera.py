@@ -196,7 +196,7 @@ subprocess.call(ffmpegcommand, stdout=DEVNULL, stderr=subprocess.STDOUT,
                 shell=True)
 t1 = time.time()
 print "in", str(round(t1 - t0, 3)), "seconds (" +\
-    str(round(options.images / (t1-t0), 3)) + " images per second)"
+    str(round(options.images / (t1 - t0), 3)) + " images per second)"
 
 filename = os.path.join(FileSavePath,
     "snapshot_%03d" % (int(round(options.images / 2.0))) + ".jpg")
@@ -207,8 +207,8 @@ figuretitle = "Snapshot", str(int(round(options.images / 2.0))), "of",\
     str(options.images), "from", FileSavePath, "\nwith an exposure time of",\
     str(options.exposuretime / 10), "ms",
 if options.preview:
-    plt.axhspan(ymin=CMOSheight-previewheight, ymax=CMOSheight,
-                xmin=0, xmax=float(previewwidth)/CMOSwidth,
+    plt.axhspan(ymin=CMOSheight - previewheight, ymax=CMOSheight,
+                xmin=0, xmax=float(previewwidth) / CMOSwidth,
                 facecolor='r', alpha=0.5)
     plt.xlim([0, CMOSwidth])
     plt.ylim([0, CMOSheight])
