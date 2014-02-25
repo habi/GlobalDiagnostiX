@@ -15,10 +15,13 @@ def draw_fansegment(startradius, length, angle):
               length * numpy.sin(numpy.deg2rad(angle)))
 
 Size = [768, 1024]
+Size = [1536, 2048]
 
 print 'Generating random image with a size of', Size[0], 'x', Size[1], 'px'
 # Generate random image
 ImageRandom = numpy.random.randint(2, size=Size) * 256
+scipy.misc.imsave('MTF_random.png', ImageRandom)
+print 'Saved random image'
 # Write grid onto image
 GridSize = 100
 for x, y in itertools.izip_longest(range(0, Size[0], GridSize),
@@ -28,8 +31,8 @@ for x, y in itertools.izip_longest(range(0, Size[0], GridSize),
     if y:
         ImageRandom[:, y] = 1
 
-scipy.misc.imsave('MTF_random.png', ImageRandom)
-print 'Saved random image'
+scipy.misc.imsave('MTF_random_grid.png', ImageRandom)
+print 'Saved random image with grid'
 
 print 'Generating star pattern with a size of', Size[0], 'x', Size[1], 'px'
 # Draw star-pattern with defined length
@@ -58,8 +61,10 @@ print 'Saved star pattern'
 
 # Show what we've done
 plt.figure('Result', figsize=(16, 9))
-plt.subplot(211)
+plt.subplot(131)
 plt.imshow(plt.imread('MTF_random.png'), cmap='gray', interpolation='none')
-plt.subplot(212)
+plt.subplot(132)
+plt.imshow(plt.imread('MTF_random_grid.png'), cmap='gray', interpolation='none')
+plt.subplot(133)
 plt.imshow(plt.imread('MTF_star.png'), cmap='gray', interpolation='none')
 plt.show()
