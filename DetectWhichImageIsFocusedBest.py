@@ -19,6 +19,7 @@ import numpy
 # Setup
 Root = '/afs/psi.ch/project/EssentialMed/Images/13-Aptina_Focus_Test/'
 Root = '/scratch/tmp/DevWareX/AR0130'
+Root = '/scratch/tmp/DevWareX/A-1300'
 
 Directories = sorted([x[0] for x in os.walk(Root)][1:])
 
@@ -115,6 +116,10 @@ print 'Image', str(MeanExposure.index(max(MeanExposure))), '(' + \
     ') is the brightest.'
 print 'Image', str(STD.index(max(STD))), '(' + \
     os.path.basename(Images[STD.index(max(STD))]) + ') has the largest STD.'
+print
+print 'Use Image'
+print Images[STD.index(max(STD))]
+print 'for further tests'
 
 # Display selection of images
 Counter = Details + 1

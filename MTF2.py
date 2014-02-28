@@ -152,6 +152,8 @@ scipy.misc.imsave('MTF_edge.png', ImageEdge)
 # Load "real" image and reverse it instantly, so we don't have to use
 # origin=lower all over the place :)
 ImageReal = rgb2gray(plt.imread('aptina_test.jpg')[::-1])
+ImageReal = plt.imread('/scratch/tmp/DevWareX/AR0130/1393346142_AR0130_0.16_2.0f_030ms_0mm_to200mm/AR0130_0.16_2.0f_030ms_0mm_to200mm_036mm.png')
+
 #~ ImageReal = padImage(ImageReal,5,-1)
 scipy.misc.imsave('MTF_real.png', ImageComb)
 
