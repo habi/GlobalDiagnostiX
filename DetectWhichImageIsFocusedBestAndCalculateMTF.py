@@ -10,6 +10,7 @@ focused best (with DetectWhichImageIsFocusedBest.py) and plots their respective
 MTF
 '''
 
+from __future__ import division
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import numpy
@@ -17,6 +18,7 @@ import scipy
 from scipy import ndimage
 import sys
 import os
+import glob
 
 print "Let's go"
 
@@ -96,6 +98,24 @@ def plotFFT(InputImage, colorh=Hues[2], colorv=Hues[3], colorgaussh=Hues[4],
 
 # Read in Images
 Root = '/scratch/tmp/DevWareX/'
+
+
+SensorList = [os.path.basename(i) for
+    i in sorted(glob.glob(os.path.join(Root, '*')))]
+
+
+print 'Which sensor-images do you want to look at?'
+
+for i,item in enumerate(SensorList):
+    print i, '-', item
+
+Sensor = []
+while Sensor not in range(len(SensorList)):
+    Sensor = int(input('Please enter a number: '))
+
+print 'Ok, I will work with the files in', os.path.join(Root,SensorList[Sensor])
+exit()
+
 
 #~ ImageReal = plt.imread(os.path.join(Root, Directory, File))
 
