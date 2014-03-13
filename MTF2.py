@@ -52,7 +52,7 @@ def gaussfilter(InputImage, sigma=0.8):
     return ndimage.gaussian_filter(InputImage, sigma)
 
 
-def psd(InputImage, Exponent=0.1):
+def psd(InputImage, Exponent=2):
     '''
     According to http://stackoverflow.com/a/15541995 we calculate the FFT,
     shift it so that the low spatial freqencies are in the center. The power
