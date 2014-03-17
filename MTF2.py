@@ -62,7 +62,7 @@ def psd(InputImage, Exponent=2):
     According to Peter it's good if we first get rid of the DC-component of the
     image, which means to delete the mean of the image from itself
     '''
-    #~ InputImage -= numpy.mean(InputImage)
+    InputImage -= numpy.mean(InputImage)
     FFTImg = numpy.fft.fft2(InputImage)
     FFTShift = numpy.fft.fftshift(FFTImg)
     return numpy.abs(FFTShift) ** Exponent
