@@ -15,7 +15,7 @@ def draw_fansegment(startradius, length, angle):
               length * numpy.sin(numpy.deg2rad(angle)))
 
 Size = [768, 1024]
-Size = [1536, 2048]
+Size = [1024, 1024]
 
 print 'Generating random image with a size of', Size[0], 'x', Size[1], 'px'
 # Generate random image
