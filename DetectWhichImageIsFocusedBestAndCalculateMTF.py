@@ -3,13 +3,19 @@ Script to calculate the Modulation transfer function of some input images
 
 It's based on the idea that once can use a random pattern to calculate the MTF,
 as specified by Daniels et al. in http://dx.doi.org/10.1117/12.190433, which
-was found through http://stackoverflow.com/q/18823968
+was found through http://stackoverflow.com/q/18823968.
+
+Imaging a random test pattern with a known (white) power spectral density and
+equal power in all spatial frequencies and transforming this image into the
+frequency domain gives the MTF. Since the input PSD is uniform, the square root
+of the output PSD is equivalent to the MTF of the optical system, as defined by
+http://is.gd/FFRB8b
 
 The script reads images which were generated with GDX.ini in DevWare. It looks
 for the best focused one via the mean (exposure) and standard deviation of each
 image in a given (user-selected) folder. This image is then used for
 calculating the MTF, giving us some "hard facts" on the quality of the images.
-MTF
+MTF.
 '''
 
 from __future__ import division
@@ -38,6 +44,8 @@ for i, item in enumerate(SensorList):
 Sensor = []
 while Sensor not in range(len(SensorList)):
     Sensor = int(input('Please enter a number: '))
+    if Sensor == 2:
+        Sensor = int(input('Please choose something else than "2": '))
 
 # In this folder, look for lenses (saved as above)
 print 'Looking for lens folders in', os.path.join(Root, SensorList[Sensor])
@@ -186,83 +194,66 @@ print 'Image', str(MeanExposure.index(max(MeanExposure))), '(' + \
 print 'Image', str(STD.index(max(STD))), '(' + \
     os.path.basename(Images[STD.index(max(STD))]) + ') has the largest STD.'
 
+# Done with focussing stuff. And now for something completely different!
+# Get an "original" random image which we can use for calculating the
+# "original" PSD
+RandomImage = numpy.random.randint(2, size=[ImageHeight,ImageWidth]) * (2 ** 16)
+RandomImage -= numpy.mean(RandomImage)
 
-def psd(InputImage, Exponent=0.1):
-    '''
-    According to http://stackoverflow.com/a/15541995 we calculate the FFT,
-    shift it so that the low spatial freqencies are in the center. The power
-    spectral density is the square of the absolute of the FFT.
-    Power spectral density according to MATLAB: http://is.gd/YSUOeG
-    "imagesc( log10(abs(fftshift(fft2(Picture))).^2 ))"
-    According to Peter it's good if we first get rid of the DC-component of the
-    image, which means to delete the mean of the image from itself
-    '''
-    #~ InputImage -= numpy.mean(InputImage)
-    FFTImg = numpy.fft.fft2(InputImage)
-    FFTShift = numpy.fft.fftshift(FFTImg)
-    return numpy.abs(FFTShift) ** Exponent
-
-
-def showFFT(InputImage, colorh=Hues[0], colorv=Hues[1]):
-    '''
-    Show the FFT of the image and overlay a horizontal and vertical line from
-    the middle of the image to the border (with colors 'colorh' and 'colorv'
-    '''
-    plt.imshow(psd(InputImage), cmap='gray', interpolation='nearest')
-    plt.hlines(InputImage.shape[0] / 2, InputImage.shape[1] / 2,
-               InputImage.shape[1], linewidth=5, color=colorh, alpha=0.5)
-    plt.vlines(InputImage.shape[1] / 2, InputImage.shape[0] / 2,
-               InputImage.shape[0], linewidth=5, color=colorv, alpha=0.5)
-
-
-def plotFFT(InputImage, colorh=Hues[0], colorv=Hues[1]):
-    '''
-    Plot first the horizontal line from the middle of the image (shape[1] / 2)
-    to the border (shape[1]:) at half the vertical height (shape[0]/2). Then
-    plot the vertical line from the middle of the image (shape[0]/2) to the
-    border (shape[0]/2:) in the middle of the horizontal length (shape[1] / 2))
-    '''
-    plt.plot(psd(InputImage)[InputImage.shape[0] / 2,
-                             InputImage.shape[1] / 2:], linestyle='-',
-             linewidth=5, color=colorh, alpha=0.5)
-    plt.plot(psd(InputImage)[InputImage.shape[0] / 2:,
-                             InputImage.shape[1] / 2], linestyle='-',
-             linewidth=5, color=colorv, alpha=0.5)
-
-
-def plotMTF(InputImage):
-    '''
-    Plot the y-axis MTF array against the x-axis frequency array. This plot
-    represents the MTF of your system in the x dimension, according to
-    http://www.precisionopticalimaging.com/products/mtfoverview.pdf
-    '''
-    print
-    print 'YOURE SEEING A WRONG MTF FOR THE MOMENT!!!'
-    print
-    plt.plot(psd(InputImage)[InputImage.shape[0] / 2,
-                             InputImage.shape[1] / 2:InputImage.shape[1] / 2 + 100],
-             psd(InputImage)[InputImage.shape[0] / 2:InputImage.shape[0] / 2 + 100,
-                             InputImage.shape[1] / 2])
-
-# Done with focussing stuff. Now for something completely different!
 # Load the image with best focus
-MTFImage = numpy.memmap(Images[STD.index(max(STD))], dtype=numpy.uint16,
-                                                     shape=(ImageHeight,
-                                                            ImageWidth))
-plt.figure('MTF')
-plt.subplot(141)
-plt.imshow(MTFImage, cmap='gray', interpolation='nearest')
-plt.title('Best focused image')
-plt.subplot(142)
-showFFT(MTFImage)
-plt.title('Power spectral density')
-plt.subplot(143)
-plotFFT(MTFImage)
-plt.savefig('MTF_MTF_' + SensorList[Sensor] + '_' + LensList[Lens] + '.png')
-plt.title('PSD plot')
-plt.subplot(144)
-plotMTF(MTFImage)
-plt.axis('equal')
 
+print 'READ RAW IMAGE'
+print 'mmap destroys the file when we subtract the mean!!!'
+print 'READ RAW IMAGE'
+
+CameraImage = numpy.fromfile(Images[STD.index(max(STD))], dtype=numpy.uint16)
+CameraImage -= numpy.mean(CameraImage)
+
+# PSD according to Daniels1995
+PSDImage = numpy.abs(numpy.fft.fft2(RandomImage)) ** 2
+PSD = numpy.mean(PSDImage,axis=0)
+
+PSDCamera = numpy.abs(numpy.fft.fft2(CameraImage)) ** 2
+PSDGauss = numpy.mean(PSDCamera,axis=0)
+
+plt.figure()
+plt.imshow(CameraImage)
+plt.show()
+exit()
+
+
+plt.subplot(231)
+plt.imshow(RandomImage,interpolation='none',cmap='gray')
+plt.title('Random image')
+plt.subplot(232)
+plt.imshow(numpy.fft.fftshift(PSDImage),interpolation='none',cmap='gray')
+plt.title('2D FFT')
+
+plt.subplot(234)
+plt.imshow(PSDCamera,interpolation='none',cmap='gray')
+plt.subplot(235)
+plt.imshow(numpy.fft.fftshift(PSDCamera),interpolation='none',cmap='gray')
+
+plt.subplot(133)
+plt.plot(PSD,label='PSD')
+plt.plot(PSDCamera,label='PSD gauss')
+plt.xlim([0,ImageWidth/2])
+plt.legend(loc='best')
+plt.title('PSD')
+
+def MTF(ImageBeforeTransformation,ImageAfterTransformation):
+    # calculate power spectral density of both images, according to Daniels1995
+    PSD_A = numpy.abs(numpy.fft.fft2(ImageBeforeTransformation)) ** 2
+    PSD_A = numpy.mean(PSD_A,axis=0)
+    PSD_B = numpy.abs(numpy.fft.fft2(ImageAfterTransformation)) ** 2
+    PSD_B = numpy.mean(PSD_B,axis=0)
+    ImgWidth = ImageBeforeTransformation.shape[1]
+    aemmteeaeff = numpy.sqrt(PSD_B/PSD_A)[:ImgWidth/2]
+    return aemmteeaeff
+
+plt.figure()
+plt.plot(MTF(RandomImage,PSDCamera))
+plt.ylim([0,1])
+plt.title('MTF')
 
 plt.show()
