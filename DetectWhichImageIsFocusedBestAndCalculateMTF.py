@@ -44,8 +44,6 @@ for i, item in enumerate(SensorList):
 Sensor = []
 while Sensor not in range(len(SensorList)):
     Sensor = int(input('Please enter a number: '))
-    if Sensor == 2:
-        Sensor = int(input('Please choose something else than "2": '))
 
 # In this folder, look for lenses (saved as above)
 print 'Looking for lens folders in', os.path.join(Root, SensorList[Sensor])
@@ -197,63 +195,63 @@ print 'Image', str(STD.index(max(STD))), '(' + \
 # Done with focussing stuff. And now for something completely different!
 # Get an "original" random image which we can use for calculating the
 # "original" PSD
-RandomImage = numpy.random.randint(2, size=[ImageHeight,ImageWidth]) * (2 ** 16)
+RandomImage = numpy.random.randint(2,
+                                   size=[ImageHeight, ImageWidth]) * (2 ** 16)
 RandomImage -= numpy.mean(RandomImage)
 
 # Load the image with best focus
+CameraImage = numpy.fromfile(Images[STD.index(max(STD))],
+                             dtype=numpy.uint16).reshape(ImageHeight,
+                                                         ImageWidth)
 
-print 'READ RAW IMAGE'
-print 'mmap destroys the file when we subtract the mean!!!'
-print 'READ RAW IMAGE'
 
-CameraImage = numpy.fromfile(Images[STD.index(max(STD))], dtype=numpy.uint16)
-CameraImage -= numpy.mean(CameraImage)
+def FFT2D(Image):
+    return numpy.abs(numpy.fft.fft2(Image)) ** 2
 
-# PSD according to Daniels1995
-PSDImage = numpy.abs(numpy.fft.fft2(RandomImage)) ** 2
-PSD = numpy.mean(PSDImage,axis=0)
 
-PSDCamera = numpy.abs(numpy.fft.fft2(CameraImage)) ** 2
-PSDGauss = numpy.mean(PSDCamera,axis=0)
+def PSD(Image):
+    # PSD according to Daniels1995
+    return numpy.mean(Image, axis=0)
 
 plt.figure()
-plt.imshow(CameraImage)
-plt.show()
-exit()
-
-
-plt.subplot(231)
-plt.imshow(RandomImage,interpolation='none',cmap='gray')
+plt.subplot(241)
+plt.imshow(RandomImage, interpolation='none', cmap='gray')
 plt.title('Random image')
-plt.subplot(232)
-plt.imshow(numpy.fft.fftshift(PSDImage),interpolation='none',cmap='gray')
+plt.subplot(242)
+plt.imshow(FFT2D(RandomImage), interpolation='none', cmap='gray')
 plt.title('2D FFT')
 
-plt.subplot(234)
-plt.imshow(PSDCamera,interpolation='none',cmap='gray')
-plt.subplot(235)
-plt.imshow(numpy.fft.fftshift(PSDCamera),interpolation='none',cmap='gray')
+plt.subplot(245)
+plt.imshow(CameraImage, interpolation='none', cmap='gray')
+plt.title('best focus')
+plt.subplot(246)
+plt.imshow(FFT2D(CameraImage), interpolation='none', cmap='gray')
+plt.title('2D FFT')
 
-plt.subplot(133)
-plt.plot(PSD,label='PSD')
-plt.plot(PSDCamera,label='PSD gauss')
-plt.xlim([0,ImageWidth/2])
+plt.subplot(143)
+plt.plot(PSD(RandomImage), label='random PSD')
+plt.plot(PSD(CameraImage), label='camera PSD')
+plt.xlim([0, ImageWidth / 2])
 plt.legend(loc='best')
 plt.title('PSD')
 
-def MTF(ImageBeforeTransformation,ImageAfterTransformation):
+
+def MTF(ImageBeforeTransformation, ImageAfterTransformation):
+    # remove DC component of images
+    ImageBeforeTransformation -= numpy.mean(ImageBeforeTransformation)
+    ImageAfterTransformation -= numpy.mean(ImageAfterTransformation)
     # calculate power spectral density of both images, according to Daniels1995
     PSD_A = numpy.abs(numpy.fft.fft2(ImageBeforeTransformation)) ** 2
-    PSD_A = numpy.mean(PSD_A,axis=0)
+    PSD_A = numpy.mean(PSD_A, axis=0)
     PSD_B = numpy.abs(numpy.fft.fft2(ImageAfterTransformation)) ** 2
-    PSD_B = numpy.mean(PSD_B,axis=0)
+    PSD_B = numpy.mean(PSD_B, axis=0)
     ImgWidth = ImageBeforeTransformation.shape[1]
-    aemmteeaeff = numpy.sqrt(PSD_B/PSD_A)[:ImgWidth/2]
-    return aemmteeaeff
+    return numpy.sqrt(PSD_B / PSD_A)[:ImgWidth / 2]
 
-plt.figure()
-plt.plot(MTF(RandomImage,PSDCamera))
-plt.ylim([0,1])
+plt.subplot(144)
+plt.plot(MTF(RandomImage, CameraImage))
+#~ plt.ylim([0, 1])
+#~ plt.xlim([0, ImageWidth / 2])
 plt.title('MTF')
 
 plt.show()
