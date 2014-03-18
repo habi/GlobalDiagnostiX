@@ -20,7 +20,7 @@ Size = [1024, 1024]
 print 'Generating random image with a size of', Size[0], 'x', Size[1], 'px'
 # Generate random image
 ImageRandom = numpy.random.randint(2, size=Size) * 256
-scipy.misc.imsave('MTF_random.png', ImageRandom)
+scipy.misc.imsave('Target_random.png', ImageRandom)
 print 'Saved random image'
 # Write grid onto image
 GridSize = 100
@@ -31,7 +31,7 @@ for x, y in itertools.izip_longest(range(0, Size[0], GridSize),
     if y:
         ImageRandom[:, y] = 1
 
-scipy.misc.imsave('MTF_random_grid.png', ImageRandom)
+scipy.misc.imsave('Target_random_grid.png', ImageRandom)
 print 'Saved random image with grid'
 
 print 'Generating star pattern with a size of', Size[0], 'x', Size[1], 'px'
@@ -56,15 +56,15 @@ for radius in range(0, max(Size), 2 * Length):
 plt.axis([0, Size[1], 0, Size[0]])
 plt.gca().axes.get_xaxis().set_visible(False)
 plt.gca().axes.get_yaxis().set_visible(False)
-fig.savefig('MTF_star.png', dpi=saveDPI)
+fig.savefig('Target_star.png', dpi=saveDPI)
 print 'Saved star pattern'
 
 # Show what we've done
 plt.figure('Result', figsize=(16, 9))
 plt.subplot(131)
-plt.imshow(plt.imread('MTF_random.png'), cmap='gray', interpolation='none')
+plt.imshow(plt.imread('Target_random.png'), cmap='gray', interpolation='none')
 plt.subplot(132)
-plt.imshow(plt.imread('MTF_random_grid.png'), cmap='gray', interpolation='none')
+plt.imshow(plt.imread('Target_random_grid.png'), cmap='gray', interpolation='none')
 plt.subplot(133)
-plt.imshow(plt.imread('MTF_star.png'), cmap='gray', interpolation='none')
+plt.imshow(plt.imread('Target_star.png'), cmap='gray', interpolation='none')
 plt.show()
