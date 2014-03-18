@@ -36,14 +36,17 @@ Hues = ["#9D6188", "#97A761"]
 print 'Looking for sensor-folders in', Root, 'and disregarding other folders'
 SensorList = [os.path.basename(i) for
     i in sorted(glob.glob(os.path.join(Root, '*')))]
-print 'Please select the sensor you want to look at'
-for i, item in enumerate(SensorList):
-    # Only look for AR130, AR132 and MT9M001 folders
-    if item.startswith('AR') or item.startswith('MT9'):
-        print i, '-', item
-Sensor = []
-while Sensor not in range(len(SensorList)):
-    Sensor = int(input('Please enter a number: '))
+if len(SensorList) > 1:
+    print 'Please select the sensor you want to look at'
+    for i, item in enumerate(SensorList):
+        # Only look for AR130, AR132 and MT9M001 folders
+        if item.startswith('AR') or item.startswith('MT9'):
+            print i, '-', item
+    Sensor = []
+    while Sensor not in range(len(SensorList)):
+        Sensor = int(input('Please enter a number: '))
+else:
+    Sensor = 0
 
 # In this folder, look for lenses (saved as above)
 print 'Looking for lens folders in', os.path.join(Root, SensorList[Sensor])
@@ -72,8 +75,8 @@ if len(FolderList) > 1:
     for i, item in enumerate(FolderList):
         print i, '-', os.path.basename(item)
     Folder = []
-    while Lens not in range(len(FolderList)):
-        Lens = int(input('Please enter a number: '))
+    while Folder not in range(len(FolderList)):
+        Folder = int(input('Please enter a number: '))
 else:
     Folder = 0
 
@@ -197,7 +200,6 @@ print 'Image', str(STD.index(max(STD))), '(' + \
 # "original" PSD
 RandomImage = numpy.random.randint(2,
                                    size=[ImageHeight, ImageWidth]) * (2 ** 16)
-RandomImage -= numpy.mean(RandomImage)
 
 # Load the image with best focus
 CameraImage = numpy.fromfile(Images[STD.index(max(STD))],
@@ -205,27 +207,27 @@ CameraImage = numpy.fromfile(Images[STD.index(max(STD))],
                                                          ImageWidth)
 
 
-def FFT2D(Image):
-    return numpy.abs(numpy.fft.fft2(Image)) ** 2
+def FFT2D(Image, Exponent=2):
+    return numpy.abs(numpy.fft.fft2(Image)) ** Exponent
 
 
 def PSD(Image):
     # PSD according to Daniels1995
     return numpy.mean(Image, axis=0)
 
-plt.figure()
+plt.figure('MTF', figsize=(16, 9))
 plt.subplot(241)
 plt.imshow(RandomImage, interpolation='none', cmap='gray')
 plt.title('Random image')
 plt.subplot(242)
-plt.imshow(FFT2D(RandomImage), interpolation='none', cmap='gray')
+plt.imshow(FFT2D(RandomImage, 0.1), interpolation='none', cmap='gray')
 plt.title('2D FFT')
 
 plt.subplot(245)
 plt.imshow(CameraImage, interpolation='none', cmap='gray')
 plt.title('best focus')
 plt.subplot(246)
-plt.imshow(FFT2D(CameraImage), interpolation='none', cmap='gray')
+plt.imshow(FFT2D(CameraImage, 0.1), interpolation='none', cmap='gray')
 plt.title('2D FFT')
 
 plt.subplot(143)
@@ -238,12 +240,12 @@ plt.title('PSD')
 
 def MTF(ImageBeforeTransformation, ImageAfterTransformation):
     # remove DC component of images
-    ImageBeforeTransformation -= numpy.mean(ImageBeforeTransformation)
-    ImageAfterTransformation -= numpy.mean(ImageAfterTransformation)
+    MeanA = ImageBeforeTransformation - numpy.mean(ImageBeforeTransformation)
+    MeanB = ImageAfterTransformation - numpy.mean(ImageAfterTransformation)
     # calculate power spectral density of both images, according to Daniels1995
-    PSD_A = numpy.abs(numpy.fft.fft2(ImageBeforeTransformation)) ** 2
+    PSD_A = numpy.abs(numpy.fft.fft2(MeanA)) ** 2
     PSD_A = numpy.mean(PSD_A, axis=0)
-    PSD_B = numpy.abs(numpy.fft.fft2(ImageAfterTransformation)) ** 2
+    PSD_B = numpy.abs(numpy.fft.fft2(MeanB)) ** 2
     PSD_B = numpy.mean(PSD_B, axis=0)
     ImgWidth = ImageBeforeTransformation.shape[1]
     return numpy.sqrt(PSD_B / PSD_A)[:ImgWidth / 2]
@@ -253,5 +255,8 @@ plt.plot(MTF(RandomImage, CameraImage))
 #~ plt.ylim([0, 1])
 #~ plt.xlim([0, ImageWidth / 2])
 plt.title('MTF')
+
+# Save this figure
+plt.savefig('MTF_MTF_' + SensorList[Sensor] + '_' + LensList[Lens] + '.png')
 
 plt.show()
