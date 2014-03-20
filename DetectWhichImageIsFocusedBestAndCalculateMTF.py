@@ -187,7 +187,8 @@ plt.title('best STD@' +
 #~ plt.axis('off')
 
 # Save this figure
-plt.savefig('MTF_Focus_' + SensorList[Sensor] + '_' + LensList[Lens] + '.png')
+plt.savefig('MTF_Focus_' + SensorList[Sensor] + '_' + LensList[Lens] + '_' +
+            os.path.basename(Images[STD.index(max(STD))]) + '.png')
 
 print 'Image', str(MeanExposure.index(max(MeanExposure))), '(' + \
     os.path.basename(Images[MeanExposure.index(max(MeanExposure))]) +\
@@ -195,16 +196,43 @@ print 'Image', str(MeanExposure.index(max(MeanExposure))), '(' + \
 print 'Image', str(STD.index(max(STD))), '(' + \
     os.path.basename(Images[STD.index(max(STD))]) + ') has the largest STD.'
 
+
+def NormalizeImage(Image):
+    # Normalize input image so that it goes from 0--1
+    Image -= numpy.min(Image)
+    Image = Image / numpy.max(Image)
+    return Image
+
 # Done with focussing stuff. And now for something completely different!
 # Get an "original" random image which we can use for calculating the
 # "original" PSD
-RandomImage = numpy.random.randint(2,
-                                   size=[ImageHeight, ImageWidth]) * (2 ** 16)
+RandomImage = numpy.random.randint(2, size=[ImageHeight, ImageWidth]) * 4096
+#~ RandomImage = plt.imread('random_target_for_MTF_8f79cf8.png')
+RandomImage = NormalizeImage(RandomImage)
 
 # Load the image with best focus
 CameraImage = numpy.fromfile(Images[STD.index(max(STD))],
                              dtype=numpy.uint16).reshape(ImageHeight,
                                                          ImageWidth)
+CameraImage = NormalizeImage(CameraImage)
+
+plt.figure('line profiles', figsize=(16, 9))
+plt.subplot(221)
+plt.imshow(RandomImage, interpolation='nearest', cmap='gray')
+plt.hlines(ImageHeight / 2, 0, ImageWidth, 'r')
+plt.title('RandomImage')
+plt.subplot(222)
+plt.plot(RandomImage[ImageHeight / 2, :], 'r')
+plt.xlim([0, ImageWidth])
+plt.title(' '.join(['Line profile at', str(ImageHeight / 2)]))
+plt.subplot(223)
+plt.imshow(CameraImage, interpolation='nearest', cmap='gray')
+plt.hlines(ImageHeight / 2, 0, ImageWidth, 'b')
+plt.title('CameraImage')
+plt.subplot(224)
+plt.plot(CameraImage[ImageHeight / 2, :], 'b')
+plt.xlim([0, ImageWidth])
+plt.title(' '.join(['Line profile at', str(ImageHeight / 2)]))
 
 
 def FFT2D(Image, Exponent=2):
@@ -218,14 +246,20 @@ def PSD(Image):
 plt.figure('MTF', figsize=(16, 9))
 plt.subplot(241)
 plt.imshow(RandomImage, interpolation='none', cmap='gray')
-plt.title('Random image')
+Title = ' '.join(['Random image, min/max=' + str(numpy.min(RandomImage)) +
+                  '/' + str(numpy.max(RandomImage))])
+plt.title(Title)
 plt.subplot(242)
 plt.imshow(FFT2D(RandomImage, 0.1), interpolation='none', cmap='gray')
 plt.title('2D FFT')
 
 plt.subplot(245)
 plt.imshow(CameraImage, interpolation='none', cmap='gray')
-plt.title('best focus')
+Title = ' '.join(['Best focus@' +
+                   os.path.basename(Images[STD.index(max(STD))]).split('_')[-1].split('.')[0] +
+                   '\nmin/max=' + str(numpy.min(CameraImage)) + '/' +
+                   str(numpy.max(CameraImage))])
+plt.title(Title)
 plt.subplot(246)
 plt.imshow(FFT2D(CameraImage, 0.1), interpolation='none', cmap='gray')
 plt.title('2D FFT')
@@ -252,11 +286,12 @@ def MTF(ImageBeforeTransformation, ImageAfterTransformation):
 
 plt.subplot(144)
 plt.plot(MTF(RandomImage, CameraImage))
-#~ plt.ylim([0, 1])
-#~ plt.xlim([0, ImageWidth / 2])
+plt.ylim([0, 1])
+plt.xlim([0, ImageWidth / 2])
 plt.title('MTF')
 
 # Save this figure
-plt.savefig('MTF_MTF_' + SensorList[Sensor] + '_' + LensList[Lens] + '.png')
+plt.savefig('MTF_MTF_' + SensorList[Sensor] + '_' + LensList[Lens] + '_' +
+            os.path.basename(Images[STD.index(max(STD))]) + '.png')
 
 plt.show()
