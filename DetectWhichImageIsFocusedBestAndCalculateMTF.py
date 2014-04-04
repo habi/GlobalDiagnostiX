@@ -206,6 +206,8 @@ def NormalizeImage(Image):
 # Done with focussing stuff. And now for something completely different!
 # Get an "original" random image which we can use for calculating the
 # "original" PSD
+# Seed the random function, so that we always get the same random image
+numpy.random.seed(seed=1796)
 RandomImage = numpy.random.randint(2, size=[ImageHeight, ImageWidth]) * 4096
 #~ RandomImage = plt.imread('random_target_for_MTF_8f79cf8.png')
 RandomImage = NormalizeImage(RandomImage)
@@ -283,6 +285,7 @@ def MTF(ImageBeforeTransformation, ImageAfterTransformation):
     PSD_B = numpy.mean(PSD_B, axis=0)
     ImgWidth = ImageBeforeTransformation.shape[1]
     return numpy.sqrt(PSD_B / PSD_A)[:ImgWidth / 2]
+    #~ return numpy.sqrt(PSD_B)[:ImgWidth / 2]
 
 plt.subplot(144)
 plt.plot(MTF(RandomImage, CameraImage))
