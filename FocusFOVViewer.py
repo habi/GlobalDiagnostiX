@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 Root = "/afs/psi.ch/project/EssentialMed/Images/13-Aptina_Focus_Test/FocusFOV"
-#~ Root = "/scratch/tmp/DevWareX/FocusFOV"  # normalized images
+Root = "/scratch/tmp/DevWareX/FocusFOV"  # normalized images
 
 SensorList = [os.path.basename(i) for
     i in sorted(glob.glob(os.path.join(Root, '*')))]
@@ -37,8 +37,8 @@ for Sensor in SensorList:
     for i, item in enumerate(Images):
         print str(i).zfill(2) + "/" + str(len(Images)), "|", Sensor, "|",\
             Lens[i]
-        rawimage = np.memmap(Images[i], dtype=np.uint16,
-                            shape=(Height[i], Width[i]))  # .byteswap()
+        Size = [Height[i], Width[i]]
+        rawimage = np.fromfile(Images[i], dtype=np.uint16).reshape(Size)
         plt.subplot(3, int(np.ceil(len(Images) / 3)), i + 1)
         plt.imshow(rawimage, cmap=plt.cm.gray)
         ImageTitle = Lens[i], '\nFocus',  str(Focus[i]), \
