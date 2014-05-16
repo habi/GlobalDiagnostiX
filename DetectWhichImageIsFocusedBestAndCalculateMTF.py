@@ -27,6 +27,7 @@ import matplotlib.pyplot as plt
 print "Hey ho, let's go"
 
 Root = '/scratch/tmp/DevWareX/'
+Root = '/afs/psi.ch/project/EssentialMed/Images/13-Aptina_Focus_Test/'
 # colors according to http://tools.medialab.sciences-po.fr/iwanthue/
 Hues = ["#C56447", "#A2C747", "#AB5CB2", "#96A8BF", "#543E3F", "#80B17D"]
 Hues = ["#9D6188", "#97A761"]

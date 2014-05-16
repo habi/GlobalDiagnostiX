@@ -18,8 +18,8 @@ import numpy
 
 # Setup
 Root = '/afs/psi.ch/project/EssentialMed/Images/13-Aptina_Focus_Test/'
-Root = '/scratch/tmp/DevWareX/AR0130'
-Root = '/scratch/tmp/DevWareX/A-1300'
+#~ Root = '/scratch/tmp/DevWareX/AR0130'
+#~ Root = '/scratch/tmp/DevWareX/A-1300'
 
 Directories = sorted([x[0] for x in os.walk(Root)][1:])
 
