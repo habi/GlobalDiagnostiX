@@ -14,6 +14,17 @@ height = 100;
 semitransparent = 0.618;
 nearlytransparent = 0.25;
 
+// dimlines.scad is used to easily draw dimensional measurements
+// http://www.cannymachines.com/entries/9/openscad_dimensioned_drawings
+include <dimlines.scad>
+
+DIM_LINE_WIDTH = .025 * unitlength;
+DIM_SPACE = .1 * unitlength;
+
+//~ translate([unitlength + 50 , padding/2, 0])
+//~ rotate([0,0,90])
+  //~ dimensions(unitlength, line_width=DIM_LINE_WIDTH, loc=0);
+
 // Housing
 module Housing()
   color ("gray", semitransparent) {
