@@ -12,8 +12,6 @@ length = 430;
 padding = 20;
 height = 100;
 
-
-
 // Housing
 module Housing()
   color ("gray", 0.618) {
@@ -36,7 +34,7 @@ module Housing()
     }
     */
 
-//Housing();
+Housing();
 
 // Scintillator
 module Scintillator()
@@ -45,7 +43,7 @@ module Scintillator()
       cube([length,length,1]);
       }
     }
-//~ Scintillator();
+Scintillator();
 
 // Ommatidium
 module Ommatidium() {
@@ -62,8 +60,8 @@ module Ommatidium() {
   translate ([0,0,0]) CMOS();
 
   // FOV CMOS
-  d_cmos_lens = 5;
-  d_lens_scintillator = 20;
+  d_cmos_lens = 15;
+  d_lens_scintillator = height - d_cmos_lens - 15;
   module CMOSCone()
       color("green",0.5) cylinder(h = d_cmos_lens, r1 = CMOSSize[0] * pixelsize / 2 , r2 = lensdiameter * 2, center=true);
   module CMOSCross() {
@@ -103,4 +101,7 @@ module Ommatidium() {
   translate([0,0,d_cmos_lens + d_lens_scintillator]) FOV();
 }
 
-Ommatidium();
+translate([430/4/2,430/3/2,height-15])
+mirror([0,0,1])
+for (xpos=[0:3], ypos = [0:2]) // do twelve iterations, using each xpos with each ypos
+   translate([xpos*430/4, ypos*430/3, 0]) Ommatidium();
