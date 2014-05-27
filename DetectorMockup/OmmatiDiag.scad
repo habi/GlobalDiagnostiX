@@ -12,7 +12,7 @@ unitlength = 430;
 padding = 20;
 height = 100;
 semitransparent = 0.618;
-nearlytransparent = 0.25;
+nearlytransparent = 0.309;
 
 // dimlines.scad is used to easily draw dimensional measurements
 // http://www.cannymachines.com/entries/9/openscad_dimensioned_drawings
@@ -33,17 +33,15 @@ module Housing()
     // box back walls
     cube([unitlength + padding, 1, height]);
     cube([1, unitlength + padding, height]);
-    }
     // box front walls, can (and should be turned off for increased visibility)
-    //~ color ("gray", 0.6) {
-      //~ translate(v = [0, unitlength + padding, 0]) {
-        //~ cube([unitlength + padding, 1, height]);
-      //~ }
-      //~ translate(v = [unitlength + padding, 0, 0]) {
-        //~ cube([1, unitlength + padding, height]); //
-      //~ }
-    //~ }
-Housing();
+    translate(v = [0, unitlength + padding, 0]) {
+      % cube([unitlength + padding, 1, height]);
+    }
+    translate(v = [unitlength + padding, 0, 0]) {
+      % cube([1, unitlength + padding, height]); //
+    }
+    }
+% Housing();
 
 // Scintillator
 module Scintillator()
@@ -53,6 +51,15 @@ module Scintillator()
       }
     }
 Scintillator();
+
+// CMOS Backplate
+module Backplate()
+  translate([(unitlength+padding)/2 + 5, (unitlength+padding)/2 + 5, height-15]) {
+    color ("red", semitransparent) {
+      cube([350,320,1],center=true);
+      }
+    }
+% Backplate();
 
 // Ommatidium
 module Ommatidium() {
@@ -65,20 +72,27 @@ module Ommatidium() {
   CMOSSize = ([1280, 960]);
   pixelsize = 3.75 / 1000; // [um]
   module CMOS()
-    color ("blue", semitransparent)
-    cube([CMOSSize[0] * pixelsize, CMOSSize[1] * pixelsize, 0.5], center=true);
+    color ("blue")
+      cube([CMOSSize[0] * pixelsize, CMOSSize[1] * pixelsize, 0.5], center=true);
   translate ([0,0,0]) CMOS();
+
+  // Ommatidium back plate
+  module Ommatidiumplate()
+    color ("red", semitransparent)
+      cube([15, 20, 1], center=true);
+  translate ([5,7,0]) Ommatidiumplate();
 
   // FOV CMOS
   d_cmos_lens = 15;
   d_lens_scintillator = height - d_cmos_lens - 15;
   module CMOSCone()
-      color("orange",nearlytransparent)
+      color("orange", nearlytransparent)
       cylinder(h = d_cmos_lens,
                 r1 = CMOSSize[0] * pixelsize / 2 ,
                 r2 = lensdiameter * 2, center=true);
   module CMOSCross() {
-    color("red", 1) polyhedron(
+    color("red", 1)
+    polyhedron(
       points=[ [0, 0, 0], //origin
         [-CMOSSize[0]*pixelsize/2, 0, d_cmos_lens],     // horizontal_1
         [CMOSSize[0]*pixelsize/2, 0,d_cmos_lens],       // horizontal_2
@@ -88,13 +102,13 @@ module Ommatidium() {
     }
 
   mirror([0,0,1]) translate([0,0,-d_cmos_lens])CMOSCross();
-  translate([0,0,d_cmos_lens/2])CMOSCone();
+  translate([0,0,d_cmos_lens/2]) CMOSCone();
 
   // Lens
   lensdiameter = 4;
   module Lens()
     // the lens is a squashed sphere: http://is.gd/4H9sZf
-      scale([2,2,0.5]) sphere(lensdiameter, $fn=50, center=true);
+    scale([2,2,0.5]) sphere(lensdiameter, $fn=50, center=true);
   translate([0, 0, d_cmos_lens]) Lens();
 
   // FOV Lens
