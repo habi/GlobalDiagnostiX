@@ -23,6 +23,10 @@ parser.add_option("-c", "--camera", dest="camera",
                   help="Camera to use; at the moment 'tis', 'aptina' and "
                        "'awaiba', even when the two latter options are not "
                        "implemented yet... (default: %default)")
+parser.add_option("-d", "--display", dest="display",
+                  action="store_true", default=False,
+                  help="Display middle frame of the movie at the end. "
+                       "(default: %default)")
 parser.add_option("-e", "--exposure", dest="exposuretime",
                   metavar='125', type='float',
                   help="Exposure time [ms]")
@@ -62,16 +66,24 @@ if not options.exposuretime:
 print 80 * "-"
 print "Hey ho, let's go!"
 
-# Check at which /dev/video we have a camera
-for device in range(5):
+# Check if and where (/dev/video0..5) we have a camera
+for device in range(6):
     if os.path.exists('/dev/video' + str(device)):
         CameraPath = '/dev/video' + str(device)
-        if options.verbose:
-            print 'Found a camera on', CameraPath
         break
     else:
         if options.verbose:
             print 'Nothing found at /dev/video' + str(device)
+# If we didn't "CameraPath", there's no cam, thus exit.
+try:
+    CameraPath
+except NameError:
+    print 'I was not able to find a camera connected on any of /dev/video0..5'
+    print 'Please make sure the camera is connected and retry.'
+    sys.exit(1)
+else:
+    if options.verbose:
+        print 'Found a camera on', CameraPath
 
 if options.verbose:
     print "We are trying to work with the '" + options.camera + "' camera"
@@ -154,9 +166,9 @@ if options.preview:
         " ms' -nosound"
     if options.verbose:
         print 'Previewing images with'
-        print
+        print 20 * '-'
         print mplayercommand
-        print
+        print 20 * '-'
     print "Exit with pressing the 'q' key!"
     subprocess.call(mplayercommand, stdout=DEVNULL, stderr=subprocess.STDOUT,
                     shell=True)
@@ -191,6 +203,7 @@ print 'with (theoretically)', round(TheoreticalFPS, 2), 'fps'
 if TheoreticalFPS > 7.5:
     print 'According to "v4l2-ctl --list-formats-ext" we can reach 7.5 fps',\
         'max.'
+    print 'According to tests, we can reach around 6 fps.'
 
 # Command based on https://trac.ffmpeg.org/wiki/x264EncodingGuide#LosslessH.264
 # ffmpeg -i input -c:v libx264 -preset ultrafast -qp 0 output.mkv
@@ -217,8 +230,8 @@ subprocess.call(ffmpegcommand, stdout=DEVNULL, stderr=subprocess.STDOUT,
 t1 = time.time()
 if t1 - t0 < options.videotime:
     print
-    print 'It seems that I was saving faster than possible, the process',\
-        'probably failed'
+    print 'It seems that I was saving faster than the desired acquisition',\
+        'time, the process probably failed...'
     print 'I am deleting', FileSavePath
     print
     print 'Please restart acquisition by repeating your last command.'
@@ -268,6 +281,26 @@ NumberOfFrames = len([f for f in os.listdir(FileSavePath)
 print '    * and', NumberOfFrames, 'frames of the video (frame*.tif), thus',\
     'a (calculated)', str(round(NumberOfFrames / options.videotime, 2)), 'fps.'
 print 'Have fun with this!'
+
+if options.display:
+    # Get middle frame
+    filename = os.path.join(FileSavePath,
+        "frame_%05d" % (int(round(NumberOfFrames / 2.0))) + ".tif")
+    # Make image
+    image = plt.imread(filename)
+    plt.imshow(image, origin="lower", cmap=plt.cm.Greys_r)
+    figuretitle = "Snapshot", str(int(round(NumberOfFrames / 2.0))), "of",\
+        str(NumberOfFrames), "from", FileSavePath, "\nwith an exposure time",\
+        "of", str(options.exposuretime), "ms"
+    if options.preview:
+        plt.axhspan(ymin=CMOSheight - previewheight, ymax=CMOSheight,
+                    xmin=0, xmax=float(previewwidth) / CMOSwidth,
+                    facecolor='r', alpha=0.5)
+        plt.xlim([0, CMOSwidth])
+        plt.ylim([0, CMOSheight])
+        figuretitle += "| red=preview area",
+    plt.title(' '.join(figuretitle))
+    plt.show()
 
 print 80 * "-"
 print "done"
