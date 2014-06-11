@@ -2,6 +2,7 @@
 based on code from http://www.frantzmartinache.com/blog/?p=84
 """
 
+from __future__ import division
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -77,23 +78,40 @@ def propagate_beam(p0, NA, nr, zl, ff, label='', color='b'):
         plt.plot(zz, xx, color=color)
 
 FOVSize = np.array([430 / 3., 430 / 4.])
+FOVDiagonal = np.sqrt(FOVSize[0] ** 2 + FOVSize[1] ** 2)
 
-# AR130
-# Full Resolution: 1280H x 960V (1.2Mp)
-# Pixel Size: 3.75um x 3.75um
+UseSensor = 3
+if UseSensor == 1:
+    Sensor = 'AR0130'
+    # Full Resolution: 1280H x 960V (1.2Mp)
+    # Pixel Size: 3.75um x 3.75um
+    pixelsize = 3.75 / 1000
+    CMOSSize = np.array([1280 * pixelsize, 960 * pixelsize])
+elif UseSensor == 2:
+    Sensor = 'AR0132'
+    # Full Resolution: 1280H x 960V (1.2Mp)
+    # Pixel Size: 3.75um x 3.75um
+    pixelsize = 3.75 / 1000
+    CMOSSize = np.array([1280 * pixelsize, 960 * pixelsize])
+elif UseSensor == 3:
+    Sensor = 'MT9M0010'
+    # Active pixels: 1,280H x 1,024V
+    # Pixel size: 5.2um x 5.2um
+    pixelsize = 5.2 / 1000
+    CMOSSize = np.array([1280 * pixelsize, 1024 * pixelsize])
 
-# AR132
-# Full Resolution: 1280H x 960V (1.2Mp)
-# Pixel Size: 3.75um x 3.75um
+CMOSDiagonal = np.sqrt(CMOSSize[0] ** 2 + CMOSSize[1] ** 2)
 
-# MT9M001
-# Active pixels: 1,280H x 1,024V
-# Pixel size: 5.2um x 5.2um
+print 'We are calcuating with the', Sensor, 'sensor, which has a size of', \
+    round(CMOSSize[0], 2), 'x', round(CMOSSize[1], 2), \
+    'mm, a diagonal of', round(CMOSDiagonal, 2), 'mm (or', \
+    round(CMOSDiagonal * 0.0393701, 2), 'inch).'
+print 'The FOV we want to look at is', round(FOVSize[0], 2), 'x', \
+    round(FOVSize[1], 2), 'mm (430 x 430mm @ 4:3), a diagonal of', \
+    round(FOVDiagonal, 2), 'mm'
 
-pixelsize = 5.2 / 1000
-CMOSSize = np.array([1280 * pixelsize, 1024 * pixelsize])
-
-Magnification = FOVSize / CMOSSize
+Magnification = FOVDiagonal / CMOSDiagonal
+print 'We thus have a (de)magnification of', round(Magnification, 2), 'x'
 
 # Draw the different sizes.
 figure1 = plt.figure()
@@ -141,28 +159,33 @@ plt.xlabel('Length [mm]')
 plt.ylabel('Length [mm]')
 plt.savefig("lens_simulation_sizecomparison.png")
 
+print 80 * '-'
+
 # www.physicsclassroom.com/class/refrn/Lesson-5/The-Mathematics-of-Lenses
 # The magnification equation relates the ratio of the image distance and
 # object distance to the ratio of the image height (hi) and object height
 # (ho). The magnification equation is stated as follows:
 # 1/f = 1/do + 1/di
 # M = hi/ho = - di/do
+# --> M * ho = hi or M * -do = di
 
-CMOSPosition = 25.
-FOVPosition = Magnification[0] * CMOSPosition
+# 17.526 is the standard lenght of the mounting surface to sensor length,
+# according to Mr. Guarino from Lensation and
+# books.google.ch/books?id=DaQY8CrmqFcC&pg=PA140&lpg=PA140&dq=17.526+mm
+CMOSPosition = 17.526
+CMOSPosition = 15.356
+FOVPosition = Magnification * CMOSPosition
 FocalLength = 1 / ((1 / CMOSPosition) + (1 / FOVPosition))
 
-print 80 * '-'
-print 'For a single FOV of', round(FOVSize[0], 2), 'x', \
-    round(FOVSize[1], 2), 'mm and a CMOS size of', round(CMOSSize[0], 2), \
-    'x', round(CMOSSize[1], 2), 'mm, we get a demagnification of', \
-    round(Magnification[0], 2), 'x', round(Magnification[1], 2)
-print 'If the CMOS is', CMOSPosition, 'mm away from the lens, the',\
-    'Scintillator had to be', round(FOVPosition), 'mm away from the lens.'
+print 'If the CMOS is set to be', CMOSPosition, 'mm away from the lens, the',\
+    'Scintillator has to be', round(FOVPosition, 2), 'mm away from the lens.'
 print 'This means that the total optical length is', \
-    round(CMOSPosition + FOVPosition), 'mm'
-print 'Since the CMOS is', CMOSPosition, 'mm away from the lens we thus',\
-    'get a focal length of of the lens of approximately', round(FocalLength, 2)
+    round(CMOSPosition + FOVPosition, 2), 'mm'
+print 'Since the CMOS is', round(CMOSPosition, 2), 'mm away from the lens', \
+    'we thus need a lens with a focal length of approximately', \
+    int(round(FocalLength))
+
+print 80 * '-'
 
 #~ Lens
 # Draw the lens at the origin, to simplify things
@@ -206,8 +229,6 @@ propagate_beam((-CMOSPosition, -CMOSSize[0] / 4), BeamNA, NumberOfRays,
                LensPosition, FocalLength, color=c[3])
 propagate_beam((-CMOSPosition, -CMOSSize[0] / 2), BeamNA, NumberOfRays,
                LensPosition, FocalLength, color=c[4])
-plt.draw()
-plt.savefig("lens_simulation_sideview.png")
 
 # Draw top view
 plt.subplot(122)
