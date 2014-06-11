@@ -35,13 +35,13 @@ module Housing()
     cube([1, unitlength + padding, height]);
     // box front walls, can (and should be turned off for increased visibility)
     translate(v = [0, unitlength + padding, 0]) {
-      % cube([unitlength + padding, 1, height]);
+      cube([unitlength + padding, 1, height]);
     }
     translate(v = [unitlength + padding, 0, 0]) {
-      % cube([1, unitlength + padding, height]); //
+      cube([1, unitlength + padding, height]); //
     }
     }
-% Housing();
+Housing();
 
 // Scintillator
 module Scintillator()
@@ -59,7 +59,7 @@ module Backplate()
       cube([350,320,1],center=true);
       }
     }
-% Backplate();
+Backplate();
 
 // Ommatidium
 module Ommatidium() {
