@@ -67,7 +67,7 @@ Since you've probably already checked out the [GlobalDiagnostiX repository][GDXr
 - Otherwise, if you're not connected to AFS, you just symlink the [data] directory of your checked out repository to the base directory of the DevWare installation.
 
 ## Start the DevSuite
-- `/Applications/Aptina_DevWare/DevWareX.app/Contents/MacOS/DevWareX`, because you'll need the command-line output!
+- `open /Applications/Aptina_DevWare/DevWareX.app/`, because you'll need the command-line output!
 
 You'll also need to associate the INI and SDAT files to "TextEditor" for various DevWareX features to work correctly:
 
