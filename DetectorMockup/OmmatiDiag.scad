@@ -106,8 +106,10 @@ module Ommatidium() {
       faces=[[0,1,2], [0,3,4]]);
     }
 
-  mirror([0,0,1]) translate([0,0,-d_cmos_lens])CMOSCross();
-  translate([0,0,d_cmos_lens/2]) CMOSCone();
+  mirror([0,0,1]) translate([0,0,-d_cmos_lens])
+    CMOSCross();
+  translate([0,0,d_cmos_lens/2])
+    CMOSCone();
 
   // Lens
   lensdiameter = 4;
@@ -133,9 +135,12 @@ module Ommatidium() {
       faces=[[0,1,2], [0,3,4]]);
     }
     
-    translate([0,0,d_cmos_lens]) LensCross();
-    translate([0,0,d_cmos_lens + d_lens_scintillator]) FOV();
-    translate([0,0,d_cmos_lens]) LensCone();
+    translate([0,0,d_cmos_lens])
+        LensCross();
+    translate([0,0,d_cmos_lens + d_lens_scintillator])
+        FOV();
+    translate([0,0,d_cmos_lens])
+         LensCone();
 
 }
 
@@ -146,7 +151,8 @@ rotate([0,0,$t*360])
         translate([unitlength/4/2 + padding/2, unitlength/3/2 + padding/2, height-14])
             mirror([0,0,1])
             for (xpos=[0:3], ypos = [0:2]) // iterate over x and y
-                translate([xpos*unitlength/4, ypos*unitlength/3, 0]) Ommatidium();
-        // Backplate();
+                translate([xpos*unitlength/4, ypos*unitlength/3, 0])
+                    Ommatidium();
+        Backplate();
         Housing();
 };
