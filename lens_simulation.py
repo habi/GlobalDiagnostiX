@@ -15,6 +15,7 @@ import colorsys
 
 os.system('clear')
 plt.ion()
+Savepath = '/afs/psi.ch/project/EssentialMed/Dev/Images/CMOSDistance'
 
 # Use Pythons Optionparser to define and read the options, and also
 # give some help to the user
@@ -24,18 +25,28 @@ usage = "usage: %prog [options] arg"
 # according to Mr. Guarino from Lensation and
 # books.google.ch/books?id=DaQY8CrmqFcC&pg=PA140&lpg=PA140&dq=17.526+mm
 parser.add_option('-d', dest='CMOSDistance', type='float',
-    help='Distance CMOS - Lens [mm]. Default=%default', default=17.526,
-    metavar='13')
+                  help='CMOS-Lens-Distance [mm]. Default=%default',
+                  default=17.526, metavar='13')
+parser.add_option('-s', dest='UseSensor', type='int',
+                  help='Sensor to use. 1=AR0130 , 2= AR0132, 3= MT9M0010. '
+                       'Default=%default', default=2, metavar='2')
 (options, args) = parser.parse_args()
 
-#~ $ for i in {10..240}; do  python lens_simulation.py -d $i; done
-#~ print 'TEMPORARY'
-#~ print
-#~ print 'CMOSDistance converted from', options.CMOSDistance, 'mm to',
-#~ options.CMOSDistance = options.CMOSDistance / 10
-#~ print options.CMOSDistance, 'mm'
-#~ print
-#~ print 'TEMPORARY'
+'''
+for i in {100..150};
+do for s in {1,2,3};
+do python lens_simulation.py -d $i -s $s;
+done;
+done
+'''
+print 'TEMPORARY'
+print
+print 'CMOSDistance converted from', options.CMOSDistance, 'mm to',
+options.CMOSDistance = options.CMOSDistance / 10
+print options.CMOSDistance, 'mm'
+print
+print 'TEMPORARY'
+
 
 def plotcolors(NumberOfColors):
     # After http://stackoverflow.com/a/9701141/323100
@@ -106,25 +117,31 @@ def propagate_beam(p0, NA, nr, zl, ff, label='', color='b'):
 FOVSize = np.array([430 / 3., 430 / 4.])
 FOVDiagonal = np.sqrt(FOVSize[0] ** 2 + FOVSize[1] ** 2)
 
-UseSensor = 2
-if UseSensor == 1:
+if options.UseSensor == 1:
     Sensor = 'AR0130'
     # Full Resolution: 1280H x 960V (1.2Mp)
     # Pixel Size: 3.75um x 3.75um
     pixelsize = 3.75 / 1000
     CMOSSize = np.array([1280 * pixelsize, 960 * pixelsize])
-elif UseSensor == 2:
+elif options.UseSensor == 2:
     Sensor = 'AR0132'
     # Full Resolution: 1280H x 960V (1.2Mp)
     # Pixel Size: 3.75um x 3.75um
     pixelsize = 3.75 / 1000
     CMOSSize = np.array([1280 * pixelsize, 960 * pixelsize])
-elif UseSensor == 3:
+elif options.UseSensor == 3:
     Sensor = 'MT9M0010'
     # Active pixels: 1,280H x 1,024V
     # Pixel size: 5.2um x 5.2um
     pixelsize = 5.2 / 1000
     CMOSSize = np.array([1280 * pixelsize, 1024 * pixelsize])
+
+# Make output directory
+try:
+    os.makedirs(os.path.join(Savepath, Sensor))
+except:
+    # Don't do anything if the folder already exists
+    pass
 
 CMOSDiagonal = np.sqrt(CMOSSize[0] ** 2 + CMOSSize[1] ** 2)
 
@@ -177,13 +194,16 @@ Ellipse = patches.Ellipse((FOVSize[0] / 2 - CMOSSize[0] / 2,
 figure1.gca().add_patch(Ellipse)
 CMOS = patches.Rectangle((FOVSize[0] / 2 - CMOSSize[0] / 2,
                           FOVSize[1] / 2 - CMOSSize[1] / 2), CMOSSize[0],
-                         CMOSSize[1], facecolor='b', linewidth=2, label='CMOS')
+                         CMOSSize[1], facecolor='b', linewidth=2,
+                         label=Sensor)
 figure1.gca().add_patch(CMOS)
 plt.legend()
 plt.axis('scaled')
 plt.xlabel('Length [mm]')
 plt.ylabel('Length [mm]')
-plt.savefig('lens_simulation_sizecomparison.png',  transparent=True)
+plt.savefig(os.path.join(Savepath, Sensor,
+                         'lens_simulation_sizecomparison.png'),
+            transparent=True)
 
 print 80 * '-'
 
@@ -234,8 +254,8 @@ figure2 = plt.figure(figsize=(16, 9))
 plt.show()
 # Draw top view
 plt.subplot(121)
-plt.title(' '.join(['Top view, CMOS-Lens-distance', str(options.CMOSDistance),
-                    'mm']))
+plt.title(' '.join([Sensor, '| Top view | CMOS-Lens-distance',
+                    str(options.CMOSDistance), 'mm']))
 # Draw CMOS and Scintillator
 plt.plot((-options.CMOSDistance, -options.CMOSDistance),
          (-CMOSSize[0] / 2, CMOSSize[0] / 2), color='b', linewidth=2)
@@ -251,8 +271,8 @@ zmin, zmax = -options.CMOSDistance, FOVPosition
 # Draw beam paths
 c = plotcolors(5)
 c = ['blue', 'blue', 'blue', 'blue', 'blue', 'blue']
-NumberOfRays = 10
-BeamNA = 1
+NumberOfRays = 5
+BeamNA = 10
 propagate_beam((-options.CMOSDistance, 0), BeamNA, NumberOfRays, LensPosition,
                FocalLength, color=c[0])
 propagate_beam((-options.CMOSDistance, CMOSSize[0] / 4), BeamNA, NumberOfRays,
@@ -263,13 +283,13 @@ propagate_beam((-options.CMOSDistance, -CMOSSize[0] / 4), BeamNA, NumberOfRays,
                LensPosition, FocalLength, color=c[3])
 propagate_beam((-options.CMOSDistance, -CMOSSize[0] / 2), BeamNA, NumberOfRays,
                LensPosition, FocalLength, color=c[4])
-plt.xlim([-30, 550])
-plt.ylim([-FOVSize[0] /2 * 1.1, FOVSize[0] /2* 1.1])
+plt.xlim([-30, 250])
+plt.ylim([-FOVSize[0] / 2 * 1.1, FOVSize[0] / 2 * 1.1])
 
 # Draw side view
 plt.subplot(122)
-plt.title(' '.join(['Side view, CMOS-Lens-distance',
-                     str(options.CMOSDistance), 'mm']))
+plt.title(' '.join([Sensor, '| Side view | CMOS-Lens-distance',
+                    str(options.CMOSDistance), 'mm']))
 # Draw CMOS and Scintillator
 plt.plot((-options.CMOSDistance, -options.CMOSDistance),
          (-CMOSSize[1] / 2, CMOSSize[1] / 2), color='b', linewidth=2)
@@ -291,12 +311,15 @@ propagate_beam((-options.CMOSDistance, -CMOSSize[1] / 2), BeamNA, NumberOfRays,
                LensPosition, FocalLength, color=c[4])
 plt.xlabel('Distance [mm]')
 plt.ylabel('Distance [mm]')
-plt.xlim([-30, 550])
-plt.ylim([-FOVSize[0] /2 * 1.1, FOVSize[0] /2* 1.1])
+plt.xlim([-30, 250])
+plt.ylim([-FOVSize[0] / 2 * 1.1, FOVSize[0] / 2 * 1.1])
 plt.draw()
 
-plt.savefig('lens_simulation_view_' + \
-            str(round(options.CMOSDistance,1)).zfill(5) + 'mm.png',
+plt.savefig(os.path.join(Savepath, Sensor, 'lens_simulation_view_' +
+            str(round(options.CMOSDistance, 1)).zfill(5) + 'mm.png'),
+            transparent=True)
+plt.savefig(os.path.join(Savepath, Sensor, 'movie_lens_simulation_view_' +
+            str(int(round(options.CMOSDistance, 1)*10)).zfill(7) + 'mm.png'),
             transparent=True)
 plt.ioff()
-plt.show()
+# plt.show()
