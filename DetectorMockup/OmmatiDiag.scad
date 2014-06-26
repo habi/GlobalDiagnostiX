@@ -1,7 +1,7 @@
 // Mockup of OmmatiDiag
 /*
  * The mockup was done after the first crude drawing with
- * [Tinkrecad](https://tinkercad.com/things/3utMiKsZhx9) proved to be too
+ * [Tinkercad](https://tinkercad.com/things/3utMiKsZhx9) proved to be too
  * inflexible.
  * The basic unit of the detector will be the scintillator size, which we
  * chose to be 17" x 17" translating to 430 x 430 mm in SI units.
