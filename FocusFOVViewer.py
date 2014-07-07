@@ -17,11 +17,13 @@ from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, \
      AnnotationBbox
 
 BaseDir = '/afs/psi.ch/project/EssentialMed/Images/Lens_FOV_and_Distance'
+#~ BaseDir = '/scratch/tmp/DevWareX/FocusDistance/'
 
 SensorList = []
 for item in os.listdir(BaseDir):
-    if not os.path.isfile(os.path.join(BaseDir, item)):
-        SensorList.append(item)
+    if not 'OldStuff' in item:
+        if not os.path.isfile(os.path.join(BaseDir, item)):
+            SensorList.append(item)
 
 for Sensor in SensorList:
     print Sensor
@@ -39,7 +41,11 @@ for Sensor in SensorList:
         for item in ImageFiles]
     ExposureTime = [int(os.path.basename(item).split('_')[4].split('ms')[0])
         for item in ImageFiles]
-    # Original images
+    print 'SDD varies from', min(SDD), 'to', max(SDD), 'mm'
+    print 'Exposure times vary from', min(ExposureTime), 'to',\
+        max(ExposureTime), 'ms'
+
+    # Display grid with images
     plt.figure(figsize=(16, 9))
     for counter, item in enumerate(ImageFiles):
         print str(counter + 1).zfill(len(str(len(ImageFiles)))) + '/' + \
@@ -63,30 +69,43 @@ for Sensor in SensorList:
     ImageOverview = os.path.join(BaseDir, Sensor + '_Images.png')
     plt.savefig(ImageOverview)
     print 'Overview image saved to', ImageOverview
-    print 'SDD varies from', min(SDD), 'to', max(SDD), 'mm'
-    print 'Exposure times vary from', min(ExposureTime), 'to',\
-        max(ExposureTime), 'ms'
-    # Scatter plot with and without images, according to
+    print 80 * '-'
+
+    # Scatter plot sdd vs. exposure time with and without images, according to
     # http://matplotlib.org/examples/pylab_examples/demo_annotation_box.html
+    # Plot the values with labels
     plt.figure(figsize=(16, 9))
-    ax = plt.subplot(121)
-    for counter, item in enumerate(ImageFiles):
-        imagebox = OffsetImage(ImageData[counter], zoom=0.1, cmap=plt.cm.gray)
-        SubImage = AnnotationBbox(imagebox,
-                                  [SDD[counter], ExposureTime[counter]], pad=0)
-        ax.add_artist(SubImage)
-    plt.xlim([0, max(SDD)])
-    plt.ylim([0, max(ExposureTime)])
+    plt.subplot(121)
+    plt.plot(SDD, ExposureTime, linestyle='', marker='o')
+    for counter, item in enumerate(Lens):
+        # Label data with lens name: http://stackoverflow.com/a/5147430/323100
+        plt.annotate(item, xy=(SDD[counter],
+                               ExposureTime[counter] + np.random.random()),
+            xytext=(0, 10), textcoords='offset points', ha='center',
+            va='center',
+            bbox=dict(boxstyle='round,pad=0.5', fc='b', alpha=0.125))
+    plt.title(Sensor)
     plt.xlabel('Szintillator-Sensor-Distance [mm]')
     plt.ylabel('Exposure time [ms]')
-    ax.grid(True)
-    # Scatter plot
-    plt.subplot(122)
+    plt.grid(True)
+    plt.xlim([0, max(SDD) * 1.1])
+    plt.ylim([0, max(ExposureTime) * 1.1])
+    # Scatter plot the images
+    ax = plt.subplot(122)
     plt.plot(SDD, ExposureTime, linestyle='', marker='o')
     plt.title(Sensor)
     plt.xlabel('Szintillator-Sensor-Distance [mm]')
     plt.ylabel('Exposure time [ms]')
     plt.grid(True)
+
+    ax = plt.subplot(122)
+    for counter, item in enumerate(ImageFiles):
+        imagebox = OffsetImage(ImageData[counter], zoom=0.1, cmap=plt.cm.gray)
+        SubImage = AnnotationBbox(imagebox,
+                                  [SDD[counter], ExposureTime[counter]], pad=0)
+        ax.add_artist(SubImage)
+    plt.xlim([0, max(SDD) * 1.1])
+    plt.ylim([0, max(ExposureTime) * 1.1])
     plt.draw()
     ImageDistances = os.path.join(BaseDir, Sensor + '_Scatterplot.png')
     plt.savefig(ImageDistances)
