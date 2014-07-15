@@ -10,8 +10,8 @@
 
 ## Install DevWare
 - `sudo apt-get install libtbb-dev` to install a necessary [library]
-- Download a recent version from the [DevSuite]-website, either manually or with this command, which downloads Version 1.4 for Linux32, unpacks it and starts the installation:
-  `wget https://aptina.atlassian.net/wiki/download/attachments/11501573/DevWareX_linux32_1_4.tar;tar -xvf DevWare*.tar;./Developer`
+- Download a recent version from the [DevSuite]-website, either manually or with this command, which downloads Version 1.9 for Linux32, unpacks it and starts the installation:
+  `wget https://aptina.atlassian.net/wiki/download/attachments/11501573/DevWareX_Linux32_1_9.tar.gz;tar -xvf DevWare*.tar;./Developer`
 
 ## Get sensor and board files
 ### Very Easy
