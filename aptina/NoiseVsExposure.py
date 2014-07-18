@@ -14,36 +14,39 @@ The analyis report gives
 See the wiki page linkes above to see how the values are calulated.
 '''
 
+import glob
 import os
 import numpy
 import matplotlib.pyplot as plt
 
-Root = '/afs/psi.ch/project/EssentialMed/Images/NoiseVsExposure'
-DataFiles = [
-    'AR0130_Navitar_10_100_3_16.txt',
-    'AR0130_Navitar_10_500_3_16.txt',
-    'AR0130_Navitar_20_200_3_12.txt',
-    'AR0130_Navitar_20_200_4_16.txt',
-    'AR0130_Navitar_20_200_6_16.txt',
-    'AR0130_Navitar_20_500_5_16.txt',
-    'AR0130_Navitar_50_100_1_10.txt'
-    ]
 
-Labels = ['Exposure time [ms]',
-    'Signal',
-    'RMS Dyn (temporal noise)',
-    'Avg Dyn (temporal noise)',
-    'FPN (fixed pattern noise)',
-    'columnwise FPN',
-    'rowwise FPN',
-    'columnwise temporal noise',
-    'rowwise temporal noise']
+def AskUser(Blurb, Choices):
+    """ Ask for input. Based on function in MasterThesisIvan.ini """
+    print(Blurb)
+    for Counter, Item in enumerate(sorted(Choices)):
+        print '    * [' + str(Counter) + ']:', Item
+    Selection = []
+    while Selection not in range(len(Choices)):
+        try:
+            Selection = int(input(' '.join(['Please enter the choice you',
+                                            'want [0-' +
+                                            str(len(Choices) - 1) +
+                                            ']:'])))
+        except:
+            print 'You actually have to select *something*'
+        if Selection not in range(len(Choices)):
+            print 'Try again with a valid choice'
+    print 'You selected', sorted(Choices)[Selection]
+    return sorted(Choices)[Selection]
+
+Root = '/afs/psi.ch/project/EssentialMed/Images/NoiseVsExposure'
+DataFiles = [os.path.basename(i) for
+    i in glob.glob(os.path.join(Root, '*.txt'))]
 
 # Which plot do we show?
-whichone = 6
+whichone = DataFiles.index(AskUser('Which file should I show you?', DataFiles))
 
 # Tell what we do
-print 'Reading data file', DataFiles[whichone]
 Sensor = DataFiles[whichone][:-4].split('_')[0]
 Lens = DataFiles[whichone][:-4].split('_')[1]
 FramesPerSample = DataFiles[whichone][:-4].split('_')[2]
@@ -74,6 +77,15 @@ with open(File, 'r') as f:
     FullRange = int(f.readline().split('=')[1])
 
 # Plot the data
+Labels = ['Exposure time [ms]',
+    'Signal',
+    'RMS Dyn (temporal noise)',
+    'Avg Dyn (temporal noise)',
+    'FPN (fixed pattern noise)',
+    'columnwise FPN',
+    'rowwise FPN',
+    'columnwise temporal noise',
+    'rowwise temporal noise']
 ## The title of the plot is split over all the suplots, otherwise it destroys
 ## the layout due to its long length
 plt.figure(' '.join(Title), figsize=(16, 9))
