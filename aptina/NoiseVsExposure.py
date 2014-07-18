@@ -58,7 +58,7 @@ print 'We are showing the data from the', Sensor, 'CMOS with the',  Lens, \
     'lens. The analysis was done with', FramesPerSample, \
     'frames per sample,', MaximumExposure, 'ms maximum exposure over', \
     Decades, 'decades with', SamplesPerDecade, 'samples per decade.'
-
+print
 print 'If the exposure has not been recorded in "log scale" (you will see',\
     'it in the plots), the "Decades" correspond to the "minimal exposure"',\
     'and the "samples per decade" correspond to the "numbers of samples".'
@@ -91,7 +91,7 @@ Labels = ['Exposure time [ms]',
 plt.figure(' '.join(Title), figsize=(16, 9))
 ## Signal
 plt.subplot(131)
-plt.plot(Data[:, 0], Data[:, 1], 'o-', label='1 ' + Labels[1])
+plt.plot(Data[:, 0], Data[:, 1], 'o-', label=Labels[1])
 plt.axhline(FullRange, linestyle='--', label='Full range')
 plt.xlabel(Labels[0])
 plt.ylabel(Labels[1])
@@ -101,7 +101,9 @@ plt.title(' '.join(Title[:2]))
 ## Fixed pattern noise
 plt.subplot(132)
 for i in range(4, 7):
-    plt.plot(Data[:, 0], Data[:, i], 'o-', label=str(i) + ' ' + Labels[i])
+    plt.plot(Data[:, 0], Data[:, i], 'o-', label=Labels[i])
+plt.plot(Data[:, 0], Data[:, 1] / max(Data[:, 1]) * max(Data[:, 4]), '--',
+    label='"Signal" scaled to FPN')
 plt.xlabel(Labels[0])
 plt.ylabel('FPN')
 plt.legend(loc='best')
@@ -110,7 +112,9 @@ plt.title(' '.join(Title[2:6]))
 # Temporal noise
 plt.subplot(133)
 for i in [2, 3, 7, 8]:
-    plt.plot(Data[:, 0], Data[:, i], 'o-', label=str(i) + ' ' + Labels[i])
+    plt.plot(Data[:, 0], Data[:, i], 'o-', label=Labels[i])
+plt.plot(Data[:, 0], Data[:, 1] / max(Data[:, 1]) * max(Data[:, 2]), '--',
+    label='"Signal" scaled to RMS Dyn')
 plt.legend(loc='best')
 plt.xlabel(Labels[0])
 plt.ylabel('Dyn')
