@@ -17,6 +17,7 @@ See the wiki page linkes above to see how the values are calulated.
 import glob
 import os
 import numpy
+from sympy.mpmath import *
 import matplotlib.pyplot as plt
 
 
@@ -45,6 +46,9 @@ DataFiles = [os.path.basename(i) for
 
 # Which plot do we show?
 whichone = DataFiles.index(AskUser('Which file should I show you?', DataFiles))
+# If no manual selection, we can do
+# for whichone in range(len(DataFiles)):
+# in a loop...
 
 # Tell what we do
 Sensor = DataFiles[whichone][:-4].split('_')[0]
@@ -90,37 +94,80 @@ Labels = ['Exposure time [ms]',
 ## the layout due to its long length
 plt.figure(' '.join(Title), figsize=(16, 9))
 ## Signal
-plt.subplot(131)
+ax = plt.subplot(131)
 plt.plot(Data[:, 0], Data[:, 1], 'o-', label=Labels[1])
 plt.axhline(FullRange, linestyle='--', label='Full range')
 plt.xlabel(Labels[0])
 plt.ylabel(Labels[1])
-plt.legend(loc='best')
 plt.title(' '.join(Title[:2]))
+box = ax.get_position()
+ax.set_position([box.x0, box.y0 + box.height * 0.25,
+                 box.width, box.height * 0.75])
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1))
+
+## We want to fit some of the data, thus make a linspace to fit over
+PolyfitRange = numpy.linspace(min(Data[:, 0]) - max(Data[:, 0]),
+                              2 * max(Data[:, 0]), 200)
+fit = 9
 
 ## Fixed pattern noise
-plt.subplot(132)
+ax = plt.subplot(132)
+maxy = 0
 for i in range(4, 7):
     plt.plot(Data[:, 0], Data[:, i], 'o-', label=Labels[i])
-plt.plot(Data[:, 0], Data[:, 1] / max(Data[:, 1]) * max(Data[:, 4]), '--',
-    label='"Signal" scaled to FPN')
+    maxy = max(max(Data[:, i]), maxy)
+plt.plot(Data[:, 0], (Data[:, 1] / max(Data[:, 1])) * max(Data[:, 4]), '--',
+    label='"Signal" scaled to max(FPN)')
+polynomial = numpy.poly1d(numpy.polyfit(Data[:, 0], Data[:, 4], fit))
+plt.plot(PolyfitRange, polynomial(PolyfitRange), '--',
+    label='Polynomial fit (' + str(fit) + ') of FPN')
+plt.xlim([min(Data[:, 0]), max(Data[:, 0])])
+plt.ylim([0, maxy * 1.1])
 plt.xlabel(Labels[0])
 plt.ylabel('FPN')
-plt.legend(loc='best')
 plt.title(' '.join(Title[2:6]))
+box = ax.get_position()
+ax.set_position([box.x0, box.y0 + box.height * 0.25,
+                 box.width, box.height * 0.75])
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1))
 
-# Temporal noise
-plt.subplot(133)
+## Temporal noise
+ax = plt.subplot(133)
+maxy = 0
 for i in [2, 3, 7, 8]:
     plt.plot(Data[:, 0], Data[:, i], 'o-', label=Labels[i])
+    maxy = max(max(Data[:, i]), maxy)
 plt.plot(Data[:, 0], Data[:, 1] / max(Data[:, 1]) * max(Data[:, 2]), '--',
-    label='"Signal" scaled to RMS Dyn')
-plt.legend(loc='best')
+    label='"Signal" scaled to max(RMS Dyn)')
+polynomial = numpy.poly1d(numpy.polyfit(Data[:, 0], Data[:, 2], fit))
+plt.plot(PolyfitRange, polynomial(PolyfitRange), '--',
+    label='Polynomial fit (' + str(fit) + ') of RMS Dyn')
+plt.xlim([min(Data[:, 0]), max(Data[:, 0])])
+plt.ylim([0, maxy * 1.1])
 plt.xlabel(Labels[0])
 plt.ylabel('Dyn')
 plt.title(' '.join(Title[6:]))
-plt.tight_layout()
+box = ax.get_position()
+ax.set_position([box.x0, box.y0 + box.height * 0.25,
+                 box.width, box.height * 0.75])
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1))
 plt.savefig(os.path.join(Root, DataFiles[whichone][:-4] + '.png'),
             Transparent=True, bbox_inches='tight')
 plt.draw()
 plt.show()
+
+#~ # Polynomial fit stuff
+#~ plt.figure()
+#~ x = Data[:, 0]
+#~ y = Data[:, 9]
+#~ xp = numpy.linspace(min(x)-max(x), 2*max(x), 222)
+#~
+#~ plt.plot(x, y, '-x', label='original')
+#~ for i in range(3,10,2):
+    #~ polynomial = numpy.poly1d(numpy.polyfit(x, y, i))
+    #~ plt.plot(xp, polynomial(xp), '--', label=str(i))
+#~ plt.legend(loc='best')
+#~ plt.xlim([min(x), max(x)])
+#~ plt.ylim([min(y), max(y)])
+#~ plt.draw()
+#~ plt.show()
