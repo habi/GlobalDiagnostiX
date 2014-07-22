@@ -3,12 +3,13 @@
 
 """
 Script to load the set of images acquired in the x-ray lab.
-Since we acquire lots of images before, during and after exposure it is
-really annoying to manually sift through all the images in all the
-directories and to look for the 'best' exposure.
-This script loads computes the mean of each image in each directory and
-gives out the maximum of the this mean.
-This should be the 'best' exposed image of all the exposures.
+Since we acquire images before, during and after exposure it is really annoying
+to manually sift through all the images in all the directories and to look for
+the 'best' exposure.
+This script loads each image in each directory, computes the mean of the images
+and gives out the maximum of the this mean. This should be the 'best' exposed
+image(s) of all the exposures.
+Optionally, the stack of the best images can be opened in Fiji.
 """
 
 from __future__ import division
@@ -16,7 +17,99 @@ import glob
 import os
 import subprocess
 import matplotlib.pyplot as plt
+import numpy
 import shutil
+
+
+def AskUser(Blurb, Choices):
+    """ Ask for input. Based on function in MasterThesisIvan.ini """
+    print(Blurb)
+    for Counter, Item in enumerate(sorted(Choices)):
+        print '    * [' + str(Counter) + ']:', Item
+    Selection = []
+    while Selection not in range(len(Choices)):
+        try:
+            Selection = int(input(' '.join(['Please enter the choice you',
+                                            'want [0-' +
+                                            str(len(Choices) - 1) +
+                                            ']:'])))
+        except:
+            print 'You actually have to select *something*'
+        if Selection not in range(len(Choices)):
+            print 'Try again with a valid choice'
+    print 'You selected', sorted(Choices)[Selection]
+    return sorted(Choices)[Selection]
+
+StartingFolder = ('/afs/psi.ch/project/EssentialMed/' +
+    'MasterArbeitBFH/XrayImages')
+
+Experiment = []
+ExperimentID = []
+for root, dirs, files in os.walk(StartingFolder):
+    #~ print 'Looking for experiment IDs in folder', os.path.basename(root)
+    if len(os.path.basename(root)) == 7 and \
+        not 'MT9' in os.path.basename(root) and \
+        not 'AR0' in os.path.basename(root):
+        Experiment.append(root)
+        ExperimentID.append(os.path.basename(root))
+
+print 'I found', len(Experiment), 'experiment IDs'
+
+# Get list of files in each folder, these are all the radiographies we acquired
+Radiographies = [sorted(glob.glob(os.path.join(Folder, '*.raw')))
+                 for Folder in Experiment]
+
+NumberOfRadiographies = [len(Radiographies[i])
+                         for i in range(len(Experiment))]
+
+# Inform user what we found
+print 'We found these experiment IDs in', os.path.commonprefix(Experiment)
+for counter, i in enumerate(Experiment):
+    print os.path.basename(i)
+    print '    * with', NumberOfRadiographies[counter], 'images'
+    print '    * in the folder', \
+        os.path.dirname(os.path.relpath(i, StartingFolder))
+
+# Concatenate the list for display purposes:
+# http://stackoverflow.com/a/22642307/323100
+Choices = ['{} with {} images'.format(x,y) for x,y in zip(ExperimentID, NumberOfRadiographies)]
+Choice = AskUser('Which one do you want to look at?', Choices)
+SelectedExperiment = Choices.index(Choice)
+
+Scintillator = Radiographies[SelectedExperiment][0].split('_')[1]
+Sensor = Radiographies[SelectedExperiment][0].split('_')[2]
+Size = [int(Radiographies[SelectedExperiment][0].split('_')[3].split('x')[1]),
+        int(Radiographies[SelectedExperiment][0].split('_')[3].split('x')[0])]
+Lens = Radiographies[SelectedExperiment][0].split('_')[4]
+SCD = int(Radiographies[SelectedExperiment][0].split('_')[5][:-5])
+Modality = Radiographies[SelectedExperiment][0].split('_')[6]
+Voltage = float(Radiographies[SelectedExperiment][0].split('_')[7][:-2])
+mAs = float(Radiographies[SelectedExperiment][0].split('_')[8][:-3])
+SourceExposuretime = float(Radiographies[SelectedExperiment][0].split('_')[9][:-6])
+CMOSExposuretime = float(Radiographies[SelectedExperiment][0].split('_')[10][:-6])
+
+
+print 'Loading', NumberOfRadiographies[SelectedExperiment], \
+    'images of experiment ID', ExperimentID[SelectedExperiment], \
+    'conducted with the', Scintillator, 'scintillator, ', Sensor, 'CMOS,', \
+    Lens, 'lens for the', Modality, 'and calculating their mean'
+
+plt.ion()
+plt.figure()
+for Counter, File in enumerate(Radiographies[SelectedExperiment]):
+    Image = numpy.fromfile(File, dtype=numpy.uint16).reshape(Size)
+    #~ Image -= numpy.mean(FromFile)
+    plt.imshow(Image,cmap='gray')
+    plt.title(' '.join(['Image', str(Counter), '/',
+                        str(NumberOfRadiographies[SelectedExperiment])]))
+    plt.draw()
+
+
+plt.ioff()
+exit()
+
+
+
 
 
 # Setup
@@ -31,13 +124,6 @@ ShowStack = True
 Threshold = 5
 # Delete Images or not
 Delete = False
-
-StartingFolder = ('/afs/psi.ch/project/EssentialMed/Images/' +
-    '12-GOTTHARD_and_TIS/TIS/')
-
-# Get list of (only) directories in StartingFolder
-# http://stackoverflow.com/a/973488
-FolderList = [x[0] for x in os.walk(StartingFolder)]
 
 # Get list of files in each folder, these are the exposures we acquired
 Exposures = [sorted(glob.glob(os.path.join(Folder, '*.jpg')))
@@ -104,9 +190,9 @@ for i in range(1, len(Exposures)):
         plt.show()
     # After the plotting, we elete unnecessary files. But we only delete, if we
     # have more than 20 images still present in the current folder
-    # 	* Delete the whole image directory if *all* images are below
-    # 	'Threshold' Threshold
-    # 	* Delete the whole image directory if the darkest and brightest image
+    #   * Delete the whole image directory if *all* images are below
+    #   'Threshold' Threshold
+    #   * Delete the whole image directory if the darkest and brightest image
     #     have a difference of less than 'Threshold'
     #   * Delete all images with are not 'Threshold'-% brighter than the
     #     *second*-darkest image
