@@ -19,7 +19,8 @@ import subprocess
 import matplotlib.pyplot as plt
 import numpy
 import shutil
-
+import logging
+import time
 
 def AskUser(Blurb, Choices):
     """ Ask for input. Based on function in MasterThesisIvan.ini """
@@ -70,11 +71,24 @@ for counter, i in enumerate(Experiment):
     print '    * in the folder', \
         os.path.dirname(os.path.relpath(i, StartingFolder))
 
-# Concatenate the list for display purposes:
-# http://stackoverflow.com/a/22642307/323100
+
+# Ask the user which experimentID to show
+## Concatenate the list for display purposes:
+## http://stackoverflow.com/a/22642307/323100
 Choices = ['{} with {} images'.format(x,y) for x,y in zip(ExperimentID, NumberOfRadiographies)]
 Choice = AskUser('Which one do you want to look at?', Choices)
 SelectedExperiment = Choices.index(Choice)
+
+# Set up logging.
+# We rewrite the logfile at each new run of the script, setting "filemode='w'"
+# We only want the message, thus formatting it accordingly
+# Set either INFO or DEBUG level
+logging.basicConfig(filename=os.path.join(os.path.dirname(Experiment[SelectedExperiment]), ExperimentID[SelectedExperiment] + '.log'), filemode='w', format='%(message)s', level=logging.INFO)
+logging.info('Log file for Experiment ID %s, Analyis performed at %s',
+    ExperimentID[SelectedExperiment],  time.strftime('%m/%d/%Y %H:%M:%S'))
+logging.info('-----')
+logging.info('All image files are to be found in %s', StartingFolder)
+logging.info('In the subfolder %s', Experiment[SelectedExperiment][len(StartingFolder):])
 
 Scintillator = Radiographies[SelectedExperiment][0].split('_')[1]
 Sensor = Radiographies[SelectedExperiment][0].split('_')[2]
@@ -88,11 +102,15 @@ mAs = float(Radiographies[SelectedExperiment][0].split('_')[8][:-3])
 SourceExposuretime = float(Radiographies[SelectedExperiment][0].split('_')[9][:-6])
 CMOSExposuretime = float(Radiographies[SelectedExperiment][0].split('_')[10][:-6])
 
-
 print 'Loading', NumberOfRadiographies[SelectedExperiment], \
     'images of experiment ID', ExperimentID[SelectedExperiment], \
     'conducted with the', Scintillator, 'scintillator,', Sensor, 'CMOS,', \
     Lens, 'lens for the', Modality, 'and calculating their mean'
+
+logging.debug('Scintillator: %s', Scintillator)
+logging.debug('Sensor: %s', Sensor)
+logging.debug('Lens: %s', Lens)
+logging.debug('Modality: %s', Modality)
 
 ImageMean = [numpy.fromfile(Image, dtype=numpy.uint16).reshape(Size).mean()
              for Image in Radiographies[SelectedExperiment]]
@@ -103,6 +121,9 @@ ImageMax = [numpy.fromfile(Image, dtype=numpy.uint16).reshape(Size).max()
 
 plt.ion()
 plt.figure()
+#~ logging.info('The folder %s contains %s Images',
+    #~ ,
+    #~ NumberOfRadiographies[SelectedExperiment])
 for Counter, File in enumerate(Radiographies[SelectedExperiment]):
     plt.clf()
     plt.subplot(211)
@@ -127,12 +148,23 @@ for Counter, File in enumerate(Radiographies[SelectedExperiment]):
         plt.savefig(os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
                     'Analysis_' + ExperimentID[SelectedExperiment] +
                     '_Image_' + str(Counter) + '_Max.png'))
+        logging.info('-----')
+        logging.info('Image %s has the largest mean of all the %s images',
+            Counter, NumberOfRadiographies[SelectedExperiment])
+        logging.info('    * Max: %s', ImageMax[Counter])
+        logging.info('    * Mean: %s', ImageMean[Counter])
+        logging.info('    * STD: %s', ImageSTD[Counter])
+        logging.info('Plot saved as %s in %s', 'Analysis_' + ExperimentID[SelectedExperiment] +
+                    '_Image_' + str(Counter) + '_Max.png', os.path.dirname(Experiment[SelectedExperiment][len(StartingFolder):]))
+        logging.info('-----')
+    logging.debug('Image %s of %s. Max: %s. Mean: %s, STD: %s',
+        Counter, NumberOfRadiographies[SelectedExperiment], ImageMax[Counter],
+        ImageMean[Counter], ImageSTD[Counter])
+
 plt.ioff()
 plt.show()
 
 exit()
-
-
 
 
 
@@ -286,3 +318,4 @@ for i in range(1, len(Exposures)):
             with open(os.devnull, 'wb') as devnull:
                 subprocess.call(viewcommand, stdout=devnull,
                                 stderr=subprocess.STDOUT, shell=True)
+
