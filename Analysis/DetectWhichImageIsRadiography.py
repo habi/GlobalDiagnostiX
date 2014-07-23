@@ -91,21 +91,45 @@ CMOSExposuretime = float(Radiographies[SelectedExperiment][0].split('_')[10][:-6
 
 print 'Loading', NumberOfRadiographies[SelectedExperiment], \
     'images of experiment ID', ExperimentID[SelectedExperiment], \
-    'conducted with the', Scintillator, 'scintillator, ', Sensor, 'CMOS,', \
+    'conducted with the', Scintillator, 'scintillator,', Sensor, 'CMOS,', \
     Lens, 'lens for the', Modality, 'and calculating their mean'
+
+ImageMean = [numpy.fromfile(Image, dtype=numpy.uint16).reshape(Size).mean()
+             for Image in Radiographies[SelectedExperiment]]
+ImageSTD = [numpy.fromfile(Image, dtype=numpy.uint16).reshape(Size).std()
+             for Image in Radiographies[SelectedExperiment]]
+ImageMax = [numpy.fromfile(Image, dtype=numpy.uint16).reshape(Size).max()
+             for Image in Radiographies[SelectedExperiment]]
 
 plt.ion()
 plt.figure()
 for Counter, File in enumerate(Radiographies[SelectedExperiment]):
+    plt.clf()
+    plt.subplot(211)
     Image = numpy.fromfile(File, dtype=numpy.uint16).reshape(Size)
     #~ Image -= numpy.mean(FromFile)
     plt.imshow(Image,cmap='gray')
-    plt.title(' '.join(['Image', str(Counter), '/',
-                        str(NumberOfRadiographies[SelectedExperiment])]))
+    plt.title(' '.join(['ID', str(ExperimentID[SelectedExperiment]), '|',
+                        'Image', str(Counter), 'of',
+                        str(NumberOfRadiographies[SelectedExperiment] - 1),
+                        '|', 'Mean', str(round(ImageMean[Counter],2))]))
+    plt.subplot(212)
+    plt.plot(ImageMean, label='Mean')
+    plt.plot(Counter, ImageMean[Counter], marker='o', color='k')
+    plt.plot(ImageMax, label='Max')
+    plt.plot(Counter, ImageMax[Counter], marker='o', color='k')
+    plt.plot(ImageSTD, label='STD')
+    plt.plot(Counter, ImageSTD[Counter], marker='o', color='k')
+    plt.legend(loc='best')
+    plt.xlim([0,NumberOfRadiographies[SelectedExperiment]-1])
     plt.draw()
-
-
+    if ImageMean[Counter] == max(ImageMean):
+        plt.savefig(os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
+                    'Analysis_' + ExperimentID[SelectedExperiment] +
+                    '_Image_' + str(Counter) + '_Max.png'))
 plt.ioff()
+plt.show()
+
 exit()
 
 
