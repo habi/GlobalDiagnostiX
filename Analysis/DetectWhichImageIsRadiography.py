@@ -22,6 +22,7 @@ import shutil
 import logging
 import time
 
+
 def AskUser(Blurb, Choices):
     """ Ask for input. Based on function in MasterThesisIvan.ini """
     print(Blurb)
@@ -41,6 +42,18 @@ def AskUser(Blurb, Choices):
     print 'You selected', sorted(Choices)[Selection]
     return sorted(Choices)[Selection]
 
+def myLogger(path, name):
+    """
+    Since logging in a loop does always write to the first instaniated file,
+    we make a little wrapper around the logger function to have one log file
+    per experient ID. Based on http://stackoverflow.com/a/2754216/323100
+    """
+    logger=logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+    handler=logging.FileHandler(os.path.join(path, name),'w')
+    logger.addHandler(handler)
+    return logger
+
 StartingFolder = ('/afs/psi.ch/project/EssentialMed/' +
     'MasterArbeitBFH/XrayImages')
 
@@ -54,7 +67,7 @@ for root, dirs, files in os.walk(StartingFolder):
         Experiment.append(root)
         ExperimentID.append(os.path.basename(root))
 
-print 'I found', len(Experiment), 'experiment IDs'
+print 'I found', len(Experiment), 'experiment IDs in', StartingFolder
 
 # Get list of files in each folder, these are all the radiographies we acquired
 Radiographies = [sorted(glob.glob(os.path.join(Folder, '*.raw')))
@@ -62,6 +75,19 @@ Radiographies = [sorted(glob.glob(os.path.join(Folder, '*.raw')))
 
 NumberOfRadiographies = [len(Radiographies[i])
                          for i in range(len(Experiment))]
+
+# Warn if a directory is empty, i.e. contains 0 NumberOfRadiographies
+# This most probably happened if DevWare crashed
+EmptyOnes = [ item == 0 for item in NumberOfRadiographies]
+for counter, i in enumerate(Experiment):
+    if EmptyOnes[counter]:
+        print
+        print 'Empty directory found!'
+        print 'Please delete'
+        print
+        print i
+        print
+        exit('before proceeding')
 
 # Inform user what we found
 print 'We found these experiment IDs in', os.path.commonprefix(Experiment)
@@ -71,41 +97,65 @@ for counter, i in enumerate(Experiment):
     print '    * in the folder', \
         os.path.dirname(os.path.relpath(i, StartingFolder))
 
+ManualSelection = False
+AnalyisList = []
+if ManualSelection:
+    # Ask the user which experimentID to show
+    ## Concatenate the list for display purposes:
+    ## http://stackoverflow.com/a/22642307/323100
+    Choices = ['{} with {} images'.format(x, y)
+               for x, y in zip(ExperimentID, NumberOfRadiographies)]
+    Choice = AskUser('Which one do you want to look at?', Choices)
+    AnalyisList.append(Choices.index(Choice))
+else:
+    AnalyisList = range(len(Experiment))
 
-# Ask the user which experimentID to show
-## Concatenate the list for display purposes:
-## http://stackoverflow.com/a/22642307/323100
-Choices = ['{} with {} images'.format(x,y) for x,y in zip(ExperimentID, NumberOfRadiographies)]
-Choice = AskUser('Which one do you want to look at?', Choices)
-SelectedExperiment = Choices.index(Choice)
+for SelectedExperiment in AnalyisList:
+    print
+    print SelectedExperiment, Experiment[SelectedExperiment]
+    print
 
-# Set up logging.
-# We rewrite the logfile at each new run of the script, setting "filemode='w'"
-# We only want the message, thus formatting it accordingly
-# Set either INFO or DEBUG level
-logging.basicConfig(filename=os.path.join(os.path.dirname(Experiment[SelectedExperiment]), ExperimentID[SelectedExperiment] + '.log'), filemode='w', format='%(message)s', level=logging.INFO)
-logging.info('Log file for Experiment ID %s, Analyis performed at %s',
-    ExperimentID[SelectedExperiment],  time.strftime('%m/%d/%Y %H:%M:%S'))
-logging.info('-----')
-logging.info('All image files are to be found in %s', StartingFolder)
-logging.info('In the subfolder %s', Experiment[SelectedExperiment][len(StartingFolder):])
+    log_hm = myLogger(os.path.dirname(Experiment[SelectedExperiment]),
+        ExperimentID[SelectedExperiment] + '.log')
+    log_hm.info("Testing Log")
 
-Scintillator = Radiographies[SelectedExperiment][0].split('_')[1]
-Sensor = Radiographies[SelectedExperiment][0].split('_')[2]
-Size = [int(Radiographies[SelectedExperiment][0].split('_')[3].split('x')[1]),
-        int(Radiographies[SelectedExperiment][0].split('_')[3].split('x')[0])]
-Lens = Radiographies[SelectedExperiment][0].split('_')[4]
-SCD = int(Radiographies[SelectedExperiment][0].split('_')[5][:-5])
-Modality = Radiographies[SelectedExperiment][0].split('_')[6]
-Voltage = float(Radiographies[SelectedExperiment][0].split('_')[7][:-2])
-mAs = float(Radiographies[SelectedExperiment][0].split('_')[8][:-3])
-SourceExposuretime = float(Radiographies[SelectedExperiment][0].split('_')[9][:-6])
-CMOSExposuretime = float(Radiographies[SelectedExperiment][0].split('_')[10][:-6])
+    #~ # Set up logging.
+    #~ # We rewrite the logfile at each new run of the script, setting
+    #~ # "filemode='w'"
+    #~ # We only want the message, thus formatting it accordingly
+    #~ # Set either INFO or DEBUG level
+    #~ logging.basicConfig(filename=os.path.join(
+        #~ os.path.dirname(Experiment[SelectedExperiment]),
+        #~ ExperimentID[SelectedExperiment] + '.log'),
+        #~ filemode='w',
+        #~ format='%(message)s',
+        #~ level=logging.INFO)
+    #~ logging.info('Log file for Experiment ID %s, Analyis performed at %s',
+        #~ ExperimentID[SelectedExperiment],  time.strftime('%m/%d/%Y %H:%M:%S'))
+    #~ logging.info('-----')
+    #~ logging.info('All image files are to be found in %s', StartingFolder)
+    #~ logging.info('In the subfolder %s',
+        #~ Experiment[SelectedExperiment][len(StartingFolder):])
 
-print 'Loading', NumberOfRadiographies[SelectedExperiment], \
-    'images of experiment ID', ExperimentID[SelectedExperiment], \
-    'conducted with the', Scintillator, 'scintillator,', Sensor, 'CMOS,', \
-    Lens, 'lens for the', Modality, 'and calculating their mean'
+    Scintillator = Radiographies[SelectedExperiment][0].split('_')[1]
+    Sensor = Radiographies[SelectedExperiment][0].split('_')[2]
+    Size = [int(Radiographies[SelectedExperiment][0].split('_')[3].split('x')[1]),
+            int(Radiographies[SelectedExperiment][0].split('_')[3].split('x')[0])]
+    Lens = Radiographies[SelectedExperiment][0].split('_')[4]
+    SCD = int(Radiographies[SelectedExperiment][0].split('_')[5][:-5])
+    Modality = Radiographies[SelectedExperiment][0].split('_')[6]
+    Voltage = float(Radiographies[SelectedExperiment][0].split('_')[7][:-2])
+    mAs = float(Radiographies[SelectedExperiment][0].split('_')[8][:-3])
+    SourceExposuretime = \
+        float(Radiographies[SelectedExperiment][0].split('_')[9][:-6])
+    CMOSExposuretime = \
+        float(Radiographies[SelectedExperiment][0].split('_')[10][:-6])
+
+    print 'Loading', NumberOfRadiographies[SelectedExperiment], \
+        'images of experiment ID', ExperimentID[SelectedExperiment], \
+        'conducted with the', Scintillator, 'scintillator,', Sensor, 'CMOS,', \
+        Lens, 'lens for the', Modality, 'and calculating their mean'
+exit()
 
 logging.debug('Scintillator: %s', Scintillator)
 logging.debug('Sensor: %s', Sensor)
@@ -129,11 +179,11 @@ for Counter, File in enumerate(Radiographies[SelectedExperiment]):
     plt.subplot(211)
     Image = numpy.fromfile(File, dtype=numpy.uint16).reshape(Size)
     #~ Image -= numpy.mean(FromFile)
-    plt.imshow(Image,cmap='gray')
+    plt.imshow(Image, cmap='gray')
     plt.title(' '.join(['ID', str(ExperimentID[SelectedExperiment]), '|',
                         'Image', str(Counter), 'of',
                         str(NumberOfRadiographies[SelectedExperiment] - 1),
-                        '|', 'Mean', str(round(ImageMean[Counter],2))]))
+                        '|', 'Mean', str(round(ImageMean[Counter], 2))]))
     plt.subplot(212)
     plt.plot(ImageMean, label='Mean')
     plt.plot(Counter, ImageMean[Counter], marker='o', color='k')
@@ -142,20 +192,24 @@ for Counter, File in enumerate(Radiographies[SelectedExperiment]):
     plt.plot(ImageSTD, label='STD')
     plt.plot(Counter, ImageSTD[Counter], marker='o', color='k')
     plt.legend(loc='best')
-    plt.xlim([0,NumberOfRadiographies[SelectedExperiment]-1])
+    plt.xlim([0, NumberOfRadiographies[SelectedExperiment] - 1])
     plt.draw()
     if ImageMean[Counter] == max(ImageMean):
-        plt.savefig(os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
-                    'Analysis_' + ExperimentID[SelectedExperiment] +
-                    '_Image_' + str(Counter) + '_Max.png'))
+        plt.savefig(os.path.join(
+            os.path.dirname(Experiment[SelectedExperiment]),
+            'Analysis_' + ExperimentID[SelectedExperiment] + '_Image_' +
+            str(Counter) + '_Max.png'))
         logging.info('-----')
         logging.info('Image %s has the largest mean of all the %s images',
             Counter, NumberOfRadiographies[SelectedExperiment])
         logging.info('    * Max: %s', ImageMax[Counter])
         logging.info('    * Mean: %s', ImageMean[Counter])
         logging.info('    * STD: %s', ImageSTD[Counter])
-        logging.info('Plot saved as %s in %s', 'Analysis_' + ExperimentID[SelectedExperiment] +
-                    '_Image_' + str(Counter) + '_Max.png', os.path.dirname(Experiment[SelectedExperiment][len(StartingFolder):]))
+        logging.info('Plot saved as %s in %s',
+            'Analysis_' + ExperimentID[SelectedExperiment] + '_Image_' +
+            str(Counter) + '_Max.png',
+            os.path.dirname(Experiment[SelectedExperiment][len(
+                StartingFolder):]))
         logging.info('-----')
     logging.debug('Image %s of %s. Max: %s. Mean: %s, STD: %s',
         Counter, NumberOfRadiographies[SelectedExperiment], ImageMax[Counter],
@@ -163,7 +217,7 @@ for Counter, File in enumerate(Radiographies[SelectedExperiment]):
 
 plt.ioff()
 plt.show()
-
+logging.shutdown()
 exit()
 
 
@@ -318,4 +372,3 @@ for i in range(1, len(Exposures)):
             with open(os.devnull, 'wb') as devnull:
                 subprocess.call(viewcommand, stdout=devnull,
                                 stderr=subprocess.STDOUT, shell=True)
-
