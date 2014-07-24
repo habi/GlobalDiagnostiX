@@ -70,9 +70,9 @@ print 'I found', len(Experiment), 'experiment IDs in', StartingFolder
 print 80 * '-'
 
 # Get list of files in each folder, these are all the radiographies we acquired
+# The length of this list is then obviously the number of radiographies
 Radiographies = [sorted(glob.glob(os.path.join(Folder, '*.raw')))
                  for Folder in Experiment]
-
 NumberOfRadiographies = [len(Radiographies[i])
                          for i in range(len(Experiment))]
 
@@ -87,7 +87,7 @@ for counter, i in enumerate(Experiment):
         exit(' '.join(['I deleted this folder, just start again. I will',
             'proceed or delete the next empty folder...']))
 
-ManualSelection = False
+ManualSelection = True
 AnalyisList = []
 if ManualSelection:
     # Ask the user which experimentID to show
@@ -97,20 +97,24 @@ if ManualSelection:
                for x, y in zip(ExperimentID, NumberOfRadiographies)]
     Choice = AskUser('Which one do you want to look at?', Choices)
     AnalyisList.append(Choices.index(Choice))
+    print
 else:
     AnalyisList = range(len(Experiment))
 
-for SelectedExperiment in AnalyisList:
-    print 'Working on Experiment', ExperimentID[SelectedExperiment]
-
+for Counter, SelectedExperiment in enumerate(AnalyisList):
+    # Inform user
+    print str(Counter + 1) + '/' + str(len(AnalyisList)) + \
+        ': Looking at experiment', ExperimentID[SelectedExperiment]
+    # Write logfile
     logfile = myLogger(os.path.dirname(Experiment[SelectedExperiment]),
         'Analysis_' + ExperimentID[SelectedExperiment] + '.log')
 
-    logfile.info('Log file for Experiment ID %s, Analyis performed at %s',
-        ExperimentID[SelectedExperiment],  time.strftime('%m/%d/%Y %H:%M:%S'))
+    logfile.info('Log file for Experiment ID %s, Analsyis performed at %s',
+        ExperimentID[SelectedExperiment],
+        time.strftime('%d.%m.%Y at %H:%M:%S'))
     logfile.info('-----')
     logfile.info('All image files are to be found in %s', StartingFolder)
-    logfile.info('This experiment can be found in the subfolder %s',
+    logfile.info('This experiment ID can be found in the subfolder %s',
         Experiment[SelectedExperiment][len(StartingFolder):])
     logfile.info('-----')
 
@@ -188,6 +192,7 @@ for SelectedExperiment in AnalyisList:
                 os.path.dirname(Experiment[SelectedExperiment]),
                 'Analysis_' + ExperimentID[SelectedExperiment] + '_Image_' +
                 str(Counter) + '_Max.png'))
+            logfile.info('-----')
             logfile.info('Image %s has the largest mean of all the %s images',
                 Counter, NumberOfRadiographies[SelectedExperiment])
             logfile.info('    * Max: %s', round(ImageMax[Counter], 3))
@@ -201,9 +206,8 @@ for SelectedExperiment in AnalyisList:
                     StartingFolder):]))
             logfile.info('-----')
 
-    autoclose = True
-    if autoclose:
-        time.sleep()
+    autopilot = True
+    if autopilot:
         plt.close()
     else:
         plt.ioff()
