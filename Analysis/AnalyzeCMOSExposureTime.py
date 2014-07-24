@@ -13,6 +13,7 @@ import glob
 import os
 import matplotlib.pyplot as plt
 import numpy
+import scipy
 import logging
 import time
 
@@ -29,7 +30,8 @@ def myLogger(Folder, LogFileName):
     logger.addHandler(handler)
     return logger
 
-StartingFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' + 'XrayImages/20140721/Pingseng/MT9M001/Computar-11A/Spine')
+StartingFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
+                  'XrayImages/20140721/Pingseng/MT9M001/Computar-11A/Spine')
 
 Experiment = [x[0] for x in os.walk(StartingFolder)][1:]
 
@@ -41,17 +43,20 @@ Radiographies = [sorted(glob.glob(os.path.join(Folder, '*.raw')))
                  for Folder in Experiment]
 NumberOfRadiographies = [len(Radiographies[i])
                          for i in range(len(Experiment))]
-Scintillator = [ FileName[0].split('_')[1] for FileName in Radiographies]
+Scintillator = [FileName[0].split('_')[1] for FileName in Radiographies]
 Sensor = [FileName[0].split('_')[2]  for FileName in Radiographies]
 Size = [[int(FileName[0].split('_')[3].split('x')[1]),
-        int(FileName[0].split('_')[3].split('x')[0])]  for FileName in Radiographies]
+        int(FileName[0].split('_')[3].split('x')[0])]
+        for FileName in Radiographies]
 Lens = [FileName[0].split('_')[4]  for FileName in Radiographies]
 SCD = [int(FileName[0].split('_')[5][:-5])  for FileName in Radiographies]
 Modality = [FileName[0].split('_')[6]  for FileName in Radiographies]
-Voltage = [float(FileName[0].split('_')[7][:-2])  for FileName in Radiographies]
+Voltage = [float(FileName[0].split('_')[7][:-2]) for FileName in Radiographies]
 mAs = [float(FileName[0].split('_')[8][:-3])  for FileName in Radiographies]
-SourceExposuretime = [float(FileName[0].split('_')[9][:-6])  for FileName in Radiographies]
-CMOSExposuretime = [float(FileName[0].split('_')[10][:-6])  for FileName in Radiographies]
+SourceExposuretime = [float(FileName[0].split('_')[9][:-6])
+                      for FileName in Radiographies]
+CMOSExposuretime = [float(FileName[0].split('_')[10][:-6])
+                    for FileName in Radiographies]
 
 plt.ion()
 for counter, item in enumerate(Experiment):
@@ -77,41 +82,91 @@ for counter, item in enumerate(Experiment):
     print 'Loading', len(Radiographies[counter]), 'images'
     Images = [numpy.fromfile(Image, dtype=numpy.uint16).reshape(Size[counter])
               for Image in Radiographies[counter]]
-    ImageMax = [numpy.fromfile(Image, dtype=numpy.uint16).reshape(Size[counter]).max()
-                for Image in Radiographies[counter]]
-    ImageMean = [numpy.fromfile(Image, dtype=numpy.uint16).reshape(Size[counter]).mean()
-                 for Image in Radiographies[counter]]
-    ImageSTD = [numpy.fromfile(Image, dtype=numpy.uint16).reshape(Size[counter]).std()
-                for Image in Radiographies[counter]]
-    [ logfile.info('Image %s of %s: Mean %s, Max: %s, STD: %s', c,
+    ImageMax = [numpy.fromfile(Image,
+        dtype=numpy.uint16).reshape(Size[counter]).max()
+        for Image in Radiographies[counter]]
+    ImageMean = [numpy.fromfile(Image,
+        dtype=numpy.uint16).reshape(Size[counter]).mean()
+        for Image in Radiographies[counter]]
+    ImageSTD = [numpy.fromfile(Image,
+        dtype=numpy.uint16).reshape(Size[counter]).std()
+        for Image in Radiographies[counter]]
+    [logfile.info('Image %s of %s: Mean %s, Max: %s, STD: %s', c,
             len(Radiographies[counter]), round(ImageMean[c], 2), ImageMax[c],
-            round(ImageSTD[c],2)) for c, i in enumerate(Radiographies[counter])]
-
+            round(ImageSTD[c], 2))
+            for c, i in enumerate(Radiographies[counter])]
+    DarkImage = numpy.empty(Size[counter])
+    SummedImage = numpy.empty(Size[counter])
     for c, Image in enumerate(Images):
         # Select images which are a bit brighter than the mean of the darkest
         if Image.mean() > numpy.min(ImageMean) * 1.618:
             plt.subplot(3, len(Images), 1 + c)
+            SummedImage += Image
         else:
             plt.subplot(3, len(Images), len(Images) + 1 + c)
+            # We probably need to add something like the mean dark image
+            # For the moment just adding "part" of the dark image fo the total
+            # dataset...
+            DarkImage += Image / NumberOfRadiographies[counter]
         plt.imshow(Image, cmap='gray')
         plt.axis('off')
         plt.title(' '.join(['Img', str(ImageSTD.index(Image.std())), '\nMean',
             str(int(round(ImageMean[c])))]))
     plt.subplot(313)
     plt.plot(ImageMax, marker='o', label='max')
-    plt.plot(ImageMean, label='mean')
-    plt.plot(ImageSTD, label='STD')
+    plt.plot(ImageMean, marker='o', label='mean')
+    plt.plot(ImageSTD, marker='o', label='STD')
+    plt.title(' '.join(['Image characteristics for an exposure time of',
+        str(CMOSExposuretime[counter]), 'ms']))
+    plt.axhline(numpy.min(ImageMean) * 1.618, label='selection threshold',
+        color='g', linestyle='--')
     plt.xlim([-0.5, NumberOfRadiographies[counter] - 0.5])
     plt.legend(loc='best')
     plt.tight_layout()
-    plt.subplots_adjust(hspace = .05)
-    plt.subplots_adjust(wspace = .05)
-    #~ plt.subplots_adjust(left = .001)
-    #~ plt.subplots_adjust(right = 1-.001)
-    #~ plt.subplots_adjust(bottom = .001)
-    #~ plt.subplots_adjust(top = 1-.001)
+    plt.subplots_adjust(hspace=.05)
+    plt.subplots_adjust(wspace=.05)
     plt.draw()
     plt.savefig(os.path.join(os.path.dirname(Experiment[counter]),
         'Exposuretime_' + os.path.basename(Experiment[counter]) + '.png'))
-plt.ioff()
-plt.show()
+    plt.figure(figsize=[16, 6])
+    plt.subplot(131)
+    plt.imshow(DarkImage, cmap='gray')
+    plt.title(' '.join(['Sum of dark images @', str(CMOSExposuretime[counter]),
+                        'ms']))
+    scipy.misc.imsave(os.path.join(os.path.dirname(Experiment[counter]),
+        'Exposuretime_' + os.path.basename(Experiment[counter]) +
+        '_Frame-Dark-' + str(CMOSExposuretime[counter]) + 'ms.png'),
+        DarkImage)
+    plt.subplot(132)
+    plt.imshow(SummedImage, cmap='gray')
+    plt.title(' '.join(['Sum of images @', str(CMOSExposuretime[counter]),
+                        'ms']))
+    scipy.misc.imsave(os.path.join(os.path.dirname(Experiment[counter]),
+        'Exposuretime_' + os.path.basename(Experiment[counter]) +
+        '_Frame_Images-' + str(CMOSExposuretime[counter]) + 'ms.png'),
+        SummedImage)
+    plt.subplot(133)
+    plt.imshow(SummedImage - DarkImage, cmap='gray')
+    plt.title(' '.join(['Sum of images - sum of dark images @',
+                        str(CMOSExposuretime[counter]), 'ms']))
+    scipy.misc.imsave(os.path.join(os.path.dirname(Experiment[counter]),
+        'Exposuretime_' + os.path.basename(Experiment[counter]) +
+        '_Frame-Corrected-' + str(CMOSExposuretime[counter]) + 'ms.png'),
+        SummedImage - DarkImage)
+    plt.subplots_adjust(left=.05)
+    plt.subplots_adjust(right=1 - .05)
+    plt.subplots_adjust(bottom=.05)
+    plt.subplots_adjust(top=1 - .05)
+    plt.tight_layout
+    plt.draw()
+    plt.savefig(os.path.join(os.path.dirname(Experiment[counter]),
+        'Exposuretime_' + os.path.basename(Experiment[counter]) +
+        '_Images.png'))
+
+    autopilot = True
+    if autopilot:
+        time.sleep(5)
+        plt.close('all')
+    else:
+        plt.ioff()
+        plt.show()
