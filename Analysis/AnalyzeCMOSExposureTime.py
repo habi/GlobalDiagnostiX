@@ -58,6 +58,15 @@ SourceExposuretime = [float(FileName[0].split('_')[9][:-6])
 CMOSExposuretime = [float(FileName[0].split('_')[10][:-6])
                     for FileName in Radiographies]
 
+# Prepare empty arrays for endresult
+TotalSummedBrightness = numpy.empty(len(Experiment))
+TotalMax = numpy.empty(len(Experiment))
+TotalMean = numpy.empty(len(Experiment))
+TotalSTD = numpy.empty(len(Experiment))
+CorrectedImages = numpy.empty([Size[0][0], Size[0][1],
+    len(Experiment)])
+
+# Results for each exposure time
 plt.ion()
 for counter, item in enumerate(Experiment):
     # First figure shows single frames and plot of max, mean and STD with an
@@ -86,16 +95,18 @@ for counter, item in enumerate(Experiment):
     # Load all images and calculate max, mean and STD. Write info to logfile
     Images = [numpy.fromfile(Image, dtype=numpy.uint16).reshape(Size[counter])
               for Image in Radiographies[counter]]
-    ImageMax  = [i.max()  for i in Images]
+    ImageMax = [i.max()  for i in Images]
     ImageMean = [i.mean() for i in Images]
-    ImageSTD  = [i.std()  for i in Images]
+    ImageSTD = [i.std()  for i in Images]
     # Initialize Images with the full size of the dataset and set every value
     # to either zero or NAN. This way we can afterwards either just sum the
     # images or use numpy.nanmean (which ignores NaNs) to calculate the mean of
     # the dark images
-    DarkImage = numpy.empty([Size[counter][0], Size[counter][1],NumberOfRadiographies[counter]])
+    DarkImage = numpy.empty([Size[counter][0], Size[counter][1],
+        NumberOfRadiographies[counter]])
     DarkImage[:] = numpy.NAN
-    SummedImage = numpy.zeros([Size[counter][0], Size[counter][1],NumberOfRadiographies[counter]])
+    SummedImage = numpy.zeros([Size[counter][0], Size[counter][1],
+        NumberOfRadiographies[counter]])
     # Go through each image and put it either to SummedImage or DarkImage. This
     # can probably be done in a more pythonic way, but a loop works just fine.
     for c, Image in enumerate(Images):
@@ -103,7 +114,7 @@ for counter, item in enumerate(Experiment):
         # Select images which are a bit brighter than the mean of the darkest
         if Image.mean() > numpy.min(ImageMean) * 1.618:
             plt.subplot(3, len(Images), 1 + c)
-            SummedImage[:,:,c] = Image
+            SummedImage[:, :, c] = Image
             print 'contains image data'
             logfile.info('%s of %s: Mean: %s,\tMax: %s,\tSTD: %s\t--> Image',
                 str(c).rjust(2), len(Radiographies[counter]),
@@ -113,7 +124,7 @@ for counter, item in enumerate(Experiment):
             # We probably need to add something like the mean dark image
             # For the moment just adding "part" of the dark image fo the total
             # dataset...
-            DarkImage[:,:,c] = Image
+            DarkImage[:, :, c] = Image
             print 'is a dark image'
             logfile.info('%s of %s: Mean: %s,\tMax: %s,\tSTD: %s\t--> Dark',
                 str(c).rjust(2), len(Radiographies[counter]),
@@ -130,7 +141,7 @@ for counter, item in enumerate(Experiment):
     plt.plot(ImageMean, marker='o', label='mean')
     plt.plot(ImageSTD, marker='o', label='STD')
     plt.title(' '.join(['Image characteristics for an exposure time of',
-        str(CMOSExposuretime[counter]), 'ms']))
+        ("%.2f" % CMOSExposuretime[counter]).zfill(6), 'ms']))
     plt.axhline(numpy.min(ImageMean) * 1.618, label='selection threshold',
         color='g', linestyle='--')
     plt.xlim([-0.5, NumberOfRadiographies[counter] - 0.5])
@@ -138,8 +149,7 @@ for counter, item in enumerate(Experiment):
     plt.tight_layout()
     plt.subplots_adjust(hspace=.05)
     plt.subplots_adjust(wspace=.05)
-    plt.draw()
-    print 'Saving Overview image'
+    print 'Saving image with all frames and values'
     plt.savefig(os.path.join(os.path.dirname(Experiment[counter]),
         'Exposuretime_' + os.path.basename(Experiment[counter]) + '.png'))
     logfile.info('In %s you now have these images:',
@@ -147,31 +157,30 @@ for counter, item in enumerate(Experiment):
     logfile.info('\t* Overview image as %s',
         'Exposuretime_' + os.path.basename(Experiment[counter]) + '.png')
     # Second figure with Darks and Projections
-    # First we calculate the sum or mean of the images from above.
+    # Calculate the sum or mean of the images from above.
     SummedImage = numpy.sum(SummedImage, axis=2)
     DarkImage = numpy.nanmean(DarkImage, axis=2)
     # Show image
     plt.figure(figsize=[16, 6])
     plt.subplot(131)
     plt.imshow(DarkImage, cmap='gray')
-    plt.title(' '.join(['Sum of dark images @', str(CMOSExposuretime[counter]),
-                        'ms']))
+    plt.title(' '.join(['Sum of dark images @',
+        ("%.2f" % CMOSExposuretime[counter]).zfill(6), 'ms']))
     plt.subplot(132)
     plt.imshow(SummedImage, cmap='gray')
-    plt.title(' '.join(['Sum of images @', str(CMOSExposuretime[counter]),
-                        'ms']))
+    plt.title(' '.join(['Sum of images @',
+        ("%.2f" % CMOSExposuretime[counter]).zfill(6), 'ms']))
     plt.subplot(133)
     plt.imshow(SummedImage - DarkImage, cmap='gray')
     plt.title(' '.join(['Sum of images - sum of dark images @',
-                        str(CMOSExposuretime[counter]), 'ms']))
+                        ("%.2f" % CMOSExposuretime[counter]).zfill(6), 'ms']))
     plt.subplots_adjust(left=.05)
     plt.subplots_adjust(right=1 - .05)
     plt.subplots_adjust(bottom=.05)
     plt.subplots_adjust(top=1 - .05)
     plt.tight_layout
-    plt.draw()
     # Save figure and single frames as images
-    print 'Saving Overview image 2'
+    print 'Saving image showing dark, frames and corrected frames'
     plt.savefig(os.path.join(os.path.dirname(Experiment[counter]),
         'Exposuretime_' + os.path.basename(Experiment[counter]) +
         '_Images.png'))
@@ -181,31 +190,89 @@ for counter, item in enumerate(Experiment):
     print 'Saving mean dark frame'
     scipy.misc.imsave(os.path.join(os.path.dirname(Experiment[counter]),
         'Exposuretime_' + os.path.basename(Experiment[counter]) +
-        '_Frame-Dark-' + str(CMOSExposuretime[counter]) + 'ms.tif'),
-        DarkImage)
+        '_Frame-Dark_' + ("%.2f" % CMOSExposuretime[counter]).zfill(6) +
+        'ms.tif'), DarkImage)
     logfile.info('\t* Mean dark frames as %s',
         'Exposuretime_' + os.path.basename(Experiment[counter]) +
-        '_Frame-Dark-' + str(CMOSExposuretime[counter]) + 'ms.tif')
+        '_Frame-Dark_' + ("%.2f" % CMOSExposuretime[counter]).zfill(6) +
+        'ms.tif')
     print 'Saving summed images frame'
     scipy.misc.imsave(os.path.join(os.path.dirname(Experiment[counter]),
         'Exposuretime_' + os.path.basename(Experiment[counter]) +
-        '_Frame_Images-' + str(CMOSExposuretime[counter]) + 'ms.tif'),
-        SummedImage)
+        '_Frame-Images_' + ("%.2f" % CMOSExposuretime[counter]).zfill(6) +
+        'ms.tif'), SummedImage)
     logfile.info('\t* Summed images frame as %s',
         'Exposuretime_' + os.path.basename(Experiment[counter]) +
-        '_Frame_Images-' + str(CMOSExposuretime[counter]) + 'ms.tif')
+        '_Frame-Images_' + ("%.2f" % CMOSExposuretime[counter]).zfill(6) +
+        'ms.tif')
     print 'Saving summed images minus mean dark frame'
     scipy.misc.imsave(os.path.join(os.path.dirname(Experiment[counter]),
         'Exposuretime_' + os.path.basename(Experiment[counter]) +
-        '_Frame-Corrected-' + str(CMOSExposuretime[counter]) + 'ms.tif'),
-        SummedImage - DarkImage)
-    logfile.info('\t* Corrected image as %s in %s',
+        '_Frame-Corrected_' + ("%.2f" % CMOSExposuretime[counter]).zfill(6) +
+        'ms.tif'), SummedImage - DarkImage)
+    logfile.info('\t* Corrected images frame as %s',
         'Exposuretime_' + os.path.basename(Experiment[counter]) +
-        '_Frame-Corrected-' + str(CMOSExposuretime[counter]) + 'ms.tif')
+        '_Frame-Corrected_' + ("%.2f" % CMOSExposuretime[counter]).zfill(6) +
+        'ms.tif')
+    # Save the max, mean and std of the corrected image for inter-exposure-time
+    # analyisis
+    # Add up all pixels for corrected image
+    TotalSummedBrightness[counter] = numpy.sum(SummedImage - DarkImage)
+    # Save max, mean and std of corrected image
+    TotalMax[counter] = (SummedImage - DarkImage).max()
+    TotalMean[counter] = (SummedImage - DarkImage).mean()
+    TotalSTD[counter] = (SummedImage - DarkImage).std()
+    CorrectedImages[:, :, counter] = SummedImage - DarkImage
+
+    # Close images if desired, otherwise you need to manually clos'em
     autopilot = True
     if autopilot:
-        time.sleep(1)
+        plt.draw()
         plt.close('all')
     else:
         plt.ioff()
         plt.show()
+
+# reread all corrected images
+CorrectedImages = glob.glob(os.path.join(StartingFolder, '*Frame-Corrected_*'))
+
+# Sort all lists according to the exposure time:
+# http://stackoverflow.com/a/6618543/323100
+CorrectedImages = [x for (y, x) in
+    sorted(zip(CMOSExposuretime, CorrectedImages))]
+TotalMax = numpy.asarray([x for (y, x) in
+    sorted(zip(CMOSExposuretime, TotalMax))])
+TotalMean = numpy.asarray([x for (y, x) in
+    sorted(zip(CMOSExposuretime, TotalMean))])
+TotalSTD = numpy.asarray([x for (y, x) in
+    sorted(zip(CMOSExposuretime, TotalSTD))])
+TotalSummedBrightness = numpy.asarray([x for (y, x) in
+    sorted(zip(CMOSExposuretime, TotalSummedBrightness))])
+
+print 'Displaying final result'
+# Final result
+plt.ioff()
+plt.figure(figsize=[16, 9])
+for i in range(len(Experiment)):
+    plt.subplot(2, len(Experiment), i + 1)
+    plt.imshow(plt.imread(CorrectedImages[i]), cmap='gray')
+    plt.title(' '.join([str(i), '\n', str(sorted(CMOSExposuretime)[i]),
+        'ms']))
+    plt.axis('off')
+    plt.subplots_adjust(hspace=.05)
+    plt.subplots_adjust(wspace=.05)
+    plt.subplots_adjust(left=.05)
+    plt.subplots_adjust(right=1 - .05)
+    plt.subplots_adjust(bottom=.05)
+    plt.subplots_adjust(top=1 - .05)
+plt.subplot(212)
+plt.semilogy(TotalSummedBrightness, marker='o', label='Total Brightness')
+plt.semilogy(TotalMax, marker='o', label='Total Max')
+plt.semilogy(TotalMean, marker='o',
+    label='Total Mean (brightness *per* pixel)')
+plt.semilogy(TotalSTD, marker='o', label='Total STD')
+plt.xlim([-0.5, len(Experiment) - 0.5])
+plt.legend(loc='best')
+plt.savefig(os.path.join(os.path.dirname(Experiment[counter]),
+    'Exposuretime_Result.png'))
+plt.show()
