@@ -87,7 +87,7 @@ for counter, i in enumerate(Experiment):
         exit(' '.join(['I deleted this folder, just start again. I will',
             'proceed or delete the next empty folder...']))
 
-ManualSelection = True
+ManualSelection = False
 AnalyisList = []
 if ManualSelection:
     # Ask the user which experimentID to show
@@ -155,8 +155,9 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     ImageMax = [numpy.fromfile(Image, dtype=numpy.uint16).reshape(Size).max()
                 for Image in Radiographies[SelectedExperiment]]
 
-    plt.ion()
-    plt.figure(figsize=[16, 9])
+    if ManualSelection:
+        plt.ion()
+        plt.figure(figsize=[16, 9])
     logfile.info('The folder %s contains %s Images',
         ExperimentID[SelectedExperiment],
         NumberOfRadiographies[SelectedExperiment])
@@ -180,7 +181,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         plt.legend(loc='best')
         plt.xlim([0, NumberOfRadiographies[SelectedExperiment] - 1])
         plt.tight_layout()
-        plt.draw()
+        if ManualSelection:
+            plt.draw()
         # Do some logging if DEBUG level
         logfile.debug('Image %s of %s. Max: %s. Mean: %s, STD: %s',
             Counter, NumberOfRadiographies[SelectedExperiment],
@@ -206,15 +208,11 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
                     StartingFolder):]))
             logfile.info('-----')
 
-    autopilot = True
-    if autopilot:
-        plt.close()
-    else:
+    if ManualSelection:
         plt.ioff()
         plt.show()
 
 exit()
-
 
 
 # Setup
