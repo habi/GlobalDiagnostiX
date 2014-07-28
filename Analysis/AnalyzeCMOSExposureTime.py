@@ -86,9 +86,9 @@ for counter, item in enumerate(Experiment):
         Experiment[counter][len(StartingFolder):])
     logfile.info('This folder contains %s .raw files',
         NumberOfRadiographies[counter])
-    logfile.info('\t*  with a size of %s x %s pixels each', Size[counter][0],
-        Size[counter][1])
-    logfile.info('\t*  recorded with an exposure time of %s ms',
+    logfile.info('\t* with a size of %s x %s pixels each', Size[counter][1],
+        Size[counter][0])
+    logfile.info('\t* recorded with an exposure time of %s ms',
         CMOSExposuretime[counter])
     logfile.info('-----')
     print 'Loading', len(Radiographies[counter]), 'images'
@@ -107,19 +107,26 @@ for counter, item in enumerate(Experiment):
     DarkImage[:] = numpy.NAN
     SummedImage = numpy.zeros([Size[counter][0], Size[counter][1],
         NumberOfRadiographies[counter]])
+    DarkCounter = 0
+    ImageCounter = 0
+    Threshold = numpy.min(ImageMean) * 1.618
     # Go through each image and put it either to SummedImage or DarkImage. This
     # can probably be done in a more pythonic way, but a loop works just fine.
     for c, Image in enumerate(Images):
         print 'Image', c + 1, 'of', NumberOfRadiographies[counter],
         # Select images which are a bit brighter than the mean of the darkest
-        if Image.mean() > numpy.min(ImageMean) * 1.618:
+        if Image.mean() > Threshold:
+            ImageCounter += 1
             plt.subplot(3, len(Images), 1 + c)
             SummedImage[:, :, c] = Image
             print 'contains image data'
             logfile.info('%s of %s: Mean: %s,\tMax: %s,\tSTD: %s\t--> Image',
                 str(c).rjust(2), len(Radiographies[counter]),
-                round(ImageMean[c], 2), ImageMax[c], round(ImageSTD[c], 2))
+                ("%.2f" % round(ImageMean[c], 2)).rjust(6),
+                str(ImageMax[c]).rjust(4),
+                ("%.2f" % round(ImageSTD[c], 2)).rjust(6))
         else:
+            DarkCounter += 1
             plt.subplot(3, len(Images), len(Images) + 1 + c)
             # We probably need to add something like the mean dark image
             # For the moment just adding "part" of the dark image fo the total
@@ -128,12 +135,20 @@ for counter, item in enumerate(Experiment):
             print 'is a dark image'
             logfile.info('%s of %s: Mean: %s,\tMax: %s,\tSTD: %s\t--> Dark',
                 str(c).rjust(2), len(Radiographies[counter]),
-                round(ImageMean[c], 2), ImageMax[c], round(ImageSTD[c], 2))
+                ("%.2f" % round(ImageMean[c], 2)).rjust(6),
+                str(ImageMax[c]).rjust(4),
+                ("%.2f" % round(ImageSTD[c], 2)).rjust(6))
         # Show each frame (either on bottom or top)
         plt.imshow(Image, cmap='gray')
         plt.axis('off')
         plt.title(' '.join(['Img', str(ImageSTD.index(Image.std())), '\nMean',
             str(int(round(ImageMean[c])))]))
+    logfile.info('-----')
+    logfile.info('We have')
+    logfile.info('\t* %s dark images (Mean below or equal to Threshold of %s)',
+        DarkCounter, round(Threshold, 2))
+    logfile.info('\t* %s images (Mean above Threshold of %s)', ImageCounter,
+        round(Threshold, 2))
     logfile.info('-----')
     # Show max, mean and STD below, with some alignment tweaks so they line up
     plt.subplot(313)
@@ -164,21 +179,24 @@ for counter, item in enumerate(Experiment):
     plt.figure(figsize=[16, 6])
     plt.subplot(131)
     plt.imshow(DarkImage, cmap='gray')
-    plt.title(' '.join(['Sum of dark images @',
+    plt.axis('off')
+    plt.title(' '.join(['Sum of', str(DarkCounter), 'dark images @',
         ("%.2f" % CMOSExposuretime[counter]).zfill(6), 'ms']))
     plt.subplot(132)
     plt.imshow(SummedImage, cmap='gray')
-    plt.title(' '.join(['Sum of images @',
+    plt.axis('off')
+    plt.title(' '.join(['Sum of', str(ImageCounter), 'images @',
         ("%.2f" % CMOSExposuretime[counter]).zfill(6), 'ms']))
     plt.subplot(133)
     plt.imshow(SummedImage - DarkImage, cmap='gray')
+    plt.axis('off')
     plt.title(' '.join(['Sum of images - sum of dark images @',
                         ("%.2f" % CMOSExposuretime[counter]).zfill(6), 'ms']))
     plt.subplots_adjust(left=.05)
     plt.subplots_adjust(right=1 - .05)
     plt.subplots_adjust(bottom=.05)
     plt.subplots_adjust(top=1 - .05)
-    plt.tight_layout
+    plt.tight_layout()
     # Save figure and single frames as images
     print 'Saving image showing dark, frames and corrected frames'
     plt.savefig(os.path.join(os.path.dirname(Experiment[counter]),
@@ -225,7 +243,7 @@ for counter, item in enumerate(Experiment):
     CorrectedImages[:, :, counter] = SummedImage - DarkImage
 
     # Close images if desired, otherwise you need to manually clos'em
-    autopilot = True
+    autopilot = False
     if autopilot:
         plt.draw()
         plt.close('all')
