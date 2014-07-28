@@ -95,9 +95,9 @@ for counter, item in enumerate(Experiment):
     # Load all images and calculate max, mean and STD. Write info to logfile
     Images = [numpy.fromfile(Image, dtype=numpy.uint16).reshape(Size[counter])
               for Image in Radiographies[counter]]
-    ImageMax = [i.max()  for i in Images]
+    ImageMax = [i.max() for i in Images]
     ImageMean = [i.mean() for i in Images]
-    ImageSTD = [i.std()  for i in Images]
+    ImageSTD = [i.std() for i in Images]
     # Initialize Images with the full size of the dataset and set every value
     # to either zero or NAN. This way we can afterwards either just sum the
     # images or use numpy.nanmean (which ignores NaNs) to calculate the mean of
@@ -157,8 +157,8 @@ for counter, item in enumerate(Experiment):
     plt.plot(ImageSTD, marker='o', label='STD')
     plt.title(' '.join(['Image characteristics for an exposure time of',
         ("%.2f" % CMOSExposuretime[counter]).zfill(6), 'ms']))
-    plt.axhline(numpy.min(ImageMean) * 1.618, label='selection threshold',
-        color='g', linestyle='--')
+    plt.axhline(Threshold, label='selection threshold', color='g',
+        linestyle='--')
     plt.xlim([-0.5, NumberOfRadiographies[counter] - 0.5])
     plt.legend(loc='best')
     plt.tight_layout()
