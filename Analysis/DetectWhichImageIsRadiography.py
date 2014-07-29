@@ -21,6 +21,15 @@ import logging
 import time
 import scipy.misc  # for saving png or tif at the end
 
+# Setup
+# If Manual selection is true, the user is asked to select one of the
+# experiment IDs manually, otherwise the script just goes through all the IDs
+# it finds in the starting folder
+ManualSelection = False
+# Where shall we start?
+StartingFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
+    'XrayImages')
+
 
 def AskUser(Blurb, Choices):
     """ Ask for input. Based on function in MasterThesisIvan.ini """
@@ -56,9 +65,8 @@ def myLogger(Folder, LogFileName):
     logger.addHandler(handler)
     return logger
 
-StartingFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-    'XrayImages')
 
+# Look for all folders matching the naming convention
 Experiment = []
 ExperimentID = []
 for root, dirs, files in os.walk(StartingFolder):
@@ -90,7 +98,6 @@ for counter, i in enumerate(Experiment):
         exit(' '.join(['I deleted this folder, just start again. I will',
             'proceed or delete the next empty folder...']))
 
-ManualSelection = False
 AnalyisList = []
 if ManualSelection:
     # Ask the user which experimentID to show
@@ -101,6 +108,7 @@ if ManualSelection:
     Choice = AskUser('Which one do you want to look at?', Choices)
     AnalyisList.append(Choices.index(Choice))
     print
+    plt.ion()
 else:
     AnalyisList = range(len(Experiment))
 
@@ -151,6 +159,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     logfile.info('Scintillator: %s', Scintillator)
     logfile.info('Sensor: %s', Sensor)
     logfile.info('Lens: %s', Lens)
+    logfile.info('Image size: %s x %s px', Size[1], Size[0])
     logfile.info('Scintillator-Sensor distance: %s mm', SCD)
     logfile.info('Modality: %s', Modality)
     logfile.info('Source kV: %s', Voltage)
@@ -188,17 +197,20 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         # If no image above selection threshold, then break the loop, since the
         # result will be bogus
         print
-        print 'The brightest image of experiment', \
-            ExperimentID[SelectedExperiment], 'has a mean of', \
-            round(max(ImageMean), 2), \
-            'which is below the selected threshold of', round(Threshold, 2)
+        print 'Image', ImageMean.index(max(ImageMean)), 'is the brightest',\
+            'image of experiment', ExperimentID[SelectedExperiment]
+        print 'Its a mean of',  round(max(ImageMean), 2), \
+            'is below the selection threshold of', round(Threshold, 2)
         print 'It is probably safe to delete the whole directory...'
         logfile.info('You can delete directory %s',
             Experiment[SelectedExperiment])
         logfile.info('-----')
-        SummedImage = numpy.sum(DarkImages, axis=0)
-        SummedImage[:,:Size[1]] = max(ImageMax)
-        SummedImage[:,Size[1]:] = 0
+        print 'I am using this *single* image as "result"'
+        SummedImage = Images[ImageMean.index(max(ImageMean))]
+        logfile.info('Using image %s with a mean of %s as result',
+            ImageMean.index(max(ImageMean)),
+            round(ImageMean[ImageMean.index(max(ImageMean))], 2))
+        logfile.info('-----')
     else:
         SummedImage = numpy.sum(RealImages, axis=0)
 
@@ -209,7 +221,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     logfile.info('Details of the %s images for experiment ID %s',
         NumberOfRadiographies[SelectedExperiment],
         ExperimentID[SelectedExperiment])
-    plt.figure(figsize=[NumberOfRadiographies[SelectedExperiment], 5])
+    plt.figure(1, figsize=[NumberOfRadiographies[SelectedExperiment], 5])
     for c, Image in enumerate(Images):
         #~ print str(c + 1).rjust(2) + '/' + str(len(Images)) + ':',
         if Image.mean() > Threshold:
@@ -261,7 +273,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     plt.savefig(SaveFigName)
     logfile.info('Overview plot saved as %s', os.path.basename(SaveFigName))
 
-    plt.figure(figsize=[16, 9])
+    plt.figure(2, figsize=[16, 9])
     # Show images above threshold
     for ctr, i in enumerate(RealImages):
         plt.subplot(3, len(RealImages), ctr + 1)
@@ -317,10 +329,15 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     CorrName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
                 'Analysis_' + ExperimentID[SelectedExperiment] +
                 '_Corrected.tif')
-    print CorrName
     scipy.misc.imsave(CorrName, CorrectedImage)
     logfile.info('Sum of %s images subtracted with the mean of %s dark ' +
         'frames saved as %s', len(RealImages), len(DarkImages), CorrName)
+
+    if ManualSelection:
+        plt.ioff()
+        plt.show()
+    else:
+        plt.close('all')
 
 exit()
 
