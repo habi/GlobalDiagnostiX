@@ -25,7 +25,7 @@ import scipy.misc  # for saving png or tif at the end
 # If Manual selection is true, the user is asked to select one of the
 # experiment IDs manually, otherwise the script just goes through all the IDs
 # it finds in the starting folder
-ManualSelection = False
+ManualSelection = True
 # Where shall we start?
 StartingFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
@@ -192,10 +192,12 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         round(Threshold, 2))
     for c, Image in enumerate(Images):
         if Image.mean() > Threshold and ImageMean[c] == max(ImageMean):
-            logfile.info('\tWith image %s being the brightest one', c)
-            logfile.info('\t\t* Max: %s', round(ImageMax[c], 3))
-            logfile.info('\t\t* Mean: %s', round(ImageMean[c], 3))
-            logfile.info('\t\t* STD: %s', round(ImageSTD[c], 3))
+            logfile.info('With image %s being the brightest one', c + 1)
+            logfile.info('\t* Filename: %s',
+                os.path.basename(Radiographies[SelectedExperiment][c]))
+            logfile.info('\t* Max: %s', round(ImageMax[c], 3))
+            logfile.info('\t* Mean: %s', round(ImageMean[c], 3))
+            logfile.info('\t* STD: %s', round(ImageSTD[c], 3))
     logfile.info('-----')
 
     # Calculate final images (if it makes sense, otherwise stop)
@@ -234,12 +236,11 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         ExperimentID[SelectedExperiment])
     plt.figure(num=1, figsize=[NumberOfRadiographies[SelectedExperiment], 5])
     for c, Image in enumerate(Images):
-        #~ print str(c + 1).rjust(2) + '/' + str(len(Images)) + ':',
         if Image.mean() > Threshold:
             #~ print 'above threshold'
             plt.subplot(3, len(Images), c + 1)
             logfile.info('%s/%s: Mean: %s,\tMax: %s,\tSTD: %s\t--> Image',
-                str(c).rjust(2), len(Radiographies[Counter]),
+                str(c + 1).rjust(2), len(Radiographies[Counter]),
                 ("%.2f" % round(ImageMean[c], 2)).rjust(6),
                 str(ImageMax[c]).rjust(4),
                 ("%.2f" % round(ImageSTD[c], 2)).rjust(6))
@@ -247,7 +248,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             #~ print 'below threshold'
             plt.subplot(3, len(Images), len(Images) + c + 1)
             logfile.info('%s/%s: Mean: %s,\tMax: %s,\tSTD: %s\t--> Dark',
-                str(c).rjust(2), len(Radiographies[Counter]),
+                str(c + 1).rjust(2), len(Radiographies[Counter]),
                 ("%.2f" % round(ImageMean[c], 2)).rjust(6),
                 str(ImageMax[c]).rjust(4),
                 ("%.2f" % round(ImageSTD[c], 2)).rjust(6))
@@ -269,8 +270,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     plt.tight_layout()
     plt.subplots_adjust(hspace=.05)
     plt.subplots_adjust(wspace=.05)
-    plt.draw()
     # Save figure
+    plt.draw()
     SaveFigName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
                 'Analysis_' + ExperimentID[SelectedExperiment] +
                 '_Overview_All.png')
@@ -306,6 +307,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     plt.title(' '.join([str(len(RealImages)), 'projections -',
         str(len(DarkImages)), 'darks']))
     # Save figure
+    plt.draw()
     SaveFigName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
                 'Analysis_' + ExperimentID[SelectedExperiment] +
                 '_Overview_DarkFlatsCorrected.png')
