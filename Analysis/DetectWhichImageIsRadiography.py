@@ -25,7 +25,7 @@ import scipy.misc  # for saving png or tif at the end
 # If Manual selection is true, the user is asked to select one of the
 # experiment IDs manually, otherwise the script just goes through all the IDs
 # it finds in the starting folder
-ManualSelection = True
+ManualSelection = False
 # Where shall we start?
 StartingFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
