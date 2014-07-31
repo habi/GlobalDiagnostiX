@@ -1,27 +1,66 @@
-import matplotlib as mpl
-from mpl_toolkits.mplot3d import Axes3D
-import numpy as np
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+"""
+This script loads the log files gerated with http://git.io/Ydwc8A and plots
+the exposure time, brightness of the brightest image and scintillator-CMOS-
+distance in 3D.
+
+This should help to visualize the results and come to a conclusion on which
+combination of components is the best to use
+"""
+import glob
+import os
+import linecache
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 
+#~ import matplotlib as mpl
+#~ import numpy as np
+#~ from matplotlib import cm
 
-lenses = ['a', 'b', 'c']
-modality = ['h', 'l', 'f']
-exposuretime = [9,10,85]
-distance = [10, 15, 23]
-brightness = [15, 16, 17]
+
+# Where shall we start?
+StartingFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
+    'XrayImages')
+
+# Testing
+StartingFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
+    '/XrayImages/20140722/')
+# Testing
+
+# Generate a list of log files, based on http://stackoverflow.com/a/14798263
+LogFiles = [os.path.join(dirpath, f)
+    for dirpath, dirnames, files in os.walk(StartingFolder)
+    for f in files if f.startswith('Analysis') and f.endswith('.log')]
+
+# Grab all the necessary parameters from the log files
+ExperimentID = [linecache.getline(i, 1).split('ID')[1].split(',')[0].strip()
+    for i in LogFiles]
+Lens = [linecache.getline(i, 8).split(':')[1].strip() for i in LogFiles]
+SSD = [float(linecache.getline(i, 10).split(':')[1].split('mm')[0].strip())
+    for i in LogFiles]
+Exposuretime = [float(linecache.getline(i, 15)
+    .split(':')[1].split('ms')[0].strip()) for i in LogFiles]
+Max = [float(linecache.getline(i, 22).split(':')[1].strip())
+    for i in LogFiles]
+Mean = [float(linecache.getline(i, 23).split(':')[1].strip())
+    for i in LogFiles]
+STD = [float(linecache.getline(i, 24).split(':')[1].strip())
+    for i in LogFiles]
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-ax.plot(exposuretime, distance, brightness, 'o')
-for lens, x, y, z in zip(lenses, exposuretime, distance, brightness):
-    label = 'Lens: %s' % lens
-    ax.text(x, y, z, label)
-ax.set_xlabel('Exposure time')
-ax.set_ylabel('Source Detector Distance')
-ax.set_zlabel('Brightness')
-ax.set_xlim([0,100])
-ax.set_ylim([0,100])
-ax.set_zlim([0,100])
+ax.plot(Exposuretime, SSD, Mean, 'o')
+for x, y, z, label in zip(Exposuretime, SSD, Mean, ExperimentID):
+    ax.text(x, y, z + 0.05, label)
+
+ax.set_xlabel('Exposure time [ms]')
+ax.set_ylabel('Source Detector Distance [mm]')
+ax.set_zlabel('Mean Brightness')
+#~ ax.set_xlim([0,100]
+#~ ax.set_ylim([0,100])
+#~ ax.set_zlim([0,100])
 
 plt.show()
