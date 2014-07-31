@@ -284,13 +284,12 @@ for i in range(len(Experiment)):
     plt.subplots_adjust(bottom=.05)
     plt.subplots_adjust(top=1 - .05)
 plt.subplot(212)
-plt.semilogy(TotalSummedBrightness, marker='o', label='Total Brightness')
-plt.semilogy(TotalMax, marker='o', label='Total Max')
-plt.semilogy(TotalMean, marker='o',
+plt.plot(TotalSummedBrightness, marker='o', label='Total Brightness')
+plt.plot(TotalMax, marker='o', label='Total Max')
+plt.plot(TotalMean, marker='o',
     label='Total Mean (brightness *per* pixel)')
-plt.semilogy(TotalSTD, marker='o', label='Total STD')
+plt.plot(TotalSTD, marker='o', label='Total STD')
 plt.xlim([-0.5, len(Experiment) - 0.5])
 plt.legend(loc='best')
-plt.savefig(os.path.join(os.path.dirname(Experiment[counter]),
-    'Exposuretime_Result.png'))
+plt.savefig(os.path.join(StartingFolder, 'Exposuretime_Result.png'))
 plt.show()
