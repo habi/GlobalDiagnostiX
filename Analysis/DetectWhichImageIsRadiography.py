@@ -153,7 +153,9 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
                         StartingFolder))
 
     print '    * conducted with the', Scintillator, 'scintillator,'
-    print '    *', Sensor, 'CMOS,'
+    print '    *', Sensor, 'CMOS with an exposure time of', CMOSExposuretime,\
+        'ms'
+    print '    * source exposure time of', SourceExposuretime, 'ms'
     print '    *', Lens, 'lens for the'
     print '    *', Modality, 'and calculating their mean'
 
@@ -191,7 +193,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     logfile.info('\t* %s images (Mean above Threshold of %s)', len(RealImages),
         round(Threshold, 2))
     for c, Image in enumerate(Images):
-        if Image.mean() > Threshold and ImageMean[c] == max(ImageMean):
+        if ImageMean[c] == max(ImageMean):
             logfile.info('With image %s being the brightest one', c + 1)
             logfile.info('\t* Filename: %s',
                 os.path.basename(Radiographies[SelectedExperiment][c]))
