@@ -26,6 +26,8 @@ import scipy.misc  # for saving png or tif at the end
 # experiment IDs manually, otherwise the script just goes through all the IDs
 # it finds in the starting folder
 ManualSelection = False
+SaveOutputImages = False
+
 # Where shall we start?
 StartingFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
@@ -72,6 +74,7 @@ ExperimentID = []
 for root, dirs, files in os.walk(StartingFolder):
     #~ print 'Looking for experiment IDs in folder', os.path.basename(root)
     if len(os.path.basename(root)) == 7 and \
+        not 'Toshiba' in os.path.basename(root) and \
         not 'MT9' in os.path.basename(root) and \
         not 'AR0' in os.path.basename(root):
         Experiment.append(root)
@@ -236,110 +239,128 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     logfile.info('Details of the %s images for experiment ID %s',
         NumberOfRadiographies[SelectedExperiment],
         ExperimentID[SelectedExperiment])
-    plt.figure(num=1, figsize=[NumberOfRadiographies[SelectedExperiment], 5])
+    if SaveOutputImages:
+        plt.figure(num=1,
+                   figsize=[NumberOfRadiographies[SelectedExperiment], 5])
     for c, Image in enumerate(Images):
         if Image.mean() > Threshold:
-            #~ print 'above threshold'
-            plt.subplot(3, len(Images), c + 1)
+            if SaveOutputImages:
+                plt.subplot(3, len(Images), c + 1)
             logfile.info('%s/%s: Mean: %s,\tMax: %s,\tSTD: %s\t--> Image',
                 str(c + 1).rjust(2), len(Radiographies[Counter]),
                 ("%.2f" % round(ImageMean[c], 2)).rjust(6),
                 str(ImageMax[c]).rjust(4),
                 ("%.2f" % round(ImageSTD[c], 2)).rjust(6))
         else:
-            #~ print 'below threshold'
-            plt.subplot(3, len(Images), len(Images) + c + 1)
+            if SaveOutputImages:
+                plt.subplot(3, len(Images), len(Images) + c + 1)
             logfile.info('%s/%s: Mean: %s,\tMax: %s,\tSTD: %s\t--> Dark',
                 str(c + 1).rjust(2), len(Radiographies[Counter]),
                 ("%.2f" % round(ImageMean[c], 2)).rjust(6),
                 str(ImageMax[c]).rjust(4),
                 ("%.2f" % round(ImageSTD[c], 2)).rjust(6))
-        plt.imshow(Image, cmap='gray')
-        plt.axis('off')
-        plt.title(' '.join(['img', str(c), '\nmx', str(round(ImageMax[c], 1)),
-            '\nmn', str(round(ImageMean[c], 1))]))
+        if SaveOutputImages:
+            plt.imshow(Image, cmap='gray')
+            plt.axis('off')
+            plt.title(' '.join(['img', str(c), '\nmx',
+                                str(round(ImageMax[c], 1)), '\nmn',
+                                str(round(ImageMean[c], 1))]))
     logfile.info('-----')
-    plt.subplot(313)
-    plt.plot(ImageMax, marker='o', label='max')
-    plt.plot(ImageMean, marker='o', label='mean')
-    plt.plot(ImageSTD, marker='o', label='STD')
-    plt.title(' '.join(['Image characteristics for an exposure time of',
-        ("%.2f" % CMOSExposuretime).zfill(6), 'ms']))
-    plt.axhline(Threshold, label='selection threshold', color='g',
-        linestyle='--')
-    plt.xlim([-0.5, NumberOfRadiographies[Counter] - 0.5])
-    plt.legend(loc='best')
-    plt.tight_layout()
-    plt.subplots_adjust(hspace=.05)
-    plt.subplots_adjust(wspace=.05)
-    # Save figure
-    plt.draw()
-    SaveFigName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
-                'Analysis_' + ExperimentID[SelectedExperiment] +
-                '_Overview_All.png')
-    plt.savefig(SaveFigName)
-    logfile.info('Overview plot saved as %s', os.path.basename(SaveFigName))
-
-    plt.figure(num=2, figsize=[16, 9])
-    # Show images above threshold
-    for ctr, i in enumerate(RealImages):
-        plt.subplot(3, len(RealImages), ctr + 1)
-        plt.imshow(i, cmap='gray')
+    if SaveOutputImages:
+        plt.subplot(313)
+        plt.plot(ImageMax, marker='o', label='max')
+        plt.plot(ImageMean, marker='o', label='mean')
+        plt.plot(ImageSTD, marker='o', label='STD')
+        plt.title(' '.join(['Image characteristics for an exposure time of',
+            ("%.2f" % CMOSExposuretime).zfill(6), 'ms']))
+        plt.axhline(Threshold, label='selection threshold', color='g',
+            linestyle='--')
+        plt.xlim([-0.5, NumberOfRadiographies[Counter] - 0.5])
+        plt.legend(loc='best')
+        plt.tight_layout()
+        plt.subplots_adjust(hspace=.05)
+        plt.subplots_adjust(wspace=.05)
+        # Save figure
+        plt.draw()
+        SaveFigName = os.path.join(os.path.dirname(
+            Experiment[SelectedExperiment]),
+                                   'Analysis_' +
+                                   ExperimentID[SelectedExperiment] +
+                                   '_Overview_All.png')
+        plt.savefig(SaveFigName)
+        logfile.info('Overview plot saved as %s',
+                     os.path.basename(SaveFigName))
+    if SaveOutputImages:
+        plt.figure(num=2, figsize=[16, 9])
+        # Show images above threshold
+        for ctr, i in enumerate(RealImages):
+            plt.subplot(3, len(RealImages), ctr + 1)
+            plt.imshow(i, cmap='gray')
+            plt.axis('off')
+            plt.title(' '.join(['Proj', str(ctr)]))
+        # Show images below threshold
+        for ctr, d in enumerate(DarkImages):
+            plt.subplot(3, len(DarkImages), len(DarkImages) + ctr + 1)
+            plt.imshow(d, cmap='gray')
+            plt.axis('off')
+            plt.title(' '.join(['Drk', str(ctr)]))
+        # Show average darks
+        plt.subplot(337)
+        plt.imshow(MeanDarkImage, cmap='gray')
         plt.axis('off')
-        plt.title(' '.join(['Proj', str(ctr)]))
-    # Show images below threshold
-    for ctr, d in enumerate(DarkImages):
-        plt.subplot(3, len(DarkImages), len(DarkImages) + ctr + 1)
-        plt.imshow(d, cmap='gray')
+        plt.title(' '.join(['Average of', str(len(DarkImages)), 'dark images']))
+        # Show summed projections
+        plt.subplot(338)
+        plt.imshow(SummedImage, cmap='gray')
         plt.axis('off')
-        plt.title(' '.join(['Drk', str(ctr)]))
-    # Show average darks
-    plt.subplot(337)
-    plt.imshow(MeanDarkImage, cmap='gray')
-    plt.axis('off')
-    plt.title(' '.join(['Average of', str(len(DarkImages)), 'dark images']))
-    # Show summed projections
-    plt.subplot(338)
-    plt.imshow(SummedImage, cmap='gray')
-    plt.axis('off')
-    plt.title(' '.join([str(len(RealImages)), 'summed projections']))
-    plt.subplot(339)
-    plt.imshow(CorrectedImage, cmap='gray')
-    plt.axis('off')
-    plt.title(' '.join([str(len(RealImages)), 'projections -',
-        str(len(DarkImages)), 'darks']))
-    # Save figure
-    plt.draw()
-    SaveFigName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
-                'Analysis_' + ExperimentID[SelectedExperiment] +
-                '_Overview_DarkFlatsCorrected.png')
-    plt.savefig(SaveFigName)
-    logfile.info('Dark/Flats/Corrected plot saved as %s',
-        os.path.basename(SaveFigName))
-    logfile.info('-----')
+        plt.title(' '.join([str(len(RealImages)), 'summed projections']))
+        plt.subplot(339)
+        plt.imshow(CorrectedImage, cmap='gray')
+        plt.axis('off')
+        plt.title(' '.join([str(len(RealImages)), 'projections -',
+            str(len(DarkImages)), 'darks']))
+        # Save figure
+        plt.draw()
+        SaveFigName = os.path.join(os.path.dirname(
+            Experiment[SelectedExperiment]),
+                                   'Analysis_' +
+                                   ExperimentID[SelectedExperiment] +
+                                   '_Overview_DarkFlatsCorrected.png')
+        plt.savefig(SaveFigName)
+        logfile.info('Dark/Flats/Corrected plot saved as %s',
+            os.path.basename(SaveFigName))
+        logfile.info('-----')
     if ManualSelection:
         plt.show()
 
     # Save corrected images
-    print 'Saving mean dark frame'
-    DarkName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
-                'Analysis_' + ExperimentID[SelectedExperiment] + '_Dark.tif')
-    scipy.misc.imsave(DarkName, MeanDarkImage)
-    logfile.info('Mean of %s dark frames saved as %s', len(DarkImages),
-        DarkName)
-    print 'Saving summed images'
-    SummedName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
-                'Analysis_' + ExperimentID[SelectedExperiment] + '_Images.tif')
-    scipy.misc.imsave(SummedName, SummedImage)
-    logfile.info('Sum of %s image frames saved as %s', len(RealImages),
-        SummedName)
-    print 'Saving corrected image'
-    CorrName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
-                'Analysis_' + ExperimentID[SelectedExperiment] +
-                '_Corrected.tif')
-    scipy.misc.imsave(CorrName, CorrectedImage)
-    logfile.info('Sum of %s images subtracted with the mean of %s dark ' +
-        'frames saved as %s', len(RealImages), len(DarkImages), CorrName)
+    if SaveOutputImages:
+        print 'Saving mean dark frame'
+        DarkName = os.path.join(os.path.dirname(
+            Experiment[SelectedExperiment]),
+                                'Analysis_' +
+                                ExperimentID[SelectedExperiment] + '_Dark.tif')
+        scipy.misc.imsave(DarkName, MeanDarkImage)
+        logfile.info('Mean of %s dark frames saved as %s', len(DarkImages),
+            DarkName)
+        print 'Saving summed images'
+        SummedName = os.path.join(os.path.dirname(
+            Experiment[SelectedExperiment]),
+                                  'Analysis_' +
+                                  ExperimentID[SelectedExperiment] +
+                                  '_Images.tif')
+        scipy.misc.imsave(SummedName, SummedImage)
+        logfile.info('Sum of %s image frames saved as %s', len(RealImages),
+            SummedName)
+        print 'Saving corrected image'
+        CorrName = os.path.join(os.path.dirname(
+            Experiment[SelectedExperiment]),
+                                'Analysis_' +
+                                ExperimentID[SelectedExperiment] +
+                                '_Corrected.tif')
+        scipy.misc.imsave(CorrName, CorrectedImage)
+        logfile.info('Sum of %s images subtracted with the mean of %s dark ' +
+            'frames saved as %s', len(RealImages), len(DarkImages), CorrName)
 
     if ManualSelection:
         plt.ioff()
