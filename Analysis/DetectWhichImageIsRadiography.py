@@ -26,7 +26,7 @@ import scipy.misc  # for saving png or tif at the end
 # experiment IDs manually, otherwise the script just goes through all the IDs
 # it finds in the starting folder
 ManualSelection = False
-SaveOutputImages = False
+SaveOutputImages = True
 
 # Where shall we start?
 StartingFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
@@ -123,7 +123,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         ': Looking at experiment', ExperimentID[SelectedExperiment]
     logfile = myLogger(os.path.dirname(Experiment[SelectedExperiment]),
         'Analysis_' + ExperimentID[SelectedExperiment] + '.log')
-    logfile.info('Log file for Experiment ID %s, Analsyis performed at %s',
+    logfile.info('Log file for Experiment ID %s, Analsyis performed on %s',
         ExperimentID[SelectedExperiment],
         time.strftime('%d.%m.%Y at %H:%M:%S'))
     logfile.info('-----')
@@ -204,19 +204,22 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             logfile.info('\t* Mean: %s', round(ImageMean[c], 3))
             logfile.info('\t* STD: %s', round(ImageSTD[c], 3))
     logfile.info('-----')
+    print 'From', NumberOfRadiographies[SelectedExperiment], \
+        'images we selected', len(RealImages), 'above and', len(DarkImages), \
+        'images below the threshold'
 
     # Calculate final images (if it makes sense, otherwise stop)
     MeanDarkImage = numpy.mean(DarkImages, axis=0)
     if len(RealImages) == 0:
-        # If no image above selection threshold, then break the loop, since the
-        # result will be bogus
+        # If no image is above the selection threshold, use the brightest image
+        # as result
         print
         print '\tImage', ImageMean.index(max(ImageMean)), 'is the brightest',\
             'image of experiment', ExperimentID[SelectedExperiment]
         print '\tIts mean of',  round(max(ImageMean), 2), \
             'is below the selection threshold of', round(Threshold, 2)
         print '\tIt is probably safe to delete the whole directory...'
-        logfile.info('You can delete directory %s',
+        logfile.info('You could probably delete directory %s',
             Experiment[SelectedExperiment])
         logfile.info('-----')
         print '\tI am using this *single* image as "result"'
@@ -235,7 +238,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     if ManualSelection:
         print 'Showing images'
     else:
-        print 'Writing images'
+        if SaveOutputImages:
+            print 'Writing images'
     logfile.info('Details of the %s images for experiment ID %s',
         NumberOfRadiographies[SelectedExperiment],
         ExperimentID[SelectedExperiment])
