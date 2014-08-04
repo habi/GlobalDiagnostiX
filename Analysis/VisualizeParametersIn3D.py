@@ -26,8 +26,8 @@ StartingFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
 
 # Testing
-StartingFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-    '/XrayImages/20140722/')
+#~ StartingFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
+    #~ '/XrayImages/20140725/')
 # Testing
 
 # Generate a list of log files, based on http://stackoverflow.com/a/14798263
@@ -35,11 +35,17 @@ LogFiles = [os.path.join(dirpath, f)
     for dirpath, dirnames, files in os.walk(StartingFolder)
     for f in files if f.startswith('Analysis') and f.endswith('.log')]
 
+print 'I found', len(LogFiles), 'log files in', StartingFolder
+
 # Grab all the necessary parameters from the log files
 ExperimentID = [linecache.getline(i, 1).split('ID')[1].split(',')[0].strip()
     for i in LogFiles]
+Scintillator = [linecache.getline(i, 6).split(':')[1].strip()
+    for i in LogFiles]
 Lens = [linecache.getline(i, 8).split(':')[1].strip() for i in LogFiles]
 SSD = [float(linecache.getline(i, 10).split(':')[1].split('mm')[0].strip())
+    for i in LogFiles]
+Modality = [linecache.getline(i, 11).split(':')[1].strip()
     for i in LogFiles]
 Exposuretime = [float(linecache.getline(i, 15)
     .split(':')[1].split('ms')[0].strip()) for i in LogFiles]
@@ -60,7 +66,8 @@ ax.set_xlabel('Exposure time [ms]')
 ax.set_ylabel('Source Detector Distance [mm]')
 ax.set_zlabel('Mean Brightness')
 #~ ax.set_xlim([0,100]
-#~ ax.set_ylim([0,100])
+#~ ax.set_ylim([0,750])
 #~ ax.set_zlim([0,100])
+plt.title(' '.join(['Data from', str(len(LogFiles)), 'log files']))
 
 plt.show()
