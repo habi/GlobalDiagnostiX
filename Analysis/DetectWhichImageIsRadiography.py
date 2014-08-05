@@ -225,8 +225,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print '\tI am using this *single* image as "result"'
         print
         SummedImage = Images[ImageMean.index(max(ImageMean))]
-        logfile.info('Using image %s with a mean of %s as result',
-            ImageMean.index(max(ImageMean)),
+        logfile.info('Using image %s with a mean of %s as "summed dark"',
+            ImageMean.index(max(ImageMean)) + 1,
             round(ImageMean[ImageMean.index(max(ImageMean))], 2))
         logfile.info('-----')
     else:
