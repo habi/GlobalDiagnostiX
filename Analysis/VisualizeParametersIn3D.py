@@ -40,6 +40,8 @@ print 'I found', len(LogFiles), 'log files in', StartingFolder
 # Grab all the necessary parameters from the log files
 ExperimentID = [linecache.getline(i, 1).split('ID')[1].split(',')[0].strip()
     for i in LogFiles]
+Sensor = [linecache.getline(i, 7).split(':')[1].strip()
+    for i in LogFiles]
 Scintillator = [linecache.getline(i, 6).split(':')[1].strip()
     for i in LogFiles]
 Lens = [linecache.getline(i, 8).split(':')[1].strip() for i in LogFiles]
@@ -56,15 +58,19 @@ Mean = [float(linecache.getline(i, 23).split(':')[1].strip())
 STD = [float(linecache.getline(i, 24).split(':')[1].strip())
     for i in LogFiles]
 
+NormalizedMax = [x/max(Max) for x in Max]
+NormalizedMean = [x/max(Mean) for x in Mean]
+NormalizedSTD = [x/max(STD) for x in STD]
+
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-ax.plot(Exposuretime, SSD, Mean, 'o')
-for x, y, z, label in zip(Exposuretime, SSD, Mean, ExperimentID):
-    ax.text(x, y, z + 0.05, label)
+ax.scatter(Exposuretime, SSD, Mean, 'o', c=Mean, cmap='gray', s=150)
+for x, y, z, label in zip(Exposuretime, SSD, Mean, zip(ExperimentID)):
+    ax.text(x, y, z + 0.05, '\n'.join(label))
 
 ax.set_xlabel('Exposure time [ms]')
-ax.set_ylabel('Source Detector Distance [mm]')
-ax.set_zlabel('Mean Brightness')
+ax.set_ylabel('Scintillator-CMOS distance [mm]')
+ax.set_zlabel('Mean brightness of brightest image')
 #~ ax.set_xlim([0,100]
 #~ ax.set_ylim([0,750])
 #~ ax.set_zlim([0,100])
