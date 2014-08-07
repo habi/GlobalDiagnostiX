@@ -68,6 +68,13 @@ def myLogger(Folder, LogFileName):
     return logger
 
 
+def normalizeImage(Image):
+    Image -= numpy.min(Image)
+    Image /= (numpy.max(Image) - numpy.min(Image))
+    Image *= 2 ** 8 - 1
+    return Image
+
+
 # Look for all folders matching the naming convention
 Experiment = []
 ExperimentID = []
@@ -178,12 +185,24 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     print 'Reading images,',
     Images = [numpy.fromfile(Image, dtype=numpy.uint16).reshape(Size)
                  for Image in Radiographies[SelectedExperiment]]
+    # Zero out a small outer region of each image, since we have some DevWare
+    # information in this region. These values change the max and mean.
+    padwidth = 3
+    for counter in range(len(Images)):
+        # left
+        Images[counter][:, :padwidth] = 0
+        # right
+        Images[counter][:, -padwidth:] = 0
+        # top
+        Images[counter][:padwidth, :] = 0
+        # bottom
+        Images[counter][-padwidth:, :] = 0
     print 'calculating max,',
-    ImageMax = [i.max() for i in Images]
+    ImageMax = [numpy.max(i) for i in Images]
     print 'calculating mean',
-    ImageMean = [i.mean() for i in Images]
+    ImageMean = [numpy.mean(i) for i in Images]
     print 'and standard deviation'
-    ImageSTD = [i.std() for i in Images]
+    ImageSTD = [numpy.std(i) for i in Images]
     Threshold = numpy.min(ImageMean) * 1.618
 
     # Split images in "real" and dark images
@@ -208,11 +227,10 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         'images we selected', len(RealImages), 'above and', len(DarkImages), \
         'images below the threshold'
 
-    # Calculate final images (if it makes sense, otherwise stop)
+    # Calculate final images
     MeanDarkImage = numpy.mean(DarkImages, axis=0)
     if len(RealImages) == 0:
         # If no image is above the selection threshold, use the brightest image
-        # as result
         print
         print '\tImage', ImageMean.index(max(ImageMean)), 'is the brightest',\
             'image of experiment', ExperimentID[SelectedExperiment]
@@ -225,21 +243,18 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print '\tI am using this *single* image as "result"'
         print
         SummedImage = Images[ImageMean.index(max(ImageMean))]
-        logfile.info('Using image %s with a mean of %s as "summed dark"',
+        logfile.info('Using image %s with a mean of %s as final image',
             ImageMean.index(max(ImageMean)) + 1,
             round(ImageMean[ImageMean.index(max(ImageMean))], 2))
-        logfile.info('-----')
+
     else:
         SummedImage = numpy.sum(RealImages, axis=0)
+        logfile.info('Using %s images summed final image', len(RealImages))
+    logfile.info('-----')
 
     CorrectedImage = SummedImage - MeanDarkImage
 
-    # Show images to the user
-    if ManualSelection:
-        print 'Showing images'
-    else:
-        if SaveOutputImages:
-            print 'Writing images'
+    # Show images to the user if desired
     logfile.info('Details of the %s images for experiment ID %s',
         NumberOfRadiographies[SelectedExperiment],
         ExperimentID[SelectedExperiment])
@@ -269,6 +284,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             plt.title(' '.join(['img', str(c), '\nmx',
                                 str(round(ImageMax[c], 1)), '\nmn',
                                 str(round(ImageMean[c], 1))]))
+    print
     logfile.info('-----')
     if SaveOutputImages:
         plt.subplot(313)
@@ -312,7 +328,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         plt.subplot(337)
         plt.imshow(MeanDarkImage, cmap='gray')
         plt.axis('off')
-        plt.title(' '.join(['Average of', str(len(DarkImages)), 'dark images']))
+        plt.title(' '.join(['Average of', str(len(DarkImages)),
+                            'dark images']))
         # Show summed projections
         plt.subplot(338)
         plt.imshow(SummedImage, cmap='gray')
@@ -337,14 +354,14 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     if ManualSelection:
         plt.show()
 
-    # Save corrected images
+    # Save final output images (dark, images, corrected)
     if SaveOutputImages:
         print 'Saving mean dark frame'
         DarkName = os.path.join(os.path.dirname(
             Experiment[SelectedExperiment]),
                                 'Analysis_' +
-                                ExperimentID[SelectedExperiment] + '_Dark.tif')
-        scipy.misc.imsave(DarkName, MeanDarkImage)
+                                ExperimentID[SelectedExperiment] + '_Dark.png')
+        scipy.misc.imsave(DarkName, normalizeImage(MeanDarkImage))
         logfile.info('Mean of %s dark frames saved as %s', len(DarkImages),
             DarkName)
         print 'Saving summed images'
@@ -352,8 +369,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             Experiment[SelectedExperiment]),
                                   'Analysis_' +
                                   ExperimentID[SelectedExperiment] +
-                                  '_Images.tif')
-        scipy.misc.imsave(SummedName, SummedImage)
+                                  '_Images.png')
+        scipy.misc.imsave(SummedName, normalizeImage(SummedImage))
         logfile.info('Sum of %s image frames saved as %s', len(RealImages),
             SummedName)
         print 'Saving corrected image'
@@ -361,8 +378,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             Experiment[SelectedExperiment]),
                                 'Analysis_' +
                                 ExperimentID[SelectedExperiment] +
-                                '_Corrected.tif')
-        scipy.misc.imsave(CorrName, CorrectedImage)
+                                '_Corrected.png')
+        scipy.misc.imsave(CorrName, normalizeImage(CorrectedImage))
         logfile.info('Sum of %s images subtracted with the mean of %s dark ' +
             'frames saved as %s', len(RealImages), len(DarkImages), CorrName)
 
