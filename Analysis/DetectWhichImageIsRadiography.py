@@ -29,8 +29,11 @@ ManualSelection = False
 SaveOutputImages = True
 
 # Where shall we start?
-StartingFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
+RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
+StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132')
+StartingFolder = os.path.join(RootFolder, '20140731')
+
 
 
 def AskUser(Blurb, Choices):
@@ -295,7 +298,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             ("%.2f" % CMOSExposuretime).zfill(6), 'ms']))
         plt.axhline(Threshold, label='selection threshold', color='g',
             linestyle='--')
-        plt.xlim([-0.5, NumberOfRadiographies[Counter] - 0.5])
+        plt.xlim([-0.5, NumberOfRadiographies[SelectedExperiment] - 0.5])
         plt.legend(loc='best')
         plt.tight_layout()
         plt.subplots_adjust(hspace=.05)
