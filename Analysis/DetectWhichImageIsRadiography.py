@@ -25,7 +25,7 @@ import scipy.misc  # for saving png or tif at the end
 # If Manual selection is true, the user is asked to select one of the
 # experiment IDs manually, otherwise the script just goes through all the IDs
 # it finds in the starting folder
-ManualSelection = False
+ManualSelection = True
 SaveOutputImages = True
 
 # Where shall we start?
@@ -257,6 +257,20 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
 
     CorrectedImage = SummedImage - MeanDarkImage
 
+    plt.figure()
+    plt.subplot(131)
+    plt.imshow(SummedImage[200:-200,300:-100], cmap='bone', interpolation='none')
+    plt.title('summed image')
+    plt.subplot(132)
+    plt.imshow(CorrectedImage[200:-200,300:-100], cmap='bone', interpolation='none')
+    plt.title('corrected image')
+    plt.subplot(133)
+    plt.imshow(numpy.log(CorrectedImage)[200:-200,300:-100], cmap='bone', interpolation='none')
+    plt.title('log(corrected image)')
+    plt.ioff()
+    plt.show()
+    exit()
+
     # Show images to the user if desired
     logfile.info('Details of the %s images for experiment ID %s',
         NumberOfRadiographies[SelectedExperiment],
@@ -282,7 +296,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
                 str(ImageMax[c]).rjust(4),
                 ("%.2f" % round(ImageSTD[c], 2)).rjust(6))
         if SaveOutputImages:
-            plt.imshow(Image, cmap='gray')
+            plt.imshow(Image, cmap='gray', interpolation='none')
             plt.axis('off')
             plt.title(' '.join(['img', str(c), '\nmx',
                                 str(round(ImageMax[c], 1)), '\nmn',
@@ -318,28 +332,28 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         # Show images above threshold
         for ctr, i in enumerate(RealImages):
             plt.subplot(3, len(RealImages), ctr + 1)
-            plt.imshow(i, cmap='gray')
+            plt.imshow(i, cmap='gray', interpolation='none')
             plt.axis('off')
             plt.title(' '.join(['Proj', str(ctr)]))
         # Show images below threshold
         for ctr, d in enumerate(DarkImages):
             plt.subplot(3, len(DarkImages), len(DarkImages) + ctr + 1)
-            plt.imshow(d, cmap='gray')
+            plt.imshow(d, cmap='gray', interpolation='none')
             plt.axis('off')
             plt.title(' '.join(['Drk', str(ctr)]))
         # Show average darks
         plt.subplot(337)
-        plt.imshow(MeanDarkImage, cmap='gray')
+        plt.imshow(MeanDarkImage, cmap='gray', interpolation='none')
         plt.axis('off')
         plt.title(' '.join(['Average of', str(len(DarkImages)),
                             'dark images']))
         # Show summed projections
         plt.subplot(338)
-        plt.imshow(SummedImage, cmap='gray')
+        plt.imshow(SummedImage, cmap='gray', interpolation='none')
         plt.axis('off')
         plt.title(' '.join([str(len(RealImages)), 'summed projections']))
         plt.subplot(339)
-        plt.imshow(CorrectedImage, cmap='gray')
+        plt.imshow(CorrectedImage, cmap='gray', interpolation='none')
         plt.axis('off')
         plt.title(' '.join([str(len(RealImages)), 'projections -',
             str(len(DarkImages)), 'darks']))
