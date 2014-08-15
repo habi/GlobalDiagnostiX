@@ -25,7 +25,7 @@ import scipy.misc  # for saving png or tif at the end
 # If Manual selection is true, the user is asked to select one of the
 # experiment IDs manually, otherwise the script just goes through all the IDs
 # it finds in the starting folder
-ManualSelection = True
+ManualSelection = False
 SaveOutputImages = True
 
 # Where shall we start?
@@ -33,7 +33,6 @@ RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
 StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132')
 StartingFolder = os.path.join(RootFolder, '20140731')
-
 
 
 def AskUser(Blurb, Choices):
@@ -240,9 +239,6 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print '\tIts mean of',  round(max(ImageMean), 2), \
             'is below the selection threshold of', round(Threshold, 2)
         print '\tIt is probably safe to delete the whole directory...'
-        logfile.info('You could probably delete directory %s',
-            Experiment[SelectedExperiment])
-        logfile.info('-----')
         print '\tI am using this *single* image as "result"'
         print
         SummedImage = Images[ImageMean.index(max(ImageMean))]
@@ -252,24 +248,24 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
 
     else:
         SummedImage = numpy.sum(RealImages, axis=0)
-        logfile.info('Using %s images summed final image', len(RealImages))
+        logfile.info('Using %s images for summed final image', len(RealImages))
     logfile.info('-----')
 
     CorrectedImage = SummedImage - MeanDarkImage
 
-    plt.figure()
-    plt.subplot(131)
-    plt.imshow(SummedImage[200:-200,300:-100], cmap='bone', interpolation='none')
-    plt.title('summed image')
-    plt.subplot(132)
-    plt.imshow(CorrectedImage[200:-200,300:-100], cmap='bone', interpolation='none')
-    plt.title('corrected image')
-    plt.subplot(133)
-    plt.imshow(numpy.log(CorrectedImage)[200:-200,300:-100], cmap='bone', interpolation='none')
-    plt.title('log(corrected image)')
-    plt.ioff()
-    plt.show()
-    exit()
+    #~ plt.figure()
+    #~ plt.subplot(131)
+    #~ plt.imshow(SummedImage[200:-200,300:-100], cmap='bone', interpolation='none')
+    #~ plt.title('summed image')
+    #~ plt.subplot(132)
+    #~ plt.imshow(CorrectedImage[200:-200,300:-100], cmap='bone', interpolation='none')
+    #~ plt.title('corrected image')
+    #~ plt.subplot(133)
+    #~ plt.imshow(numpy.log(CorrectedImage)[200:-200,300:-100], cmap='bone', interpolation='none')
+    #~ plt.title('log(corrected image)')
+    #~ plt.ioff()
+    #~ plt.show()
+    #~ exit()
 
     # Show images to the user if desired
     logfile.info('Details of the %s images for experiment ID %s',
@@ -279,7 +275,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         plt.figure(num=1,
                    figsize=[NumberOfRadiographies[SelectedExperiment], 5])
     for c, Image in enumerate(Images):
-        if Image.mean() > Threshold:
+        if Image.mean() > Threshold or Image.mean() == max(ImageMean):
             if SaveOutputImages:
                 plt.subplot(3, len(Images), c + 1)
             logfile.info('%s/%s: Mean: %s,\tMax: %s,\tSTD: %s\t--> Image',

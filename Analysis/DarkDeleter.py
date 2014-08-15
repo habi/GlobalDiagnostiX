@@ -24,7 +24,8 @@ ReallyRemove = True
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
-StartingFolder = os.path.join(RootFolder, '20140724')
+StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
+    'Computar-11A')
 
 
 def myLogger(Folder, LogFileName):
