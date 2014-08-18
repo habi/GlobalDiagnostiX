@@ -26,7 +26,8 @@ import scipy.misc  # for saving png or tif at the end
 # experiment IDs manually, otherwise the script just goes through all the IDs
 # it finds in the starting folder
 ManualSelection = False
-SaveOutputImages = True
+ViewImages = True
+SaveOutputImages = False
 
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
@@ -271,7 +272,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     logfile.info('Details of the %s images for experiment ID %s',
         NumberOfRadiographies[SelectedExperiment],
         ExperimentID[SelectedExperiment])
-    if SaveOutputImages:
+    if ViewImages:
         plt.figure(num=1,
                    figsize=[NumberOfRadiographies[SelectedExperiment], 5])
     for c, Image in enumerate(Images):
@@ -284,14 +285,14 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
                 str(ImageMax[c]).rjust(4),
                 ("%.2f" % round(ImageSTD[c], 2)).rjust(6))
         else:
-            if SaveOutputImages:
+            if ViewImages:
                 plt.subplot(3, len(Images), len(Images) + c + 1)
             logfile.info('%s/%s: Mean: %s,\tMax: %s,\tSTD: %s\t--> Dark',
                 str(c + 1).rjust(2), len(Radiographies[Counter]),
                 ("%.2f" % round(ImageMean[c], 2)).rjust(6),
                 str(ImageMax[c]).rjust(4),
                 ("%.2f" % round(ImageSTD[c], 2)).rjust(6))
-        if SaveOutputImages:
+        if ViewImages:
             plt.imshow(Image, cmap='gray', interpolation='none')
             plt.axis('off')
             plt.title(' '.join(['img', str(c), '\nmx',
@@ -299,7 +300,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
                                 str(round(ImageMean[c], 1))]))
     print
     logfile.info('-----')
-    if SaveOutputImages:
+    if ViewImages:
         plt.subplot(313)
         plt.plot(ImageMax, marker='o', label='max')
         plt.plot(ImageMean, marker='o', label='mean')
@@ -313,8 +314,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         plt.tight_layout()
         plt.subplots_adjust(hspace=.05)
         plt.subplots_adjust(wspace=.05)
-        # Save figure
         plt.draw()
+    if SaveOutputImages:
         SaveFigName = os.path.join(os.path.dirname(
             Experiment[SelectedExperiment]),
                                    'Analysis_' +
@@ -323,7 +324,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         plt.savefig(SaveFigName)
         logfile.info('Overview plot saved as %s',
                      os.path.basename(SaveFigName))
-    if SaveOutputImages:
+    if ViewImages:
         plt.figure(num=2, figsize=[16, 9])
         # Show images above threshold
         for ctr, i in enumerate(RealImages):
@@ -353,8 +354,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         plt.axis('off')
         plt.title(' '.join([str(len(RealImages)), 'projections -',
             str(len(DarkImages)), 'darks']))
-        # Save figure
-        plt.draw()
+        plt.show()
+    if SaveOutputImages:
         SaveFigName = os.path.join(os.path.dirname(
             Experiment[SelectedExperiment]),
                                    'Analysis_' +
