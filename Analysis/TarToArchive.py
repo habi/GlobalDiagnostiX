@@ -26,7 +26,7 @@ ManualSelection = False
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
-StartingFolder = os.path.join(RootFolder, '20140731')
+StartingFolder = os.path.join(RootFolder, '20140818')
 
 def AskUser(Blurb, Choices):
     """ Ask for input. Based on function in MasterThesisIvan.ini """
@@ -75,7 +75,6 @@ for root, dirs, files in os.walk(StartingFolder):
         ExperimentID.append(os.path.basename(root))
 
 print 'I found', len(Experiment), 'experiment IDs in', StartingFolder
-print 80 * '-'
 
 AnalyisList = []
 if ManualSelection:
@@ -101,25 +100,37 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         time.strftime('%d.%m.%Y at %H:%M:%S'))
     logfile.info(80 * '-')
     # Tar the selected folder
-    TarCommand = ['tar', '-cPzf', Experiment[SelectedExperiment] + '.tar.gz',
-        Experiment[SelectedExperiment]]
-    print 'Packing', ExperimentID[SelectedExperiment], 'with the command', \
-        ' '.join(TarCommand)
+    TarCommand = ['tar', '-czf', Experiment[SelectedExperiment] + '.tar.gz',
+        '-C', os.path.dirname(Experiment[SelectedExperiment]),
+        os.path.basename(Experiment[SelectedExperiment])]
+    print 'Packing', ExperimentID[SelectedExperiment]
     logfile.info('Packing the original files with')
     logfile.info('---')
     logfile.info(' '.join(TarCommand))
     logfile.info('---')
     packit = subprocess.Popen(TarCommand, stdout=subprocess.PIPE)
     output, error = packit.communicate()
-    print output
+    if output:
+        print output
+    if error:
+        print error
+    time.sleep(0.5)
     # FTP the file to the PSI archive
-    #~ LFTPcommand = ['lftp', '-e', "'put",
-        #~ Experiment[SelectedExperiment] + '.tar;', "bye'", '-u',
-        #~ 'EssentialMed,ACTUALPASSWORD', '-v', 'archivftp:ExperimentsIvan']
-    #~ print 'Transferring', ExperimentID[SelectedExperiment] + '.tar',\
-        #~ 'with the command', ' '.join(LFTPcommand)
-    #~ logfile.info('Transferring %s to the PSI archive with',
-        #~ ExperimentID[SelectedExperiment] + '.tar')
-    #~ logfile.info('---')
-    #~ logfile.info(' '.join(LFTPcommand))
-    #~ logfile.info('---')
+    # We use the bookmark feature of 'lftp' to save the password. It's in
+    # ~/.lftp/bookmarks...
+
+    LFTPcommand = 'lftp -e \"mkdir -p ' + \
+        StartingFolder[len(RootFolder) + 1:] + ';put ' + \
+        Experiment[SelectedExperiment] + '.tar.gz -o ' + \
+        StartingFolder[len(RootFolder) + 1:] + '/' + \
+        ExperimentID[SelectedExperiment] + '.tar.gz;bye\" Ivan'
+    print 'Transferring', \
+        ExperimentID[SelectedExperiment] + '.tar.gz to archive'
+    print LFTPcommand
+    logfile.info('Transferring %s to the PSI archive with',
+        ExperimentID[SelectedExperiment] + '.tar.gz')
+    logfile.info('---')
+    logfile.info(LFTPcommand)
+    logfile.info('---')
+    os.system(LFTPcommand)
+    time.sleep(0.5)
