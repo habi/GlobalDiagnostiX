@@ -78,7 +78,7 @@ StretchedImage = normalize(contrast_stretch(Image))
 
 plt.ion()
 
-plt.figure(File, figsize=[23, 9])
+plt.figure(File, figsize=[16, 9])
 # Images
 plt.subplot(231)
 plt.imshow(Image, cmap='bone', interpolation='nearest')
@@ -122,7 +122,7 @@ while not done:
     currentAxis = plt.gca()
     rectangle = currentAxis.add_patch(Rectangle((xmin, ymin), xmax - xmin,
                                                 ymax - ymin, facecolor='red',
-                                                alpha=0.25))
+                                                edgecolor='black', alpha=0.25))
     tellme('Done? Press any key for yes, click with mouse for no')
     done = plt.waitforbuttonpress()
     # Redraw image if necessary
@@ -130,9 +130,12 @@ while not done:
         plt.clf()
         plt.subplot(121)
         plt.imshow(StretchedImage, cmap='bone', interpolation='nearest')
-# Draw selected ROI
-tellme('Selected ROI')
-plt.subplot(222)
+# Give plot a nice title
+ROISize = [xmax - xmin, ymax - ymin]
+tellme(' '.join(['Selected ROI with a size of', str(int(round(ROISize[1]))),
+    'x', str(int(round(ROISize[0]))), 'px']))
+# Show selected ROI
+plt.subplot(322)
 CroppedImage = contrast_stretch(Image[ymin:ymax, xmin:xmax])
 plt.imshow(CroppedImage, cmap='bone', interpolation='none')
 tellme(' '.join(['ROI:', str(int(round(xmax - xmin))), 'x',
@@ -160,15 +163,19 @@ while not done:
     rectangle = currentAxis.add_patch(Rectangle((xmin - pad, ymin),
                                                 xmax - xmin + pad + pad,
                                                 ymax - ymin, facecolor='red',
-                                                alpha=0.25))
+                                                edgecolor='black', alpha=0.25))
     tellme('Done? Press any key for yes, click with mouse for no')
     done = plt.waitforbuttonpress()
     # Redraw image if necessary
     if not done:
         plt.clf()
-        plt.subplot(222)
+        plt.subplot(322)
         plt.imshow(CroppedImage, cmap='bone', interpolation='none')
-tellme('Selected ROI and lines of plot below')
+# Give plot a nice title
+ROISize = [xmax - xmin + pad + pad, ymax - ymin]
+tellme(' '.join(['Selected ROI with a size of', str(int(round(ROISize[1]))),
+    'x', str(int(round(ROISize[0]))), 'px and location of lines from plot',
+    'below']))
 
 # draw $steps horizontal lines $pad px around the selected one
 # IWantHue, dark background, 10 colors, hard
@@ -181,17 +188,34 @@ SelectedLines = [line for
     line in [CroppedImage[int(round(height)), xmin - pad:xmax + pad] for
     height in SelectedHeight]]
 
-plt.subplot(222)
+plt.subplot(322)
 for c, height in enumerate(SelectedHeight):
     plt.axhline(height, linewidth=4, alpha=0.5, color=clr[c])
-plt.subplot(224)
+plt.subplot(324)
 for c, line in enumerate(SelectedLines):
     plt.plot(line, alpha=0.5, color=clr[c])
-plt.plot(numpy.mean(SelectedLines, axis=0), 'k', linewidth='4',
+plt.plot(numpy.mean(SelectedLines, axis=0), 'k', linewidth='2',
     label=' '.join(['mean of', str(steps), 'shown lines']))
+plt.xlim([0, xmax + pad - xmin - pad])
+plt.ylim([0, 256])
 plt.legend(loc='best')
 plt.title('Brightness in the red ROI shown above')
+plt.subplot(326)
+for c, line in enumerate(SelectedLines):
+    plt.plot(line, alpha=0.5, color=clr[c])
+plt.plot(numpy.mean(SelectedLines, axis=0), 'k', linewidth='2',
+    label=' '.join(['mean of', str(steps), 'shown lines']))
+plt.xlim([0, xmax + pad - xmin - pad])
+plt.legend(loc='best')
+plt.title('Brightness in the red ROI shown above, scaled')
 plt.tight_layout()
 
+ExperimentID = '5808858'
+
+SaveName = os.path.join(Directory, ExperimentID + '.resolution.png')
+
+plt.draw()
 plt.ioff()
+plt.savefig(SaveName)
+print 'Figure saved as', SaveName
 plt.show()
