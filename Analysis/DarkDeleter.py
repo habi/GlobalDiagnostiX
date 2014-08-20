@@ -19,12 +19,18 @@ import time
 import numpy
 
 # Setup
-ReallyRemove = True
+ReallyRemove = False
 
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
+StartingFolder = os.path.join(RootFolder, '20140721')
+StartingFolder = os.path.join(RootFolder, '20140722')
+StartingFolder = os.path.join(RootFolder, '20140724')
+StartingFolder = os.path.join(RootFolder, '20140730')
 StartingFolder = os.path.join(RootFolder, '20140731')
+StartingFolder = os.path.join(RootFolder, '20140818')
+StartingFolder = os.path.join(RootFolder, '20140819')
 
 
 def myLogger(Folder, LogFileName):
@@ -80,7 +86,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     # and the second 'Dark', delete the rest.
     AnalysisLogFile = os.path.join(
         os.path.dirname(Experiment[SelectedExperiment]),
-        'Analysis_' + ExperimentID[SelectedExperiment] + '.log')
+        ExperimentID[SelectedExperiment] + '.analyis.log')
     Keepers = []
     for line in open(AnalysisLogFile, 'r'):
         if len(line.split('-->')) == 2:
