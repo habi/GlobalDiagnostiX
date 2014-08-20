@@ -9,7 +9,6 @@ the 'best' exposure.
 This script loads each image in each directory, computes the mean of the images
 and gives out the maximum of the this mean. This should be the 'best' exposed
 image(s) of all the exposures.
-Optionally, the stack of the best images can be opened in Fiji.
 """
 
 from __future__ import division
@@ -26,14 +25,18 @@ import scipy.misc  # for saving png or tif at the end
 # experiment IDs manually, otherwise the script just goes through all the IDs
 # it finds in the starting folder
 ManualSelection = False
-ViewImages = True
-SaveOutputImages = False
+SaveOutputImages = True
 
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
-StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132')
-StartingFolder = os.path.join(RootFolder, '20140731')
+StartingFolder = os.path.join(RootFolder, '20140721')
+StartingFolder = os.path.join(RootFolder, '20140722')
+StartingFolder = os.path.join(RootFolder, '20140724')
+StartingFolder = os.path.join(RootFolder, '20140730')
+StartingFolder = os.path.join(RootFolder, '20140731/Toshiba/AR0132/TIS-TBL-6C-3MP/Hand')
+#~ StartingFolder = os.path.join(RootFolder, '20140818')
+#~ StartingFolder = os.path.join(RootFolder, '20140819')
 
 
 def AskUser(Blurb, Choices):
@@ -71,11 +74,25 @@ def myLogger(Folder, LogFileName):
     return logger
 
 
-def normalizeImage(Image):
-    Image -= numpy.min(Image)
-    Image /= (numpy.max(Image) - numpy.min(Image))
-    Image *= 2 ** 8 - 1
-    return Image
+def normalizeImage(image, depth=256):
+    """Normalize image to chosen bit depth"""
+    #~ print 'Normalizing image from [' + str(numpy.min(image)) + ':' + \
+        #~ str(numpy.max(image)) + '] to',
+    normalizedimage = ((image - numpy.min(image)) *
+        ((depth) / (numpy.max(image) - numpy.min(image))))
+    #~ print '[' + str(numpy.min(normalizedimage)) + ':' + \
+        #~ str(numpy.max(normalizedimage)) + ']'
+    return normalizedimage
+
+
+def contrast_stretch(image):
+    #~ print 'Clipping image from [' + str(numpy.min(image)) + ':' + \
+        #~ str(numpy.max(image)) + '] to',
+    clippedimage = numpy.clip(image, numpy.mean(image) - 2 * numpy.std(image),
+                              numpy.mean(image) + 2 * numpy.std(image))
+    #~ print '[' + str(numpy.min(clippedimage)) + ':' + \
+        #~ str(numpy.max(clippedimage)) + ']'
+    return clippedimage
 
 
 # Look for all folders matching the naming convention
@@ -132,7 +149,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     print str(Counter + 1) + '/' + str(len(AnalyisList)) + \
         ': Looking at experiment', ExperimentID[SelectedExperiment]
     logfile = myLogger(os.path.dirname(Experiment[SelectedExperiment]),
-        'Analysis_' + ExperimentID[SelectedExperiment] + '.log')
+        ExperimentID[SelectedExperiment] + '.analysis.log')
     logfile.info('Log file for Experiment ID %s, Analsyis performed on %s',
         ExperimentID[SelectedExperiment],
         time.strftime('%d.%m.%Y at %H:%M:%S'))
@@ -206,12 +223,12 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     ImageMean = [numpy.mean(i) for i in Images]
     print 'and standard deviation'
     ImageSTD = [numpy.std(i) for i in Images]
-    Threshold = numpy.min(ImageMean) * 1.618
+    Threshold = numpy.min(ImageMax) * 1.618
 
     # Split images in "real" and dark images
     print 'Selecting dark frames and image frames'
-    RealImages = [i for i in Images if i.mean() > Threshold]
-    DarkImages = [i for i in Images if i.mean() <= Threshold]
+    RealImages = [i for i in Images if i.max() > Threshold]
+    DarkImages = [i for i in Images if i.max() <= Threshold]
     logfile.info('We have')
     logfile.info('\t* %s dark images (Mean below or equal to Threshold of %s)',
         len(DarkImages), round(Threshold, 2))
@@ -254,29 +271,13 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
 
     CorrectedImage = SummedImage - MeanDarkImage
 
-    #~ plt.figure()
-    #~ plt.subplot(131)
-    #~ plt.imshow(SummedImage[200:-200,300:-100], cmap='bone', interpolation='none')
-    #~ plt.title('summed image')
-    #~ plt.subplot(132)
-    #~ plt.imshow(CorrectedImage[200:-200,300:-100], cmap='bone', interpolation='none')
-    #~ plt.title('corrected image')
-    #~ plt.subplot(133)
-    #~ plt.imshow(numpy.log(CorrectedImage)[200:-200,300:-100], cmap='bone', interpolation='none')
-    #~ plt.title('log(corrected image)')
-    #~ plt.ioff()
-    #~ plt.show()
-    #~ exit()
-
     # Show images to the user if desired
     logfile.info('Details of the %s images for experiment ID %s',
         NumberOfRadiographies[SelectedExperiment],
         ExperimentID[SelectedExperiment])
-    if ViewImages:
-        plt.figure(num=1,
-                   figsize=[NumberOfRadiographies[SelectedExperiment], 5])
+    plt.figure(num=1, figsize=[NumberOfRadiographies[SelectedExperiment], 5])
     for c, Image in enumerate(Images):
-        if Image.mean() > Threshold or Image.mean() == max(ImageMean):
+        if Image.max() > Threshold or Image.max() == max(ImageMean):
             if SaveOutputImages:
                 plt.subplot(3, len(Images), c + 1)
             logfile.info('%s/%s: Mean: %s,\tMax: %s,\tSTD: %s\t--> Image',
@@ -285,115 +286,103 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
                 str(ImageMax[c]).rjust(4),
                 ("%.2f" % round(ImageSTD[c], 2)).rjust(6))
         else:
-            if ViewImages:
-                plt.subplot(3, len(Images), len(Images) + c + 1)
+            plt.subplot(3, len(Images), len(Images) + c + 1)
             logfile.info('%s/%s: Mean: %s,\tMax: %s,\tSTD: %s\t--> Dark',
                 str(c + 1).rjust(2), len(Radiographies[Counter]),
                 ("%.2f" % round(ImageMean[c], 2)).rjust(6),
                 str(ImageMax[c]).rjust(4),
                 ("%.2f" % round(ImageSTD[c], 2)).rjust(6))
-        if ViewImages:
-            plt.imshow(Image, cmap='gray', interpolation='none')
-            plt.axis('off')
-            plt.title(' '.join(['img', str(c), '\nmx',
-                                str(round(ImageMax[c], 1)), '\nmn',
-                                str(round(ImageMean[c], 1))]))
+        plt.imshow(Image, cmap='gray', interpolation='none')
+        plt.axis('off')
+        plt.title(' '.join(['img', str(c), '\nmx',
+                            str(round(ImageMax[c], 1)), '\nmn',
+                            str(round(ImageMean[c], 1))]))
     print
     logfile.info('-----')
-    if ViewImages:
-        plt.subplot(313)
-        plt.plot(ImageMax, marker='o', label='max')
-        plt.plot(ImageMean, marker='o', label='mean')
-        plt.plot(ImageSTD, marker='o', label='STD')
-        plt.title(' '.join(['Image characteristics for an exposure time of',
-            ("%.2f" % CMOSExposuretime).zfill(6), 'ms']))
-        plt.axhline(Threshold, label='selection threshold', color='g',
-            linestyle='--')
-        plt.xlim([-0.5, NumberOfRadiographies[SelectedExperiment] - 0.5])
-        plt.legend(loc='best')
-        plt.tight_layout()
-        plt.subplots_adjust(hspace=.05)
-        plt.subplots_adjust(wspace=.05)
-        plt.draw()
+    plt.subplot(313)
+    plt.plot(ImageMax, marker='o', label='max', color='r')
+    plt.plot(ImageMean, marker='o', label='mean', color='g')
+    plt.plot(ImageSTD, marker='o', label='STD', color='b')
+    plt.title(' '.join(['Image characteristics for an exposure time of',
+        ("%.2f" % CMOSExposuretime).zfill(6), 'ms']))
+    plt.axhline(Threshold, label='selection threshold', color='r',
+        linestyle='--')
+    plt.xlim([-0.5, NumberOfRadiographies[SelectedExperiment] - 0.5])
+    plt.legend(loc='best')
+    plt.tight_layout()
+    plt.subplots_adjust(hspace=.05)
+    plt.subplots_adjust(wspace=.05)
+    plt.draw()
     if SaveOutputImages:
         SaveFigName = os.path.join(os.path.dirname(
-            Experiment[SelectedExperiment]),
-                                   'Analysis_' +
-                                   ExperimentID[SelectedExperiment] +
-                                   '_Overview_All.png')
+            Experiment[SelectedExperiment]), ExperimentID[SelectedExperiment] +
+            '.overview.all.png')
         plt.savefig(SaveFigName)
         logfile.info('Overview plot saved as %s',
                      os.path.basename(SaveFigName))
-    if ViewImages:
-        plt.figure(num=2, figsize=[16, 9])
-        # Show images above threshold
-        for ctr, i in enumerate(RealImages):
-            plt.subplot(3, len(RealImages), ctr + 1)
-            plt.imshow(i, cmap='gray', interpolation='none')
-            plt.axis('off')
-            plt.title(' '.join(['Proj', str(ctr)]))
-        # Show images below threshold
-        for ctr, d in enumerate(DarkImages):
-            plt.subplot(3, len(DarkImages), len(DarkImages) + ctr + 1)
-            plt.imshow(d, cmap='gray', interpolation='none')
-            plt.axis('off')
-            plt.title(' '.join(['Drk', str(ctr)]))
-        # Show average darks
-        plt.subplot(337)
-        plt.imshow(MeanDarkImage, cmap='gray', interpolation='none')
-        plt.axis('off')
-        plt.title(' '.join(['Average of', str(len(DarkImages)),
-                            'dark images']))
-        # Show summed projections
-        plt.subplot(338)
-        plt.imshow(SummedImage, cmap='gray', interpolation='none')
-        plt.axis('off')
-        plt.title(' '.join([str(len(RealImages)), 'summed projections']))
-        plt.subplot(339)
-        plt.imshow(CorrectedImage, cmap='gray', interpolation='none')
-        plt.axis('off')
-        plt.title(' '.join([str(len(RealImages)), 'projections -',
-            str(len(DarkImages)), 'darks']))
-        plt.show()
+    plt.figure(num=2, figsize=[16, 9])
+    # Show average darks
+    plt.subplot(231)
+    plt.imshow(MeanDarkImage, cmap='gray', interpolation='none')
+    plt.title(' '.join(['Average of', str(len(DarkImages)),
+                        'dark images']))
+    plt.subplot(234)
+    plt.imshow(contrast_stretch(MeanDarkImage), cmap='gray',
+        interpolation='none')
+    plt.title('Contrast stretched average')
+    # Show summed projections
+    plt.subplot(232)
+    plt.imshow(SummedImage, cmap='gray', interpolation='none')
+    plt.title(' '.join([str(len(RealImages)), 'summed projections']))
+    plt.subplot(235)
+    plt.imshow(contrast_stretch(SummedImage), cmap='gray',
+        interpolation='none')
+    plt.title('Contrast stretched projections sum')
+    plt.subplot(233)
+    plt.imshow(CorrectedImage, cmap='gray', interpolation='none')
+    plt.title(' '.join([str(len(RealImages)), 'projections -',
+        str(len(DarkImages)), 'darks']))
+    plt.subplot(236)
+    plt.imshow(contrast_stretch(CorrectedImage), cmap='gray',
+    interpolation='none')
+    plt.title('Contrast stretched corrected image')
+    plt.draw()
     if SaveOutputImages:
         SaveFigName = os.path.join(os.path.dirname(
-            Experiment[SelectedExperiment]),
-                                   'Analysis_' +
-                                   ExperimentID[SelectedExperiment] +
-                                   '_Overview_DarkFlatsCorrected.png')
+            Experiment[SelectedExperiment]), ExperimentID[SelectedExperiment] +
+            '.overview.darkflatscorrected.png')
         plt.savefig(SaveFigName)
         logfile.info('Dark/Flats/Corrected plot saved as %s',
             os.path.basename(SaveFigName))
         logfile.info('-----')
-    if ManualSelection:
-        plt.show()
 
     # Save final output images (dark, images, corrected)
     if SaveOutputImages:
         print 'Saving mean dark frame'
         DarkName = os.path.join(os.path.dirname(
-            Experiment[SelectedExperiment]),
-                                'Analysis_' +
-                                ExperimentID[SelectedExperiment] + '_Dark.png')
-        scipy.misc.imsave(DarkName, normalizeImage(MeanDarkImage))
+            Experiment[SelectedExperiment]), ExperimentID[SelectedExperiment] +
+            '.image.dark')
+        scipy.misc.imsave(DarkName + '.png', normalizeImage(MeanDarkImage))
+        scipy.misc.imsave(DarkName + '.stretched.png',
+            contrast_stretch(MeanDarkImage))
         logfile.info('Mean of %s dark frames saved as %s', len(DarkImages),
             DarkName)
         print 'Saving summed images'
         SummedName = os.path.join(os.path.dirname(
-            Experiment[SelectedExperiment]),
-                                  'Analysis_' +
-                                  ExperimentID[SelectedExperiment] +
-                                  '_Images.png')
-        scipy.misc.imsave(SummedName, normalizeImage(SummedImage))
+            Experiment[SelectedExperiment]), ExperimentID[SelectedExperiment] +
+            '.image.sum')
+        scipy.misc.imsave(SummedName + '.png', normalizeImage(SummedImage))
+        scipy.misc.imsave(SummedName + '.stretched.png',
+            contrast_stretch(SummedImage))
         logfile.info('Sum of %s image frames saved as %s', len(RealImages),
             SummedName)
         print 'Saving corrected image'
         CorrName = os.path.join(os.path.dirname(
-            Experiment[SelectedExperiment]),
-                                'Analysis_' +
-                                ExperimentID[SelectedExperiment] +
-                                '_Corrected.png')
-        scipy.misc.imsave(CorrName, normalizeImage(CorrectedImage))
+            Experiment[SelectedExperiment]), ExperimentID[SelectedExperiment] +
+            '.image.corrected')
+        scipy.misc.imsave(CorrName + '.png', normalizeImage(CorrectedImage))
+        scipy.misc.imsave(CorrName + '.stretched.png',
+            contrast_stretch(CorrectedImage))
         logfile.info('Sum of %s images subtracted with the mean of %s dark ' +
             'frames saved as %s', len(RealImages), len(DarkImages), CorrName)
 
@@ -401,5 +390,4 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         plt.ioff()
         plt.show()
     else:
-        plt.close(1)
-        plt.close(2)
+        plt.close('all')
