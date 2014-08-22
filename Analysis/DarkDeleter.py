@@ -25,12 +25,18 @@ ReallyRemove = False
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
 StartingFolder = os.path.join(RootFolder, '20140721')
-StartingFolder = os.path.join(RootFolder, '20140722')
-StartingFolder = os.path.join(RootFolder, '20140724')
-StartingFolder = os.path.join(RootFolder, '20140730')
-StartingFolder = os.path.join(RootFolder, '20140731')
-StartingFolder = os.path.join(RootFolder, '20140818')
-StartingFolder = os.path.join(RootFolder, '20140819')
+#~ StartingFolder = os.path.join(RootFolder, '20140722')
+#~ StartingFolder = os.path.join(RootFolder, '20140724')
+#~ StartingFolder = os.path.join(RootFolder, '20140730')
+#~ StartingFolder = os.path.join(RootFolder, '20140731')
+#~ StartingFolder = os.path.join(RootFolder, '20140818')
+#~ StartingFolder = os.path.join(RootFolder, '20140819')
+#~ StartingFolder = os.path.join(RootFolder, '20140820')
+
+# Testing
+StartingFolder = os.path.join(RootFolder, '20140721', 'Pingseng', 'MT9M001',
+    'Computar-11A', 'Foot')
+# Testing
 
 
 def myLogger(Folder, LogFileName):
@@ -47,6 +53,14 @@ def myLogger(Folder, LogFileName):
     logger.addHandler(handler)
     return logger
 
+
+def get_git_revision_short_hash():
+    import subprocess
+    hashit = subprocess.Popen(['git', 'rev-parse', '--short', 'HEAD'],
+        stdout=subprocess.PIPE)
+    output, error = hashit.communicate()
+    return output
+
 # Look for all folders matching the naming convention
 Experiment = []
 ExperimentID = []
@@ -60,7 +74,6 @@ for root, dirs, files in os.walk(StartingFolder):
         ExperimentID.append(os.path.basename(root))
 
 print 'I found', len(Experiment), 'experiment IDs in', StartingFolder
-print 80 * '-'
 
 # Get list of files in each folder, these are all the radiographies we acquired
 # The length of this list is then obviously the number of radiographies
@@ -86,7 +99,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     # and the second 'Dark', delete the rest.
     AnalysisLogFile = os.path.join(
         os.path.dirname(Experiment[SelectedExperiment]),
-        ExperimentID[SelectedExperiment] + '.analyis.log')
+        ExperimentID[SelectedExperiment] + '.analysis.log')
     Keepers = []
     for line in open(AnalysisLogFile, 'r'):
         if len(line.split('-->')) == 2:
@@ -97,7 +110,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
                 Keepers.append(FileNumber)
                 Keepers.append(FileNumber + 1)
     print 'For Experiment', ExperimentID[SelectedExperiment], 'in folder', \
-        Experiment[SelectedExperiment][len(StartingFolder):]
+        Experiment[SelectedExperiment][len(StartingFolder) + 1:]
     # Always keep second image
     Keepers.append(2)
     Keepers = numpy.unique(Keepers)
@@ -111,6 +124,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             'Deletion log file for Experiment ID %s, deletion done on %s',
             ExperimentID[SelectedExperiment],
             time.strftime('%d.%m.%Y at %H:%M:%S'))
+        logfile.info('\nMade with "%s" at Revision %s',
+            os.path.basename(__file__), get_git_revision_short_hash())
         logfile.info(80 * '-')
         logfile.info('Grabbing Information from %s', AnalysisLogFile)
         logfile.info(80 * '-')
@@ -147,3 +162,12 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print 'We have as many Keepers as radiographies in the folder.', \
             'Either it does not make sense to delete any files or we', \
             'already did delete them...'
+
+    if not ReallyRemove:
+        print '\nWe did not really remove anything, set "ReallyRemove" at', \
+            'the beginnig of the script to "True"'
+        logfile.info(80 * '-')
+        logfile.info('We did not really remove anything')
+        logfile.info(' '.join(['Set "ReallyRemove" on line 22 of the script',
+            'to "True" at the beginnig of the script to really delete the',
+            'superfluous files']))

@@ -16,6 +16,13 @@ import logging
 import time
 import subprocess
 
+
+def get_git_revision_short_hash():
+    hashit = subprocess.Popen(['git', 'rev-parse', '--short', 'HEAD'],
+        stdout=subprocess.PIPE)
+    output, error = hashit.communicate()
+    return output
+
 # Setup
 # If Manual selection is true, the user is asked to select one of the
 # experiment IDs manually, otherwise the script just goes through all the IDs
@@ -23,10 +30,22 @@ import subprocess
 ManualSelection = False
 
 # Where shall we start?
-# Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
-StartingFolder = os.path.join(RootFolder, '20140818')
+StartingFolder = os.path.join(RootFolder, '20140721')
+#~ StartingFolder = os.path.join(RootFolder, '20140722')
+#~ StartingFolder = os.path.join(RootFolder, '20140724')
+#~ StartingFolder = os.path.join(RootFolder, '20140730')
+#~ StartingFolder = os.path.join(RootFolder, '20140731')
+#~ StartingFolder = os.path.join(RootFolder, '20140818')
+#~ StartingFolder = os.path.join(RootFolder, '20140819')
+#~ StartingFolder = os.path.join(RootFolder, '20140820')
+
+# Testing
+StartingFolder = os.path.join(RootFolder, '20140721', 'Pingseng', 'MT9M001',
+    'Computar-11A', 'Foot')
+# Testing
+
 
 def AskUser(Blurb, Choices):
     """ Ask for input. Based on function in MasterThesisIvan.ini """
@@ -98,6 +117,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     logfile.info('Archival log file for Experiment ID %s, archived on %s',
         ExperimentID[SelectedExperiment],
         time.strftime('%d.%m.%Y at %H:%M:%S'))
+    logfile.info('\nMade with "%s" at Revision %s', os.path.basename(__file__),
+        get_git_revision_short_hash())
     logfile.info(80 * '-')
     # Tar the selected folder
     TarCommand = ['tar', '-czf', Experiment[SelectedExperiment] + '.tar.gz',
@@ -116,9 +137,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print error
     time.sleep(0.5)
     # FTP the file to the PSI archive
-    # We use the bookmark feature of 'lftp' to save the password. It's in
+    # We use the bookmark feature of 'lftp' to access the password. It's in
     # ~/.lftp/bookmarks...
-
     LFTPcommand = 'lftp -e \"mkdir -p ' + \
         StartingFolder[len(RootFolder) + 1:] + ';put ' + \
         Experiment[SelectedExperiment] + '.tar.gz -o ' + \
@@ -133,4 +153,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     logfile.info(LFTPcommand)
     logfile.info('---')
     os.system(LFTPcommand)
+    time.sleep(0.5)
+    print 'Deleting archival file', \
+        os.path.basename(Experiment[SelectedExperiment]) + '.tar.gz'
+    os.remove(Experiment[SelectedExperiment] + '.tar.gz')
     time.sleep(0.5)

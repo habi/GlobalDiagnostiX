@@ -18,40 +18,33 @@ import logging
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
-#~ StartingFolder = os.path.join(RootFolder, '20140721')
+StartingFolder = os.path.join(RootFolder, '20140721')
 #~ StartingFolder = os.path.join(RootFolder, '20140722')
 #~ StartingFolder = os.path.join(RootFolder, '20140724')
 #~ StartingFolder = os.path.join(RootFolder, '20140730')
-StartingFolder = os.path.join(RootFolder, '20140731/Toshiba/AR0132/TIS-TBL-6C-3MP/Hand')
+#~ StartingFolder = os.path.join(RootFolder, '20140731')
 #~ StartingFolder = os.path.join(RootFolder, '20140818')
 #~ StartingFolder = os.path.join(RootFolder, '20140819')
+#~ StartingFolder = os.path.join(RootFolder, '20140820')
+
+# Testing
+StartingFolder = os.path.join(RootFolder, '20140721', 'Pingseng', 'MT9M001',
+    'Computar-11A', 'Foot')
+# Testing
+
+
+def get_git_revision_short_hash():
+    import subprocess
+    hashit = subprocess.Popen(['git', 'rev-parse', '--short', 'HEAD'],
+        stdout=subprocess.PIPE)
+    output, error = hashit.communicate()
+    return output
 
 
 def tellme(blurb):
     print(blurb)
     plt.title(blurb)
     plt.draw()
-
-
-def normalize(image, depth=256):
-    """Normalize image to chosen bit depth"""
-    #~ print 'Normalizing image from [' + str(numpy.min(image)) + ':' + \
-        #~ str(numpy.max(image)) + '] to',
-    normalizedimage = ((image - numpy.min(image)) *
-        ((depth) / (numpy.max(image) - numpy.min(image))))
-    #~ print '[' + str(numpy.min(normalizedimage)) + ':' + \
-        #~ str(numpy.max(normalizedimage)) + ']'
-    return normalizedimage
-
-
-def contrast_stretch(image):
-    #~ print 'Clipping image from [' + str(numpy.min(image)) + ':' + \
-        #~ str(numpy.max(image)) + '] to',
-    clippedimage = numpy.clip(image, numpy.mean(image) - 2 * numpy.std(image),
-                              numpy.mean(image) + 2 * numpy.std(image))
-    #~ print '[' + str(numpy.min(clippedimage)) + ':' + \
-        #~ str(numpy.max(clippedimage)) + ']'
-    return clippedimage
 
 
 def myLogger(Folder, LogFileName):
@@ -94,7 +87,9 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         'Log file for Experiment ID %s, Resolution analsyis performed on %s',
         ExperimentID[SelectedExperiment],
         time.strftime('%d.%m.%Y at %H:%M:%S'))
-    logfile.info('-----')
+    logfile.info('\nMade with "%s" at Revision %s', os.path.basename(__file__),
+        get_git_revision_short_hash())
+    logfile.info(80 * '-')
     # either read original or contrast-stretched corrected image
     OriginalImage = plt.imread(os.path.join(
         os.path.dirname(Experiment[SelectedExperiment]),
@@ -107,7 +102,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         ExperimentID[SelectedExperiment] + '.image.corrected.png'))
     logfile.info(os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
         ExperimentID[SelectedExperiment] + '.image.corrected.stretched.png'))
-    logfile.info('-----')
+    logfile.info(80 * '-')
 
     plt.ion()
 
@@ -214,7 +209,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         xmin, xmax, xmax - xmin)
     logfile.info('Selected region in Resolution-Phantom y-ROI: %s-%s (%s px)',
         ymin, ymax, ymax - ymin)
-    logfile.info('-----')
+    logfile.info(80 * '-')
 
     # draw $steps horizontal lines $pad px around the selected one
     # IWantHue, dark background, 10 colors, hard
@@ -251,7 +246,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     logfile.info('Mean brightness along %s equally spaced lines in ROI', steps)
     for i in numpy.mean(SelectedLines, axis=0):
         logfile.info(i)
-    logfile.info('-----')
+    logfile.info(80 * '-')
 
     SaveName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
         ExperimentID[SelectedExperiment] + '.resolution.png')
