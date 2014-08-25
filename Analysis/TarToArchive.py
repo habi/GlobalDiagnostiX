@@ -33,7 +33,7 @@ ManualSelection = False
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
 StartingFolder = os.path.join(RootFolder, '20140721')
-#~ StartingFolder = os.path.join(RootFolder, '20140722')
+StartingFolder = os.path.join(RootFolder, '20140722')
 #~ StartingFolder = os.path.join(RootFolder, '20140724')
 #~ StartingFolder = os.path.join(RootFolder, '20140730')
 #~ StartingFolder = os.path.join(RootFolder, '20140731')
@@ -42,9 +42,10 @@ StartingFolder = os.path.join(RootFolder, '20140721')
 #~ StartingFolder = os.path.join(RootFolder, '20140820')
 
 # Testing
-StartingFolder = os.path.join(RootFolder, '20140721', 'Pingseng', 'MT9M001',
-    'Computar-11A', 'Foot')
+#~ StartingFolder = os.path.join(RootFolder, '20140721', 'Pingseng', 'MT9M001',
+    #~ 'Computar-11A', 'Foot')
 # Testing
+#~ StartingFolder = RootFolder
 
 
 def AskUser(Blurb, Choices):
@@ -140,10 +141,13 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     # We use the bookmark feature of 'lftp' to access the password. It's in
     # ~/.lftp/bookmarks...
     LFTPcommand = 'lftp -e \"mkdir -p ' + \
-        StartingFolder[len(RootFolder) + 1:] + ';put ' + \
-        Experiment[SelectedExperiment] + '.tar.gz -o ' + \
-        StartingFolder[len(RootFolder) + 1:] + '/' + \
-        ExperimentID[SelectedExperiment] + '.tar.gz;bye\" Ivan'
+        os.path.dirname(
+            Experiment[SelectedExperiment][len(RootFolder) + 1:]) + \
+        ';put ' + str(Experiment[SelectedExperiment]) + '.tar.gz -o ' + \
+        os.path.join(
+            os.path.dirname(
+                Experiment[SelectedExperiment][len(RootFolder) + 1:]),
+            ExperimentID[SelectedExperiment] + '.tar.gz') + ';bye\" Ivan'
     print 'Transferring', \
         ExperimentID[SelectedExperiment] + '.tar.gz to archive'
     print LFTPcommand
