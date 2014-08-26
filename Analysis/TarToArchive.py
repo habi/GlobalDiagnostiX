@@ -34,17 +34,17 @@ RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
 StartingFolder = os.path.join(RootFolder, '20140721')
 StartingFolder = os.path.join(RootFolder, '20140722')
-#~ StartingFolder = os.path.join(RootFolder, '20140724')
-#~ StartingFolder = os.path.join(RootFolder, '20140730')
+StartingFolder = os.path.join(RootFolder, '20140724')
+StartingFolder = os.path.join(RootFolder, '20140730')
 #~ StartingFolder = os.path.join(RootFolder, '20140731')
 #~ StartingFolder = os.path.join(RootFolder, '20140818')
 #~ StartingFolder = os.path.join(RootFolder, '20140819')
 #~ StartingFolder = os.path.join(RootFolder, '20140820')
 
-# Testing
-#~ StartingFolder = os.path.join(RootFolder, '20140721', 'Pingseng', 'MT9M001',
-    #~ 'Computar-11A', 'Foot')
-# Testing
+#~ # Testing
+#~ StartingFolder = os.path.join(RootFolder, '20140724', 'Pingseng', 'MT9M001',
+    #~ 'Lensation-CHR6020', 'Lung')
+#~ # Testing
 #~ StartingFolder = RootFolder
 
 
@@ -107,58 +107,88 @@ if ManualSelection:
 else:
     AnalyisList = range(len(Experiment))
 
+
+
 # Go through each selected experiment
 for Counter, SelectedExperiment in enumerate(AnalyisList):
     # Inform the user and start logging
     print 80 * '-'
     print str(Counter + 1) + '/' + str(len(AnalyisList)) + \
         ': Archiving experiment', ExperimentID[SelectedExperiment]
-    logfile = myLogger(os.path.dirname(Experiment[SelectedExperiment]),
-        ExperimentID[SelectedExperiment] + '.archive.log')
-    logfile.info('Archival log file for Experiment ID %s, archived on %s',
-        ExperimentID[SelectedExperiment],
-        time.strftime('%d.%m.%Y at %H:%M:%S'))
-    logfile.info('\nMade with "%s" at Revision %s', os.path.basename(__file__),
-        get_git_revision_short_hash())
-    logfile.info(80 * '-')
-    # Tar the selected folder
-    TarCommand = ['tar', '-czf', Experiment[SelectedExperiment] + '.tar.gz',
-        '-C', os.path.dirname(Experiment[SelectedExperiment]),
-        os.path.basename(Experiment[SelectedExperiment])]
-    print 'Packing', ExperimentID[SelectedExperiment]
-    logfile.info('Packing the original files with')
-    logfile.info('---')
-    logfile.info(' '.join(TarCommand))
-    logfile.info('---')
-    packit = subprocess.Popen(TarCommand, stdout=subprocess.PIPE)
-    output, error = packit.communicate()
-    if output:
-        print output
-    if error:
-        print error
-    time.sleep(0.5)
-    # FTP the file to the PSI archive
-    # We use the bookmark feature of 'lftp' to access the password. It's in
-    # ~/.lftp/bookmarks...
-    LFTPcommand = 'lftp -e \"mkdir -p ' + \
-        os.path.dirname(
-            Experiment[SelectedExperiment][len(RootFolder) + 1:]) + \
-        ';put ' + str(Experiment[SelectedExperiment]) + '.tar.gz -o ' + \
-        os.path.join(
+    # See if DarkDeleter.py was already run on this experiment
+    DarkDeleterLog = os.path.join(
+        os.path.dirname(Experiment[SelectedExperiment]),
+        ExperimentID[SelectedExperiment] + '.deletion.log')
+    if os.path.isfile(DarkDeleterLog):
+        DoArchive = False
+        # Did we really delete them? If not, we can repeat the analysis
+        for line in open(DarkDeleterLog, 'r'):
+            # The last line of the log file tells us if we did it or not...
+            if 'Set "ReallyRemove"' in line:
+                print 'We have a deletion log file, but did not actually', \
+                    'delete the files. Proceeding...'
+                DoArchive = True
+    else:
+        DoArchive = True
+    if not DoArchive:
+        # If we removed some files it doesn't make sense to redo the analysis
+        print '\tWe already deleted files from this experiment, we thus do',\
+            'not archive it again.'
+        print '\tLook at', os.path.join(
+            os.path.dirname(Experiment[SelectedExperiment]),
+            ExperimentID[SelectedExperiment] + '.archive.log'), \
+            'for more info'
+    else:
+        # Archive it!
+        logfile = myLogger(os.path.dirname(Experiment[SelectedExperiment]),
+            ExperimentID[SelectedExperiment] + '.archive.log')
+        logfile.info('Archival log file for Experiment ID %s, archived on %s',
+            ExperimentID[SelectedExperiment],
+            time.strftime('%d.%m.%Y at %H:%M:%S'))
+        logfile.info('\nMade with "%s" at Revision %s', os.path.basename(__file__),
+            get_git_revision_short_hash())
+        logfile.info(80 * '-')
+        # Tar the selected folder
+        TarCommand = ['tar', '-czf', Experiment[SelectedExperiment] + '.tar.gz',
+            '-C', os.path.dirname(Experiment[SelectedExperiment]),
+            os.path.basename(Experiment[SelectedExperiment])]
+        print 'Packing', ExperimentID[SelectedExperiment]
+        logfile.info('Packing the original files with')
+        logfile.info('---')
+        logfile.info(' '.join(TarCommand))
+        logfile.info('---')
+        packit = subprocess.Popen(TarCommand, stdout=subprocess.PIPE)
+        output, error = packit.communicate()
+        if output:
+            print output
+        if error:
+            print error
+        time.sleep(0.5)
+        # FTP the file to the PSI archive
+        # We use the bookmark feature of 'lftp' to access the password. It's in
+        # ~/.lftp/bookmarks...
+        LFTPcommand = 'lftp -e \"mkdir -p ' + \
             os.path.dirname(
-                Experiment[SelectedExperiment][len(RootFolder) + 1:]),
-            ExperimentID[SelectedExperiment] + '.tar.gz') + ';bye\" Ivan'
-    print 'Transferring', \
-        ExperimentID[SelectedExperiment] + '.tar.gz to archive'
-    print LFTPcommand
-    logfile.info('Transferring %s to the PSI archive with',
-        ExperimentID[SelectedExperiment] + '.tar.gz')
-    logfile.info('---')
-    logfile.info(LFTPcommand)
-    logfile.info('---')
-    os.system(LFTPcommand)
-    time.sleep(0.5)
-    print 'Deleting archival file', \
-        os.path.basename(Experiment[SelectedExperiment]) + '.tar.gz'
-    os.remove(Experiment[SelectedExperiment] + '.tar.gz')
-    time.sleep(0.5)
+                Experiment[SelectedExperiment][len(RootFolder) + 1:]) + \
+            ';put ' + str(Experiment[SelectedExperiment]) + '.tar.gz -o ' + \
+            os.path.join(
+                os.path.dirname(
+                    Experiment[SelectedExperiment][len(RootFolder) + 1:]),
+                ExperimentID[SelectedExperiment] + '.tar.gz') + ';bye\" Ivan'
+        print 'Transferring', \
+            ExperimentID[SelectedExperiment] + '.tar.gz to archive'
+        print LFTPcommand
+        logfile.info('Transferring %s to the PSI archive with',
+            ExperimentID[SelectedExperiment] + '.tar.gz')
+        logfile.info('---')
+        logfile.info(LFTPcommand)
+        logfile.info('---')
+        os.system(LFTPcommand)
+        time.sleep(0.5)
+        print 'Deleting archival file', \
+            os.path.basename(Experiment[SelectedExperiment]) + '.tar.gz'
+        os.remove(Experiment[SelectedExperiment] + '.tar.gz')
+        time.sleep(0.5)
+
+print
+print 'Archival of', StartingFolder, 'finished'
