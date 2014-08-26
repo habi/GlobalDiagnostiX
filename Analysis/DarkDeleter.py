@@ -19,24 +19,25 @@ import time
 import numpy
 
 # Setup
-ReallyRemove = False
+ReallyRemove = True
 
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
-StartingFolder = os.path.join(RootFolder, '20140721')
+#~ StartingFolder = os.path.join(RootFolder, '20140721')
 #~ StartingFolder = os.path.join(RootFolder, '20140722')
 #~ StartingFolder = os.path.join(RootFolder, '20140724')
 #~ StartingFolder = os.path.join(RootFolder, '20140730')
 #~ StartingFolder = os.path.join(RootFolder, '20140731')
 #~ StartingFolder = os.path.join(RootFolder, '20140818')
-#~ StartingFolder = os.path.join(RootFolder, '20140819')
+StartingFolder = os.path.join(RootFolder, '20140819')
 #~ StartingFolder = os.path.join(RootFolder, '20140820')
 
-# Testing
-StartingFolder = os.path.join(RootFolder, '20140721', 'Pingseng', 'MT9M001',
-    'Computar-11A', 'Foot')
-# Testing
+#~ # Testing
+#~ StartingFolder = os.path.join(RootFolder, '20140724', 'Pingseng', 'MT9M001',
+    #~ 'Lensation-CHR6020', 'Lung')
+#~ # Testing
+#~ StartingFolder = RootFolder
 
 
 def myLogger(Folder, LogFileName):
@@ -88,6 +89,17 @@ AnalyisList = range(len(Experiment))
 # Go through each selected experiment
 for Counter, SelectedExperiment in enumerate(AnalyisList):
     # Inform the user and start logging
+    # See if TarToArchive.py was already run on this experiment
+    ArchivalLog = os.path.join(
+        os.path.dirname(Experiment[SelectedExperiment]),
+        ExperimentID[SelectedExperiment] + '.archive.log')
+    if not os.path.isfile(ArchivalLog):
+        ReallyRemove = False
+        print 'I could not find an archival log file for experiment', \
+            ExperimentID[SelectedExperiment]
+        print 'I thus set "ReallyRemove" to false'
+        print 'Please archive the data first, then delete'
+        exit()
     print 80 * '-'
     #~ print str(Counter + 1) + '/' + str(len(AnalyisList)) + \
         #~ ': Deleting darks experiment', ExperimentID[SelectedExperiment]
@@ -171,3 +183,6 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         logfile.info(' '.join(['Set "ReallyRemove" on line 22 of the script',
             'to "True" at the beginnig of the script to really delete the',
             'superfluous files']))
+
+print
+print 'Deletion of unnecessary darks of', StartingFolder, 'finished'
