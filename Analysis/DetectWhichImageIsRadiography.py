@@ -31,17 +31,20 @@ SaveOutputImages = True
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
 #~ StartingFolder = os.path.join(RootFolder, '20140721')
-StartingFolder = os.path.join(RootFolder, '20140722')
+#~ StartingFolder = os.path.join(RootFolder, '20140722')
 #~ StartingFolder = os.path.join(RootFolder, '20140724')
 #~ StartingFolder = os.path.join(RootFolder, '20140730')
 #~ StartingFolder = os.path.join(RootFolder, '20140731')
 #~ StartingFolder = os.path.join(RootFolder, '20140818')
 #~ StartingFolder = os.path.join(RootFolder, '20140819')
 #~ StartingFolder = os.path.join(RootFolder, '20140820')
+#~ StartingFolder = os.path.join(RootFolder, '20140822')
+#~ StartingFolder = os.path.join(RootFolder, '20140823')
+StartingFolder = os.path.join(RootFolder, '20140825')
 
 #~ # Testing
-#~ StartingFolder = os.path.join(RootFolder, '20140721', 'Pingseng', 'MT9M001',
-    #~ 'Computar-11A', 'Foot')
+#~ StartingFolder = os.path.join(RootFolder, '20140724', 'Pingseng', 'MT9M001',
+    #~ 'Lensation-CHR6020', 'Lung')
 #~ # Testing
 #~ StartingFolder = RootFolder
 
@@ -136,7 +139,6 @@ for root, dirs, files in os.walk(StartingFolder):
         ExperimentID.append(os.path.basename(root))
 
 print 'I found', len(Experiment), 'experiment IDs in', StartingFolder
-print 80 * '-'
 
 # Get list of files in each folder, these are all the radiographies we acquired
 # The length of this list is then obviously the number of radiographies
@@ -187,18 +189,22 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             # The last line of the log file tells us if we did it or not...
             if 'Set "ReallyRemove"' in line:
                 print 'We have a deletion log file, but did not actually', \
-                    'delete the files'
+                    'delete the files. Proceeding...'
                 DoAnalyze = True
     else:
         DoAnalyze = True
     if not DoAnalyze:
         # If we removed some files it doesn't make sense to redo the analysis
-        print '\tWe do not analyze that experiment again, most probably', \
-            'because we already deleted some original raw files'
-        print '\tLook at', os.path.join(
-            os.path.dirname(Experiment[SelectedExperiment]),
-            ExperimentID[SelectedExperiment] + '.deletion.log'), \
-            'for more info'
+        print
+        print '\tWe already ran DarkDeleter.py on experiment', \
+            ExperimentID[SelectedExperiment]
+        print '\tWe thus do not analyze it again.'
+        print '\tTake a look at', os.path.join(
+            os.path.dirname(Experiment[SelectedExperiment])
+                [len(StartingFolder) + 1:],
+            ExperimentID[SelectedExperiment] + '.analysis.log'), \
+                'for more info'
+        print
     else:
         # Otherwise do all the work now!
         logfile = myLogger(os.path.dirname(Experiment[SelectedExperiment]),
@@ -213,7 +219,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         logfile.info('This experiment ID can be found in the subfolder %s',
             Experiment[SelectedExperiment][len(StartingFolder):])
         logfile.info(80 * '-')
-#~ #~
+
         # Grab the information from the filenames
         Scintillator = Radiographies[SelectedExperiment][0].split('_')[1]
         Sensor = Radiographies[SelectedExperiment][0].split('_')[2]
@@ -231,21 +237,21 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             float(Radiographies[SelectedExperiment][0].split('_')[9][:-6])
         CMOSExposuretime = \
             float(Radiographies[SelectedExperiment][0].split('_')[10][:-6])
-#~ #~
+
         # Inform the user some more and log some more
         print '    * with', NumberOfRadiographies[SelectedExperiment], \
             'images'
         print '    * in the folder', \
             os.path.dirname(os.path.relpath(Experiment[SelectedExperiment],
                             StartingFolder))
-#~ #~
+
         print '    * conducted with the', Scintillator, 'scintillator,'
         print '    *', Sensor, 'CMOS with an exposure time of', \
             CMOSExposuretime, 'ms'
         print '    * source exposure time of', SourceExposuretime, 'ms'
         print '    *', Lens, 'lens for the'
         print '    *', Modality, 'and calculating their mean'
-#~ #~
+
         logfile.info('Scintillator: %s', Scintillator)
         logfile.info('Sensor: %s', Sensor)
         logfile.info('Lens: %s', Lens)
@@ -257,7 +263,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         logfile.info('Source expsure time: %s ms', SourceExposuretime)
         logfile.info('CMOS exposure time: %s ms', CMOSExposuretime)
         logfile.info(80 * '-')
-#~ #~
+
         # Read images and calculate max, mean, STD and dark/img-threshold
         print 'Reading images,',
         Images = [numpy.fromfile(Image, dtype=numpy.uint16).reshape(Size)
@@ -282,7 +288,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print 'and standard deviation'
         ImageSTD = [numpy.std(i) for i in Images]
         Threshold = numpy.min(ImageMax) * 1.618
-#~ #~
+
         # Split images in "real" and dark images
         print 'Selecting dark frames and image frames'
         RealImages = [i for i in Images if i.max() > Threshold]
@@ -322,17 +328,17 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             logfile.info('Using image %s with a max of %s as final image',
                 ImageMean.index(max(ImageMean)) + 1,
                 round(ImageMean[ImageMean.index(max(ImageMean))], 2))
-#~ #~
+
         else:
             SummedImage = numpy.sum(RealImages, axis=0)
             logfile.info('Using %s images for summed final image',
                 len(RealImages))
         logfile.info(80 * '-')
-#~ #~
+
         # Subtract mean dark image from the summed projections, use as
         # corrected image
         CorrectedImage = SummedImage - MeanDarkImage
-#~ #~
+
         # Show images to the user if desired
         logfile.info('Details of the %s images for experiment ID %s',
             NumberOfRadiographies[SelectedExperiment],
@@ -461,4 +467,4 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             plt.close('all')
 
 print
-print 'Done with', StartingFolder
+print 'Analysis of', StartingFolder, 'finished'
