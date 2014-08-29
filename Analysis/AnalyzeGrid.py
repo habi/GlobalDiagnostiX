@@ -18,7 +18,7 @@ import logging
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
-StartingFolder = os.path.join(RootFolder, '20140721')
+#~ StartingFolder = os.path.join(RootFolder, '20140721')
 #~ StartingFolder = os.path.join(RootFolder, '20140722')
 #~ StartingFolder = os.path.join(RootFolder, '20140724')
 #~ StartingFolder = os.path.join(RootFolder, '20140730')
@@ -26,11 +26,15 @@ StartingFolder = os.path.join(RootFolder, '20140721')
 #~ StartingFolder = os.path.join(RootFolder, '20140818')
 #~ StartingFolder = os.path.join(RootFolder, '20140819')
 #~ StartingFolder = os.path.join(RootFolder, '20140820')
+#~ StartingFolder = os.path.join(RootFolder, '20140822')
+#~ StartingFolder = os.path.join(RootFolder, '20140823')
+StartingFolder = os.path.join(RootFolder, '20140825')
 
-# Testing
-StartingFolder = os.path.join(RootFolder, '20140721', 'Pingseng', 'MT9M001',
-    'Computar-11A', 'Foot')
-# Testing
+#~ # Testing
+#~ StartingFolder = os.path.join(RootFolder, '20140724', 'Pingseng', 'MT9M001',
+    #~ 'Lensation-CHR6020', 'Lung')
+#~ # Testing
+#~ StartingFolder = RootFolder
 
 
 def get_git_revision_short_hash():
@@ -218,8 +222,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     Phantom = numpy.empty(shape=((xmax + pad) - (xmin - pad), steps))
     SelectedHeight = numpy.linspace(ymin, ymax, steps)
     SelectedLines = [line for
-        line in [normalize(CroppedImage)[int(round(height)),
-                                         xmin - pad:xmax + pad] for
+        line in [CroppedImage[int(round(height)), xmin - pad:xmax + pad] for
         height in SelectedHeight]]
 
     plt.subplot(322)
