@@ -4,9 +4,9 @@
 """
 Script to delete unused darks of each image.
 For each experiment we acquire something like 30 images, from which only about
-3 to four contain data, the rest of the images are darks.
-We don't have to keep all the darks, one at the beginning, one at the end and
-one in the middle is probably plenty.
+3 to 4 contain data, the rest of the images are darks.
+We don't have to keep all the darks; this script deletes all but one at the
+beginning and the two darks adjacent to the images with signal.
 
 The detection of folders and other things are based on
 DetectWhichImageIsRadiography.py
@@ -30,8 +30,11 @@ RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
 #~ StartingFolder = os.path.join(RootFolder, '20140730')
 #~ StartingFolder = os.path.join(RootFolder, '20140731')
 #~ StartingFolder = os.path.join(RootFolder, '20140818')
-StartingFolder = os.path.join(RootFolder, '20140819')
+#~ StartingFolder = os.path.join(RootFolder, '20140819')
 #~ StartingFolder = os.path.join(RootFolder, '20140820')
+#~ StartingFolder = os.path.join(RootFolder, '20140822')
+#~ StartingFolder = os.path.join(RootFolder, '20140823')
+StartingFolder = os.path.join(RootFolder, '20140825')
 
 #~ # Testing
 #~ StartingFolder = os.path.join(RootFolder, '20140724', 'Pingseng', 'MT9M001',
@@ -98,8 +101,10 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print 'I could not find an archival log file for experiment', \
             ExperimentID[SelectedExperiment]
         print 'I thus set "ReallyRemove" to false'
-        print 'Please archive the data first, then delete'
-        exit()
+        print
+        print 'Please archive the data first with TarToArchive.py, then', \
+            'run this script again'
+        break
     print 80 * '-'
     #~ print str(Counter + 1) + '/' + str(len(AnalyisList)) + \
         #~ ': Deleting darks experiment', ExperimentID[SelectedExperiment]
@@ -112,6 +117,10 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     AnalysisLogFile = os.path.join(
         os.path.dirname(Experiment[SelectedExperiment]),
         ExperimentID[SelectedExperiment] + '.analysis.log')
+    if not os.path.isfile(AnalysisLogFile):
+        print 'The analysis of experiment', \
+            ExperimentID[SelectedExperiment], 'has not been done yet'
+        break
     Keepers = []
     for line in open(AnalysisLogFile, 'r'):
         if len(line.split('-->')) == 2:
@@ -184,5 +193,6 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             'to "True" at the beginnig of the script to really delete the',
             'superfluous files']))
 
-print
-print 'Deletion of unnecessary darks of', StartingFolder, 'finished'
+if ReallyRemove:
+    print
+    print 'Deletion of unnecessary darks of', StartingFolder, 'finished'
