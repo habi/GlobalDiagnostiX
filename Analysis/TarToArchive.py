@@ -32,14 +32,17 @@ ManualSelection = False
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
-StartingFolder = os.path.join(RootFolder, '20140721')
-StartingFolder = os.path.join(RootFolder, '20140722')
-StartingFolder = os.path.join(RootFolder, '20140724')
-StartingFolder = os.path.join(RootFolder, '20140730')
+#~ StartingFolder = os.path.join(RootFolder, '20140721')
+#~ StartingFolder = os.path.join(RootFolder, '20140722')
+#~ StartingFolder = os.path.join(RootFolder, '20140724')
+#~ StartingFolder = os.path.join(RootFolder, '20140730')
 #~ StartingFolder = os.path.join(RootFolder, '20140731')
 #~ StartingFolder = os.path.join(RootFolder, '20140818')
 #~ StartingFolder = os.path.join(RootFolder, '20140819')
 #~ StartingFolder = os.path.join(RootFolder, '20140820')
+#~ StartingFolder = os.path.join(RootFolder, '20140822')
+#~ StartingFolder = os.path.join(RootFolder, '20140823')
+StartingFolder = os.path.join(RootFolder, '20140825')
 
 #~ # Testing
 #~ StartingFolder = os.path.join(RootFolder, '20140724', 'Pingseng', 'MT9M001',
@@ -107,8 +110,6 @@ if ManualSelection:
 else:
     AnalyisList = range(len(Experiment))
 
-
-
 # Go through each selected experiment
 for Counter, SelectedExperiment in enumerate(AnalyisList):
     # Inform the user and start logging
@@ -131,13 +132,16 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     else:
         DoArchive = True
     if not DoArchive:
-        # If we removed some files it doesn't make sense to redo the analysis
-        print '\tWe already deleted files from this experiment, we thus do',\
-            'not archive it again.'
-        print '\tLook at', os.path.join(
-            os.path.dirname(Experiment[SelectedExperiment]),
-            ExperimentID[SelectedExperiment] + '.archive.log'), \
-            'for more info'
+        # If we removed some files it doesn't make sense to archive again
+        print
+        print '\tWe already ran DarkDeleter.py on experiment', \
+            ExperimentID[SelectedExperiment]
+        print '\tWe thus do not archive it again.'
+        print '\tTake a look at', os.path.join(
+            os.path.dirname(Experiment[SelectedExperiment])
+                [len(StartingFolder) + 1:],
+            ExperimentID[SelectedExperiment] + '.archive.log'), 'for more info'
+        print
     else:
         # Archive it!
         logfile = myLogger(os.path.dirname(Experiment[SelectedExperiment]),
@@ -145,11 +149,13 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         logfile.info('Archival log file for Experiment ID %s, archived on %s',
             ExperimentID[SelectedExperiment],
             time.strftime('%d.%m.%Y at %H:%M:%S'))
-        logfile.info('\nMade with "%s" at Revision %s', os.path.basename(__file__),
+        logfile.info('\nMade with "%s" at Revision %s',
+            os.path.basename(__file__),
             get_git_revision_short_hash())
         logfile.info(80 * '-')
         # Tar the selected folder
-        TarCommand = ['tar', '-czf', Experiment[SelectedExperiment] + '.tar.gz',
+        TarCommand = ['tar', '-czf',
+            Experiment[SelectedExperiment] + '.tar.gz',
             '-C', os.path.dirname(Experiment[SelectedExperiment]),
             os.path.basename(Experiment[SelectedExperiment])]
         print 'Packing', ExperimentID[SelectedExperiment]
