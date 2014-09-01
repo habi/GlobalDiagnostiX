@@ -14,7 +14,6 @@ from matplotlib.patches import Rectangle
 import time
 import logging
 
-
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
@@ -28,13 +27,21 @@ RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
 #~ StartingFolder = os.path.join(RootFolder, '20140820')
 #~ StartingFolder = os.path.join(RootFolder, '20140822')
 #~ StartingFolder = os.path.join(RootFolder, '20140823')
-StartingFolder = os.path.join(RootFolder, '20140825')
+#~ StartingFolder = os.path.join(RootFolder, '20140825')
+#~ StartingFolder = os.path.join(RootFolder, '20140829')
 
+# Testing
+StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
+    'TIS-TBL-6C-3MP')
 #~ # Testing
-#~ StartingFolder = os.path.join(RootFolder, '20140724', 'Pingseng', 'MT9M001',
-    #~ 'Lensation-CHR6020', 'Lung')
-#~ # Testing
+# Testing
 #~ StartingFolder = RootFolder
+
+# Setup
+# Draw lines in final plot $pad pixels longer than the selection (left & right)
+pad = 25
+# Draw $steps lines in the final selected ROI
+steps = 6
 
 
 def get_git_revision_short_hash():
@@ -110,28 +117,29 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
 
     plt.ion()
 
-    plt.figure(ExperimentID[SelectedExperiment], figsize=[16, 9])
-    # Show Images
+    # Show original images with histograms
+    plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)), '|',
+        ExperimentID[SelectedExperiment], '| Originals and Histograms']),
+        figsize=[16, 9])
     plt.subplot(221)
     plt.imshow(OriginalImage, cmap='bone', interpolation='nearest')
-    plt.title('Original')
+    plt.title(ExperimentID[SelectedExperiment] + '.image.corrected.png')
     plt.subplot(222)
     plt.imshow(StretchedImage, cmap='bone', interpolation='nearest')
-    plt.title('Contrast stretched')
+    plt.title(ExperimentID[SelectedExperiment] +
+        '.image.corrected.stretched.png')
     # Histograms
+    bins = 256
     plt.subplot(223)
-    plt.hist(OriginalImage.flatten(), 64)
+    plt.hist(OriginalImage.flatten(), bins, fc='k', ec='k')
     plt.subplot(224)
-    plt.hist(StretchedImage.flatten(), 64)
-    #~ plt.xlim([0, 256])
+    plt.hist(StretchedImage.flatten(), bins, fc='k', ec='k')
     plt.tight_layout()
 
-    plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)),
-        'Selection']), figsize=[23, 9])
-    plt.subplot(121)
+    # Let the user select the ROI of the resolution phantom on the contrast
+    # stretched image
+    plt.subplot(222)
     plt.imshow(StretchedImage, cmap='bone', interpolation='nearest')
-
-    # Let the user select the ROI of the resolution phantom
     done = False
     while not done:
         pts = []
@@ -147,7 +155,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         ymin = int(round(min(pts[:, 1])))
         ymax = int(round(max(pts[:, 1])))
         currentAxis = plt.gca()
-        rectangle = currentAxis.add_patch(Rectangle((xmin, ymin), xmax - xmin,
+        BigROI = currentAxis.add_patch(Rectangle((xmin, ymin), xmax - xmin,
                                                     ymax - ymin,
                                                     facecolor='red',
                                                     edgecolor='black',
@@ -157,26 +165,33 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         # Redraw image if necessary
         if not done:
             plt.cla()
-            plt.subplot(121)
+            plt.subplot(222)
             plt.imshow(StretchedImage, cmap='bone', interpolation='nearest')
     # Give plot a nice title
-    ROISize = [xmax - xmin, ymax - ymin]
-    tellme(' '.join(['Selected ROI with a size of', str(ROISize[1]), 'x',
-        str(ROISize[0]), 'px']))
+    BigROISize = [xmax - xmin, ymax - ymin]
+    tellme(' '.join(['Selected ROI with a size of', str(BigROISize[1]), 'x',
+        str(BigROISize[0]), 'px']))
     logfile.info('Resolution-Phantom x-ROI: %s-%s (%s px)', xmin, xmax,
         xmax - xmin)
     logfile.info('Resolution-Phantom y-ROI: %s-%s (%s px)', ymin, ymax,
         ymax - ymin)
-    # Show selected ROI
-    plt.subplot(322)
-    CroppedImage = StretchedImage[ymin:ymax, xmin:xmax]
-    plt.imshow(CroppedImage, cmap='bone', interpolation='none')
-    tellme(' '.join(['ROI:', str(xmax - xmin), 'x', str(ymax - ymin), 'px']))
+    # Show selected ROI and select sub-ROI to plot the line profiles
+    plt.subplot(221)
+    plt.title(' '.join([ExperimentID[SelectedExperiment] +
+        '.image.corrected.png with', str(BigROISize[1]), 'x',
+        str(BigROISize[0]), 'px ROI']))
+    currentAxis = plt.gca()
+    BigROI = currentAxis.add_patch(Rectangle((xmin, ymin), xmax - xmin,
+                                                    ymax - ymin,
+                                                    facecolor='red',
+                                                    edgecolor='black',
+                                                    alpha=0.25))
+    plt.subplot(222)
+    CroppedImage = OriginalImage[ymin:ymax, xmin:xmax]
+    CroppedImageStretched = StretchedImage[ymin:ymax, xmin:xmax]
+    plt.imshow(CroppedImageStretched, cmap='bone', interpolation='none')
     plt.tight_layout()
-    # Select ROI of resolution phantom. Afterwards we draw $steps horizontal
-    # lines in a region $pad px bigger than the selected ROI
-    pad = 25
-    steps = 5
+    # Select ROI of resolution phantom.
     done = False
     while not done:
         pts = []
@@ -187,15 +202,15 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
                 tellme('Too few points, starting over')
                 time.sleep(1)  # Wait a second
         # Get region of interest from user input and draw it
-        xmin = int(round(min(pts[:, 0])))
-        xmax = int(round(max(pts[:, 0])))
-        ymin = int(round(min(pts[:, 1])))
-        ymax = int(round(max(pts[:, 1])))
+        xxmin = int(round(min(pts[:, 0])))
+        xxmax = int(round(max(pts[:, 0])))
+        yymin = int(round(min(pts[:, 1])))
+        yymax = int(round(max(pts[:, 1])))
         currentAxis = plt.gca()
-        rectangle = currentAxis.add_patch(Rectangle((xmin - pad, ymin),
-                                                    xmax - xmin + pad + pad,
-                                                    ymax - ymin,
-                                                    facecolor='red',
+        LineROI = currentAxis.add_patch(Rectangle((xxmin - pad, yymin),
+                                                    xxmax - xxmin + pad + pad,
+                                                    yymax - yymin,
+                                                    facecolor='green',
                                                     edgecolor='black',
                                                     alpha=0.25))
         tellme('Done? Press any key for yes, click with mouse for no')
@@ -203,48 +218,92 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         # Redraw image if necessary
         if not done:
             plt.cla()
-            plt.subplot(322)
-            plt.imshow(CroppedImage, cmap='bone', interpolation='none')
+            plt.subplot(222)
+            plt.imshow(CroppedImageStretched, cmap='bone',
+                interpolation='none')
     # Give plot a nice title
-    ROISize = [xmax - xmin + pad + pad, ymax - ymin]
-    tellme(' '.join(['Selected ROI with a size of', str(ROISize[1]), 'x',
-        str(ROISize[0]), 'px and location of lines from plot below']))
+    LineROISize = [xxmax - xxmin + pad + pad, yymax - yymin]
+    tellme(' '.join(['Selected ROI with a size of', str(LineROISize[1]), 'x',
+        str(LineROISize[0]), 'px']))
+    logfile.info(80 * '-')
     logfile.info('Selected region in Resolution-Phantom x-ROI: %s-%s (%s px)',
-        xmin, xmax, xmax - xmin)
+        xxmin, xxmax, xxmax - xxmin)
     logfile.info('Selected region in Resolution-Phantom y-ROI: %s-%s (%s px)',
-        ymin, ymax, ymax - ymin)
+        yymin, yymax, yymax - yymin)
     logfile.info(80 * '-')
 
-    # draw $steps horizontal lines $pad px around the selected one
+    # Final plot
+    plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)), '|',
+        ExperimentID[SelectedExperiment], '| Result']), figsize=[16, 9])
+    ## Original image
+    plt.subplot(331)
+    plt.imshow(OriginalImage, cmap='bone', interpolation='nearest')
+    plt.title(' '.join([ExperimentID[SelectedExperiment] +
+        '.image.corrected.png']))
+    # Stretched image with both ROIs
+    plt.subplot(332)
+    plt.imshow(StretchedImage, cmap='bone', interpolation='nearest')
+    plt.title(' '.join([ExperimentID[SelectedExperiment] +
+        '.image.corrected.stretched.png\nSelected ROIs',
+        str(BigROISize[1]), 'x', str(BigROISize[0]), 'px (red) and',
+        str(LineROISize[1]), 'x', str(LineROISize[0]), 'px (green).']))
+    currentAxis = plt.gca()
+    BigROI = currentAxis.add_patch(Rectangle((xmin, ymin), xmax - xmin,
+                                                    ymax - ymin,
+                                                    facecolor='red',
+                                                    edgecolor='black',
+                                                    alpha=0.5))
+    LineROI = currentAxis.add_patch(Rectangle((xmin + xxmin - pad,
+                                               ymin + yymin),
+                                               xxmax - xxmin + pad + pad,
+                                               yymax - yymin,
+                                               facecolor='green',
+                                               edgecolor='black', alpha=0.5))
+    # ROI and LineROI
+    plt.subplot(333)
+    plt.imshow(CroppedImageStretched, cmap='bone', interpolation='none')
+    currentAxis = plt.gca()
+    LineROI = currentAxis.add_patch(Rectangle((xxmin - pad, yymin),
+                                                xxmax - xxmin + pad + pad,
+                                                yymax - yymin,
+                                                facecolor='green',
+                                                edgecolor='black',
+                                                alpha=0.5))
+    tellme(' '.join([str(BigROISize[1]), 'x', str(BigROISize[0]),
+        'px ROI\nLocation of lines from plots below']))
+    # Draw $steps horizontal lines in the LineROI
     # IWantHue, dark background, 10 colors, hard
     clr = ["#6B9519", "#9B46C3", "#281B32", "#F29C2F", "#F0418C", "#8DF239",
         "#EBF493", "#4680F0", "#402305", "#9F9BFD"]
-    Phantom = numpy.empty(shape=((xmax + pad) - (xmin - pad), steps))
-    SelectedHeight = numpy.linspace(ymin, ymax, steps)
-    SelectedLines = [line for
-        line in [CroppedImage[int(round(height)), xmin - pad:xmax + pad] for
-        height in SelectedHeight]]
-
-    plt.subplot(322)
+    SelectedHeight = numpy.linspace(yymin, yymax, steps)
+    SelectedLines = [line for line in
+        [CroppedImage[int(round(height)), xxmin - pad:xxmax + pad] for height
+        in SelectedHeight]]
+    SelectedLinesStretched = [line for line in
+        [CroppedImageStretched[int(round(height)), xxmin - pad:xxmax + pad]
+        for height in SelectedHeight]]
     for c, height in enumerate(SelectedHeight):
-        plt.axhline(height, linewidth=4, alpha=0.5, color=clr[c])
-    plt.subplot(324)
+        plt.axhline(height, linewidth=2, alpha=1, color=clr[c])
+    # Plot values
+    plt.subplot(312)
     for c, line in enumerate(SelectedLines):
         plt.plot(line, alpha=0.5, color=clr[c])
     plt.plot(numpy.mean(SelectedLines, axis=0), 'k', linewidth='2',
         label=' '.join(['mean of', str(steps), 'shown lines']))
-    plt.xlim([0, xmax + pad - xmin - pad])
-    plt.ylim([0, 256])
+    plt.xlim([0, LineROISize[0]])
+    plt.ylim([0, 1])
     plt.legend(loc='best')
-    plt.title('Brightness in the red ROI shown above')
-    plt.subplot(326)
-    for c, line in enumerate(SelectedLines):
+    plt.title(' '.join(['Brightness in the green', str(LineROISize[1]), 'x',
+        str(LineROISize[0]),
+        'px ROI.\nTop: original image, bottom: contrast stretched image']))
+    plt.subplot(313)
+    for c, line in enumerate(SelectedLinesStretched):
         plt.plot(line, alpha=0.5, color=clr[c])
-    plt.plot(numpy.mean(SelectedLines, axis=0), 'k', linewidth='2',
+    plt.plot(numpy.mean(SelectedLinesStretched, axis=0), 'k', linewidth='2',
         label=' '.join(['mean of', str(steps), 'shown lines']))
-    plt.xlim([0, xmax + pad - xmin - pad])
+    plt.xlim([0, LineROISize[0]])
+    plt.ylim([0, 1])
     plt.legend(loc='best')
-    plt.title('Brightness in the red ROI shown above, scaled')
     plt.tight_layout()
     logfile.info('Mean brightness along %s equally spaced lines in ROI', steps)
     for i in numpy.mean(SelectedLines, axis=0):
@@ -260,5 +319,5 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     print 'Figure saved as', SaveName
     print 80 * '-'
 
-    time.sleep(1)
+    time.sleep(3)
     plt.close('all')
