@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 """
@@ -43,15 +42,15 @@ RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
 #~ StartingFolder = os.path.join(RootFolder, '20140822')
 #~ StartingFolder = os.path.join(RootFolder, '20140823')
 #~ StartingFolder = os.path.join(RootFolder, '20140825')
-StartingFolder = os.path.join(RootFolder, '20140829')
+#~ StartingFolder = os.path.join(RootFolder, '20140829')
 #~ StartingFolder = os.path.join(RootFolder, '20140831')
+StartingFolder = os.path.join(RootFolder, '20140901')
 
-#~ # Testing
-#~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
-    #~ 'TIS-TBL-6C-3MP')
-#~ # Testing
+# Testing
+StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
+    'Lensation-CHR6020')
+# Testing
 #~ StartingFolder = RootFolder
-
 
 def AskUser(Blurb, Choices):
     """ Ask for input. Based on function in MasterThesisIvan.ini """
