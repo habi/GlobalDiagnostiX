@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import time
 import logging
+import linecache
+import random
 
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
@@ -23,18 +25,19 @@ RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
 #~ StartingFolder = os.path.join(RootFolder, '20140730')
 #~ StartingFolder = os.path.join(RootFolder, '20140731')
 #~ StartingFolder = os.path.join(RootFolder, '20140818')
-#~ StartingFolder = os.path.join(RootFolder, '20140819')
-#~ StartingFolder = os.path.join(RootFolder, '20140820')
-#~ StartingFolder = os.path.join(RootFolder, '20140822')
-#~ StartingFolder = os.path.join(RootFolder, '20140823')
+StartingFolder = os.path.join(RootFolder, '20140819')
+StartingFolder = os.path.join(RootFolder, '20140820')
+StartingFolder = os.path.join(RootFolder, '20140822')
+StartingFolder = os.path.join(RootFolder, '20140823')
 #~ StartingFolder = os.path.join(RootFolder, '20140825')
 #~ StartingFolder = os.path.join(RootFolder, '20140829')
 #~ StartingFolder = os.path.join(RootFolder, '20140831')
-StartingFolder = os.path.join(RootFolder, '20140901')
+#~ StartingFolder = os.path.join(RootFolder, '20140901')
+
 
 # Testing
-StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
-    'Lensation-CHR6020')
+#~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
+    #~ 'Lensation-CHR6020')
 # Testing
 #~ StartingFolder = RootFolder
 
@@ -73,26 +76,46 @@ def myLogger(Folder, LogFileName):
     logger.addHandler(handler)
     return logger
 
-# Look for all folders matching the naming convention
-Experiment = []
-ExperimentID = []
-for root, dirs, files in os.walk(StartingFolder):
-    #~ print 'Looking for experiment IDs in folder', os.path.basename(root)
-    if len(os.path.basename(root)) == 7 and \
-        not 'Toshiba' in os.path.basename(root) and \
-        not 'MT9' in os.path.basename(root) and \
-        not 'AR0' in os.path.basename(root):
-        Experiment.append(root)
-        ExperimentID.append(os.path.basename(root))
+# Generate a list of log files, based on http://stackoverflow.com/a/14798263
+LogFiles = [os.path.join(dirpath, f)
+    for dirpath, dirnames, files in os.walk(StartingFolder)
+    for f in files if f.endswith('analysis.log')]
 
-print 'I found', len(Experiment), 'experiment IDs in', StartingFolder
-print 80 * '-'
+print 'I found', len(LogFiles), 'log files in', StartingFolder
 
-AnalyisList = range(len(Experiment))
+# Shuffle the logfiles, to make clicking less boring...
+random.shuffle(LogFiles)
 
-# Go through each selected experiment
-for Counter, SelectedExperiment in enumerate(AnalyisList):
-    print str(Counter + 1) + '/' + str(len(Experiment))
+# Grab all the necessary parameters from the log files
+ExperimentID = \
+    [linecache.getline(i, 1).split('ID')[1].split(',')[0].strip() for i in
+    LogFiles]
+Sensor = [linecache.getline(i, 10).split(':')[1].strip() for i in LogFiles]
+Scintillator = [linecache.getline(i, 9).split(':')[1].strip()
+    for i in LogFiles]
+Lens = [str(linecache.getline(i, 11).split(':')[1].strip()) for i in LogFiles]
+SSD = [float(linecache.getline(i, 13).split(':')[1].split('mm')[0].strip())
+    for i in LogFiles]
+Modality = [linecache.getline(i, 14).split(':')[1].strip()
+    for i in LogFiles]
+Exposuretime = [float(linecache.getline(i, 18)
+    .split(':')[1].split('ms')[0].strip()) for i in LogFiles]
+Max = [float(linecache.getline(i, 25).split(':')[1].strip())
+    for i in LogFiles]
+Mean = [float(linecache.getline(i, 26).split(':')[1].strip())
+    for i in LogFiles]
+STD = [float(linecache.getline(i, 27).split(':')[1].strip())
+    for i in LogFiles]
+
+# Generate folder names
+Experiment = [item[:-len('.analysis.log')] for item in LogFiles]
+
+# Go through each selected experiment (in the shuffled list)
+for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
+    print str(Counter + 1) + '/' + str(len(Experiment)), '|', \
+        ExperimentID[SelectedExperiment], '|', \
+        Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment], \
+        '|', Lens[SelectedExperiment]
     logfile = myLogger(os.path.dirname(Experiment[SelectedExperiment]),
         ExperimentID[SelectedExperiment] + '.resolution.log')
     logfile.info(
@@ -120,7 +143,9 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
 
     # Show original images with histograms
     plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)), '|',
-        ExperimentID[SelectedExperiment], '| Originals and Histograms']),
+        ExperimentID[SelectedExperiment], '|',
+        Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment], '|',
+        Lens[SelectedExperiment], '| Originals and Histograms']),
         figsize=[16, 9])
     plt.subplot(221)
     plt.imshow(OriginalImage, cmap='bone', interpolation='nearest')
@@ -235,19 +260,20 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
 
     # Final plot
     plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)), '|',
-        ExperimentID[SelectedExperiment], '| Result']), figsize=[16, 9])
+        ExperimentID[SelectedExperiment], '|',
+        Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment], '|',
+        Lens[SelectedExperiment], '| Result']), figsize=[16, 9])
     ## Original image
     plt.subplot(331)
     plt.imshow(OriginalImage, cmap='bone', interpolation='nearest')
-    plt.title(' '.join([ExperimentID[SelectedExperiment] +
-        '.image.corrected.png']))
+    plt.title(' '.join([Scintillator[SelectedExperiment], '|',
+        Sensor[SelectedExperiment], '|', Lens[SelectedExperiment]]))
     # Stretched image with both ROIs
     plt.subplot(332)
     plt.imshow(StretchedImage, cmap='bone', interpolation='nearest')
-    plt.title(' '.join([ExperimentID[SelectedExperiment] +
-        '.image.corrected.stretched.png\nSelected ROIs',
-        str(BigROISize[1]), 'x', str(BigROISize[0]), 'px (red) and',
-        str(LineROISize[1]), 'x', str(LineROISize[0]), 'px (green).']))
+    plt.title(' '.join(['Selected ROIs', str(BigROISize[1]), 'x',
+        str(BigROISize[0]), 'px (red) and', str(LineROISize[1]), 'x',
+        str(LineROISize[0]), 'px (green).']))
     currentAxis = plt.gca()
     BigROI = currentAxis.add_patch(Rectangle((xmin, ymin), xmax - xmin,
                                                     ymax - ymin,
@@ -320,5 +346,5 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     print 'Figure saved as', SaveName
     print 80 * '-'
 
-    time.sleep(3)
+    #~ time.sleep(1)
     plt.close('all')
