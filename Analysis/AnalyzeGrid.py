@@ -12,6 +12,7 @@ import sys
 import numpy
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
+from matplotlib.gridspec import GridSpec
 import time
 import logging
 import linecache
@@ -300,20 +301,24 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     logfile.info(80 * '-')
 
     # Final plot
-    plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)), '|',
-        ExperimentID[SelectedExperiment], '|',
+    fig = plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)),
+        '|', ExperimentID[SelectedExperiment], '|',
         Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment], '|',
         Lens[SelectedExperiment], '| Result']), figsize=[16, 9])
-    ## Original image
-    plt.subplot(331)
-    plt.imshow(OriginalImage, cmap='bone', interpolation='nearest')
-    plt.title(' '.join([Scintillator[SelectedExperiment], '|',
+    plt.suptitle(' '.join([Scintillator[SelectedExperiment], '|',
         Sensor[SelectedExperiment], '|', Lens[SelectedExperiment]]))
-    # Stretched image with both ROIs
-    plt.subplot(332)
+    # Use gridspec for easier positioning
+    gs1 = GridSpec(3, 3)
+    gs1.update(left=0.05, right=0.95, hspace=-0.2)
+    # Show original image on top left
+    plt.subplot(gs1[0, 0])
+    plt.imshow(OriginalImage, cmap='bone', interpolation='nearest')
+    plt.title('Original Image')
+    # Stretched image with both ROIs in top middle
+    plt.subplot(gs1[0, 1])
     plt.imshow(StretchedImage, cmap='bone', interpolation='nearest')
-    plt.title(' '.join(['Selected ROIs', str(BigROISize[1]), 'x',
-        str(BigROISize[0]), 'px (red) and', str(LineROISize[1]), 'x',
+    plt.title(' '.join(['Contrast stretched Image\nROIs', str(BigROISize[1]),
+        'x', str(BigROISize[0]), 'px (red),', str(LineROISize[1]), 'x',
         str(LineROISize[0]), 'px (green).']))
     currentAxis = plt.gca()
     BigROI = currentAxis.add_patch(Rectangle((xmin, ymin), xmax - xmin,
@@ -327,8 +332,8 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
                                                yymax - yymin,
                                                facecolor='green',
                                                edgecolor='black', alpha=0.5))
-    # ROI and LineROI
-    plt.subplot(333)
+    # ROI and LineROI on top right
+    plt.subplot(gs1[0, 2])
     plt.imshow(CroppedImageStretched, cmap='bone', interpolation='none')
     currentAxis = plt.gca()
     LineROI = currentAxis.add_patch(Rectangle((xxmin - pad, yymin),
@@ -337,8 +342,6 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
                                                 facecolor='green',
                                                 edgecolor='black',
                                                 alpha=0.5))
-    tellme(' '.join([str(BigROISize[1]), 'x', str(BigROISize[0]),
-        'px ROI\nLocation of lines from plots below']))
     # Draw $steps horizontal lines in the LineROI
     # IWantHue, dark background, 10 colors, hard
     clr = ["#6B9519", "#9B46C3", "#281B32", "#F29C2F", "#F0418C", "#8DF239",
@@ -351,21 +354,26 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         [CroppedImageStretched[int(round(height)), xxmin - pad:xxmax + pad]
         for height in SelectedHeight]]
     for c, height in enumerate(SelectedHeight):
-        plt.axhline(height, linewidth=2, alpha=0.618, color=clr[c])
-    # Plot values
-    plt.subplot(312)
+        plt.axhline(y = height, linewidth=2, alpha=0.618, color=clr[c])
+    tellme(' '.join([str(BigROISize[1]), 'x', str(BigROISize[0]),
+        'px ROI\nLocation of lines from plots below']))
+
+    # Plot values for original image in the middle
+    gs2 = GridSpec(4, 1)
+    gs2.update(left=0.04, right=0.96, hspace=0)
+    plotoriginal = plt.subplot(gs2[2, :])
     for c, line in enumerate(SelectedLines):
         plt.plot(line, linewidth=2, alpha=0.618, color=clr[c])
     plt.plot(numpy.mean(SelectedLines, axis=0), 'k', linewidth='2',
-        label=' '.join(['mean of', str(steps), 'shown lines']))
-    print LineROISize
+        label=' '.join(['mean of    ', str(steps), 'shown lines']))
     plt.xlim([0, LineROISize[0]])
     plt.ylim([0, 1])
     plt.legend(loc='best')
     plt.title(' '.join(['Brightness in the green', str(LineROISize[1]), 'x',
         str(LineROISize[0]),
-        'px ROI.\nTop: original image, bottom: contrast stretched image']))
-    plt.subplot(313)
+        'px ROI. Top: original image, bottom: contrast stretched image']))
+    # Plot values for contrast streched image at the bottom
+    plotmean = plt.subplot(gs2[-1, :], sharex = plotoriginal)
     for c, line in enumerate(SelectedLinesStretched):
         plt.plot(line, linewidth=2, alpha=0.618, color=clr[c])
     plt.plot(numpy.mean(SelectedLinesStretched, axis=0), 'k', linewidth='2',
@@ -373,8 +381,8 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     plt.xlim([0, LineROISize[0]])
     plt.ylim([0, 1])
     plt.legend(loc='best')
-    if 'linux' in sys.platform:
-        plt.tight_layout()
+
+    # Write mean plot values to log file
     logfile.info('Mean brightness along %s equally spaced lines in ROI', steps)
     for i in numpy.mean(SelectedLines, axis=0):
         logfile.info(i)
