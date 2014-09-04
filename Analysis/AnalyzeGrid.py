@@ -8,6 +8,7 @@ Region selection code based on http://is.gd/GoCP5g
 
 from __future__ import division
 import os
+import sys
 import numpy
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
@@ -19,21 +20,22 @@ import random
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
-#~ StartingFolder = os.path.join(RootFolder, '20140721')
-#~ StartingFolder = os.path.join(RootFolder, '20140722')
-#~ StartingFolder = os.path.join(RootFolder, '20140724')
-#~ StartingFolder = os.path.join(RootFolder, '20140730')
-#~ StartingFolder = os.path.join(RootFolder, '20140731')
-#~ StartingFolder = os.path.join(RootFolder, '20140818')
-StartingFolder = os.path.join(RootFolder, '20140819')
-StartingFolder = os.path.join(RootFolder, '20140820')
-StartingFolder = os.path.join(RootFolder, '20140822')
-StartingFolder = os.path.join(RootFolder, '20140823')
-#~ StartingFolder = os.path.join(RootFolder, '20140825')
-#~ StartingFolder = os.path.join(RootFolder, '20140829')
-#~ StartingFolder = os.path.join(RootFolder, '20140831')
-#~ StartingFolder = os.path.join(RootFolder, '20140901')
-
+# RootFolder = ('//Volumes/MobileBackups/Backups.backupdb')
+StartingFolder = os.path.join(RootFolder, '20140721')  # 11
+StartingFolder = os.path.join(RootFolder, '20140722')  # 44
+StartingFolder = os.path.join(RootFolder, '20140724')  # 91
+StartingFolder = os.path.join(RootFolder, '20140730')  # 30
+StartingFolder = os.path.join(RootFolder, '20140731')  # 262
+StartingFolder = os.path.join(RootFolder, '20140818')  # 20
+StartingFolder = os.path.join(RootFolder, '20140819')  # 64
+StartingFolder = os.path.join(RootFolder, '20140820')  # 64
+StartingFolder = os.path.join(RootFolder, '20140822')  # 149
+StartingFolder = os.path.join(RootFolder, '20140823')  # 6
+StartingFolder = os.path.join(RootFolder, '20140825')  # 99
+StartingFolder = os.path.join(RootFolder, '20140829')  # 4
+#~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
+#~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
+StartingFolder = os.path.join(RootFolder, '20140903')  # 30
 
 # Testing
 #~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
@@ -112,10 +114,49 @@ Experiment = [item[:-len('.analysis.log')] for item in LogFiles]
 
 # Go through each selected experiment (in the shuffled list)
 for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
+    plt.ion()
     print str(Counter + 1) + '/' + str(len(Experiment)), '|', \
         ExperimentID[SelectedExperiment], '|', \
         Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment], \
         '|', Lens[SelectedExperiment]
+    # See if we've already ran the resolution evaluation, i.e. have a
+    # 'ExperimentID.resolution.png' file. If we have, show it and let the user
+    # decide to rerun, otherwise skip to next
+    # Load image
+    ResolutionFileName = os.path.join(
+        os.path.dirname(Experiment[SelectedExperiment]),
+        ExperimentID[SelectedExperiment] + '.resolution.png')
+    if os.path.isfile(ResolutionFileName):
+        plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)),
+            '|', ExperimentID[SelectedExperiment], '|',
+            Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment],
+            '|', Lens[SelectedExperiment], '| Resolution evaluation']),
+            figsize=[16, 9])
+        ResolutionFigure = plt.imread(ResolutionFileName)
+        plt.imshow(ResolutionFigure)
+        currentAxis = plt.gca()
+        overlayalpha = 0.125
+        ok = currentAxis.add_patch(Rectangle((0, 0),
+                                   ResolutionFigure.shape[1] / 2,
+                                   ResolutionFigure.shape[0],
+                                   facecolor='green', alpha=overlayalpha))
+        nok = currentAxis.add_patch(Rectangle((ResolutionFigure.shape[1] / 2,
+                                    0), ResolutionFigure.shape[1] /2,
+                                    ResolutionFigure.shape[0],
+                                    facecolor='red', alpha=overlayalpha))
+        if 'linux' in sys.platform:
+            plt.tight_layout()
+        tellme(' '.join(['click left (green) if you are happy, click right',
+            '(red) if you want to redo the evaluation']))
+        # If the user clicks in the red, we redo the analysis, if in the green
+        # we 'continue' without doing anything
+        if plt.ginput(1, timeout=-1)[0][0] < ResolutionFigure.shape[1]/2:
+            print 'We leave',  ExperimentID[SelectedExperiment], 'be'
+            plt.close('all')
+            continue
+        else:
+            print 'We redo the evaluation of experiment', \
+                ExperimentID[SelectedExperiment]
     logfile = myLogger(os.path.dirname(Experiment[SelectedExperiment]),
         ExperimentID[SelectedExperiment] + '.resolution.log')
     logfile.info(
@@ -139,8 +180,6 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         ExperimentID[SelectedExperiment] + '.image.corrected.stretched.png'))
     logfile.info(80 * '-')
 
-    plt.ion()
-
     # Show original images with histograms
     plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)), '|',
         ExperimentID[SelectedExperiment], '|',
@@ -160,7 +199,8 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     plt.hist(OriginalImage.flatten(), bins, fc='k', ec='k')
     plt.subplot(224)
     plt.hist(StretchedImage.flatten(), bins, fc='k', ec='k')
-    plt.tight_layout()
+    if 'linux' in sys.platform:
+        plt.tight_layout()
 
     # Let the user select the ROI of the resolution phantom on the contrast
     # stretched image
@@ -216,7 +256,8 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     CroppedImage = OriginalImage[ymin:ymax, xmin:xmax]
     CroppedImageStretched = StretchedImage[ymin:ymax, xmin:xmax]
     plt.imshow(CroppedImageStretched, cmap='bone', interpolation='none')
-    plt.tight_layout()
+    if 'linux' in sys.platform:
+        plt.tight_layout()
     # Select ROI of resolution phantom.
     done = False
     while not done:
@@ -310,13 +351,14 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         [CroppedImageStretched[int(round(height)), xxmin - pad:xxmax + pad]
         for height in SelectedHeight]]
     for c, height in enumerate(SelectedHeight):
-        plt.axhline(height, linewidth=2, alpha=1, color=clr[c])
+        plt.axhline(height, linewidth=2, alpha=0.618, color=clr[c])
     # Plot values
     plt.subplot(312)
     for c, line in enumerate(SelectedLines):
-        plt.plot(line, alpha=0.5, color=clr[c])
+        plt.plot(line, linewidth=2, alpha=0.618, color=clr[c])
     plt.plot(numpy.mean(SelectedLines, axis=0), 'k', linewidth='2',
         label=' '.join(['mean of', str(steps), 'shown lines']))
+    print LineROISize
     plt.xlim([0, LineROISize[0]])
     plt.ylim([0, 1])
     plt.legend(loc='best')
@@ -325,13 +367,14 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         'px ROI.\nTop: original image, bottom: contrast stretched image']))
     plt.subplot(313)
     for c, line in enumerate(SelectedLinesStretched):
-        plt.plot(line, alpha=0.5, color=clr[c])
+        plt.plot(line, linewidth=2, alpha=0.618, color=clr[c])
     plt.plot(numpy.mean(SelectedLinesStretched, axis=0), 'k', linewidth='2',
         label=' '.join(['mean of', str(steps), 'shown lines']))
     plt.xlim([0, LineROISize[0]])
     plt.ylim([0, 1])
     plt.legend(loc='best')
-    plt.tight_layout()
+    if 'linux' in sys.platform:
+        plt.tight_layout()
     logfile.info('Mean brightness along %s equally spaced lines in ROI', steps)
     for i in numpy.mean(SelectedLines, axis=0):
         logfile.info(i)
@@ -342,9 +385,10 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
 
     plt.draw()
     plt.ioff()
+
     plt.savefig(SaveName)
     print 'Figure saved as', SaveName
     print 80 * '-'
 
-    #~ time.sleep(1)
+    time.sleep(2)
     plt.close('all')
