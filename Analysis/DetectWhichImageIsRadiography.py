@@ -42,11 +42,12 @@ RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
 #~ StartingFolder = os.path.join(RootFolder, '20140825')
 #~ StartingFolder = os.path.join(RootFolder, '20140829')
 #~ StartingFolder = os.path.join(RootFolder, '20140831')
-StartingFolder = os.path.join(RootFolder, '20140901')
+#~ StartingFolder = os.path.join(RootFolder, '20140901')
+StartingFolder = os.path.join(RootFolder, '20140903')
 
 # Testing
-StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
-    'Lensation-CHR6020')
+#~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
+    #~ 'Lensation-CHR6020')
 # Testing
 #~ StartingFolder = RootFolder
 
