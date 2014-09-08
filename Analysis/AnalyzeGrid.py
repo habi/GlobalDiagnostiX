@@ -17,11 +17,17 @@ import time
 import logging
 import linecache
 import random
+from functions import myLogger
+from functions import get_git_hash
 
 # Where shall we start?
-RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
+if 'linux' in sys.platform:
+    # If running at the office, look on AFS
+    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
-# RootFolder = ('//Volumes/MobileBackups/Backups.backupdb')
+else:
+    # If running on Ivans machine, look on the connected harddisk
+    RootFolder = ('Volumes/WINDOWS')
 StartingFolder = os.path.join(RootFolder, '20140721')  # 11
 StartingFolder = os.path.join(RootFolder, '20140722')  # 44
 StartingFolder = os.path.join(RootFolder, '20140724')  # 91
@@ -37,6 +43,7 @@ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
 #~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
 #~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
 StartingFolder = os.path.join(RootFolder, '20140903')  # 30
+StartingFolder = os.path.join(RootFolder, '20140907')  # 30
 
 # Testing
 #~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
@@ -51,33 +58,11 @@ pad = 25
 steps = 6
 
 
-def get_git_revision_short_hash():
-    import subprocess
-    hashit = subprocess.Popen(['git', 'rev-parse', '--short', 'HEAD'],
-        stdout=subprocess.PIPE)
-    output, error = hashit.communicate()
-    return output
-
-
 def tellme(blurb):
     print(blurb)
     plt.title(blurb)
     plt.draw()
 
-
-def myLogger(Folder, LogFileName):
-    """
-    Since logging in a loop does always write to the first instaniated file,
-    we make a little wrapper around the logger function to have one log file
-    per experient ID. Based on http://stackoverflow.com/a/2754216/323100
-    """
-    logger = logging.getLogger(LogFileName)
-    # either set INFO or DEBUG
-    #~ logger.setLevel(logging.DEBUG)
-    logger.setLevel(logging.INFO)
-    handler = logging.FileHandler(os.path.join(Folder, LogFileName), 'w')
-    logger.addHandler(handler)
-    return logger
 
 # Generate a list of log files, based on http://stackoverflow.com/a/14798263
 LogFiles = [os.path.join(dirpath, f)
@@ -142,7 +127,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
                                    ResolutionFigure.shape[0],
                                    facecolor='green', alpha=overlayalpha))
         nok = currentAxis.add_patch(Rectangle((ResolutionFigure.shape[1] / 2,
-                                    0), ResolutionFigure.shape[1] /2,
+                                    0), ResolutionFigure.shape[1] / 2,
                                     ResolutionFigure.shape[0],
                                     facecolor='red', alpha=overlayalpha))
         if 'linux' in sys.platform:
@@ -151,7 +136,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
             '(red) if you want to redo the evaluation']))
         # If the user clicks in the red, we redo the analysis, if in the green
         # we 'continue' without doing anything
-        if plt.ginput(1, timeout=-1)[0][0] < ResolutionFigure.shape[1]/2:
+        if plt.ginput(1, timeout=-1)[0][0] < ResolutionFigure.shape[1] / 2:
             print 'We leave',  ExperimentID[SelectedExperiment], 'be'
             plt.close('all')
             continue
@@ -165,7 +150,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         ExperimentID[SelectedExperiment],
         time.strftime('%d.%m.%Y at %H:%M:%S'))
     logfile.info('\nMade with "%s" at Revision %s', os.path.basename(__file__),
-        get_git_revision_short_hash())
+        get_git_hash())
     logfile.info(80 * '-')
     # either read original or contrast-stretched corrected image
     OriginalImage = plt.imread(os.path.join(
@@ -354,7 +339,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         [CroppedImageStretched[int(round(height)), xxmin - pad:xxmax + pad]
         for height in SelectedHeight]]
     for c, height in enumerate(SelectedHeight):
-        plt.axhline(y = height, linewidth=2, alpha=0.618, color=clr[c])
+        plt.axhline(y=height, linewidth=2, alpha=0.618, color=clr[c])
     tellme(' '.join([str(BigROISize[1]), 'x', str(BigROISize[0]),
         'px ROI\nLocation of lines from plots below']))
 
@@ -373,7 +358,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         str(LineROISize[0]),
         'px ROI. Top: original image, bottom: contrast stretched image']))
     # Plot values for contrast streched image at the bottom
-    plotmean = plt.subplot(gs2[-1, :], sharex = plotoriginal)
+    plotmean = plt.subplot(gs2[-1, :], sharex=plotoriginal)
     for c, line in enumerate(SelectedLinesStretched):
         plt.plot(line, linewidth=2, alpha=0.618, color=clr[c])
     plt.plot(numpy.mean(SelectedLinesStretched, axis=0), 'k', linewidth='2',

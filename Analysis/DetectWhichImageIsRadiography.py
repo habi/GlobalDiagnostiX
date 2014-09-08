@@ -15,9 +15,11 @@ import glob
 import os
 import matplotlib.pyplot as plt
 import numpy
-import logging
 import time
 import scipy.misc  # for saving png or tif at the end
+from functions import AskUser
+from functions import get_git_hash
+from functions import myLogger
 
 # Setup
 # If Manual selection is true, the user is asked to select one of the
@@ -43,56 +45,14 @@ RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
 #~ StartingFolder = os.path.join(RootFolder, '20140829')
 #~ StartingFolder = os.path.join(RootFolder, '20140831')
 #~ StartingFolder = os.path.join(RootFolder, '20140901')
-StartingFolder = os.path.join(RootFolder, '20140903')
+#~ StartingFolder = os.path.join(RootFolder, '20140903')
+StartingFolder = os.path.join(RootFolder, '20140907')
 
 # Testing
-#~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
-    #~ 'Lensation-CHR6020')
+StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
+    'Lensation-CHR6020')
 # Testing
 #~ StartingFolder = RootFolder
-
-
-def get_git_revision_short_hash():
-    import subprocess
-    hashit = subprocess.Popen(['git', 'rev-parse', '--short', 'HEAD'],
-        stdout=subprocess.PIPE)
-    output, error = hashit.communicate()
-    return output
-
-
-def AskUser(Blurb, Choices):
-    """ Ask for input. Based on function in MasterThesisIvan.ini """
-    print(Blurb)
-    for Counter, Item in enumerate(sorted(Choices)):
-        print '    * [' + str(Counter) + ']:', Item
-    Selection = []
-    while Selection not in range(len(Choices)):
-        try:
-            Selection = int(input(' '.join(['Please enter the choice you',
-                                            'want [0-' +
-                                            str(len(Choices) - 1) +
-                                            ']:'])))
-        except:
-            print 'You actually have to select *something*'
-        if Selection not in range(len(Choices)):
-            print 'Try again with a valid choice'
-    print 'You selected', sorted(Choices)[Selection]
-    return sorted(Choices)[Selection]
-
-
-def myLogger(Folder, LogFileName):
-    """
-    Since logging in a loop does always write to the first instaniated file,
-    we make a little wrapper around the logger function to have one log file
-    per experient ID. Based on http://stackoverflow.com/a/2754216/323100
-    """
-    logger = logging.getLogger(LogFileName)
-    # either set INFO or DEBUG
-    #~ logger.setLevel(logging.DEBUG)
-    logger.setLevel(logging.INFO)
-    handler = logging.FileHandler(os.path.join(Folder, LogFileName), 'w')
-    logger.addHandler(handler)
-    return logger
 
 
 def normalizeImage(image, depth=256, verbose=False):
@@ -216,7 +176,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             ExperimentID[SelectedExperiment],
             time.strftime('%d.%m.%Y at %H:%M:%S'))
         logfile.info('\nMade with "%s" at Revision %s',
-            os.path.basename(__file__), get_git_revision_short_hash())
+            os.path.basename(__file__), get_git_hash())
         logfile.info(80 * '-')
         logfile.info('All image files are to be found in %s', StartingFolder)
         logfile.info('This experiment ID can be found in the subfolder %s',

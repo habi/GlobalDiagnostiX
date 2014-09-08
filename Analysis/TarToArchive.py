@@ -11,16 +11,8 @@ DetectWhichImageIsRadiography.py
 
 import glob
 import os
-import logging
 import time
 import subprocess
-
-
-def get_git_revision_short_hash():
-    hashit = subprocess.Popen(['git', 'rev-parse', '--short', 'HEAD'],
-        stdout=subprocess.PIPE)
-    output, error = hashit.communicate()
-    return output
 
 # Setup
 # If Manual selection is true, the user is asked to select one of the
@@ -45,7 +37,8 @@ RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
 #~ StartingFolder = os.path.join(RootFolder, '20140829')
 #~ StartingFolder = os.path.join(RootFolder, '20140831')
 #~ StartingFolder = os.path.join(RootFolder, '20140901')
-StartingFolder = os.path.join(RootFolder, '20140903')
+#~ StartingFolder = os.path.join(RootFolder, '20140903')
+StartingFolder = os.path.join(RootFolder, '20140907')
 
 # Testing
 #~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
@@ -53,40 +46,6 @@ StartingFolder = os.path.join(RootFolder, '20140903')
 # Testing
 #~ StartingFolder = RootFolder
 
-
-def AskUser(Blurb, Choices):
-    """ Ask for input. Based on function in MasterThesisIvan.ini """
-    print(Blurb)
-    for Counter, Item in enumerate(sorted(Choices)):
-        print '    * [' + str(Counter) + ']:', Item
-    Selection = []
-    while Selection not in range(len(Choices)):
-        try:
-            Selection = int(input(' '.join(['Please enter the choice you',
-                                            'want [0-' +
-                                            str(len(Choices) - 1) +
-                                            ']:'])))
-        except:
-            print 'You actually have to select *something*'
-        if Selection not in range(len(Choices)):
-            print 'Try again with a valid choice'
-    print 'You selected', sorted(Choices)[Selection]
-    return sorted(Choices)[Selection]
-
-
-def myLogger(Folder, LogFileName):
-    """
-    Since logging in a loop does always write to the first instaniated file,
-    we make a little wrapper around the logger function to have one log file
-    per experient ID. Based on http://stackoverflow.com/a/2754216/323100
-    """
-    logger = logging.getLogger(LogFileName)
-    # either set INFO or DEBUG
-    #~ logger.setLevel(logging.DEBUG)
-    logger.setLevel(logging.INFO)
-    handler = logging.FileHandler(os.path.join(Folder, LogFileName), 'w')
-    logger.addHandler(handler)
-    return logger
 
 # Look for all folders matching the naming convention
 Experiment = []
@@ -153,8 +112,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             ExperimentID[SelectedExperiment],
             time.strftime('%d.%m.%Y at %H:%M:%S'))
         logfile.info('\nMade with "%s" at Revision %s',
-            os.path.basename(__file__),
-            get_git_revision_short_hash())
+            os.path.basename(__file__), get_git_hash())
         logfile.info(80 * '-')
         # Tar the selected folder
         TarCommand = ['tar', '-czf',
