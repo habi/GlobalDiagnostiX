@@ -27,7 +27,7 @@ if 'linux' in sys.platform:
     'XrayImages')
 else:
     # If running on Ivans machine, look on the connected harddisk
-    RootFolder = ('Volumes/WINDOWS')
+    RootFolder = 'Volumes/WINDOWS'
 StartingFolder = os.path.join(RootFolder, '20140721')  # 11
 StartingFolder = os.path.join(RootFolder, '20140722')  # 44
 StartingFolder = os.path.join(RootFolder, '20140724')  # 91
@@ -239,6 +239,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
                                                     edgecolor='black',
                                                     alpha=0.25))
     plt.subplot(222)
+    plt.cla()
     CroppedImage = OriginalImage[ymin:ymax, xmin:xmax]
     CroppedImageStretched = StretchedImage[ymin:ymax, xmin:xmax]
     plt.imshow(CroppedImageStretched, cmap='bone', interpolation='none')
@@ -345,7 +346,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
 
     # Plot values for original image in the middle
     gs2 = GridSpec(4, 1)
-    gs2.update(left=0.04, right=0.96, hspace=0)
+    gs2.update(left=0.05, right=0.95, hspace=0)
     plotoriginal = plt.subplot(gs2[2, :])
     for c, line in enumerate(SelectedLines):
         plt.plot(line, linewidth=2, alpha=0.618, color=clr[c])
@@ -354,9 +355,15 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     plt.xlim([0, LineROISize[0]])
     plt.ylim([0, 1])
     plt.legend(loc='best')
+    # Turn off x-ticks: http://stackoverflow.com/a/12998531/323100
+    plt.tick_params(axis='x', which='both', labelbottom='off')
+    # remove "0" y-tick label: http://stackoverflow.com/a/13583251/323100
+    yticks = plotoriginal.yaxis.get_major_ticks()
+    yticks[0].label1.set_visible(False)
     plt.title(' '.join(['Brightness in the green', str(LineROISize[1]), 'x',
         str(LineROISize[0]),
         'px ROI. Top: original image, bottom: contrast stretched image']))
+
     # Plot values for contrast streched image at the bottom
     plotmean = plt.subplot(gs2[-1, :], sharex=plotoriginal)
     for c, line in enumerate(SelectedLinesStretched):
@@ -385,3 +392,4 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
 
     time.sleep(2)
     plt.close('all')
+
