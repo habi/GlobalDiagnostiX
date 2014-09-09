@@ -55,14 +55,13 @@ StartingFolder = os.path.join(RootFolder, '20140907')  # 30
 # Draw lines in final plot $pad pixels longer than the selection (left & right)
 pad = 25
 # Draw $steps lines in the final selected ROI
-steps = 6
+steps = 10
 
 
 def tellme(blurb):
     print(blurb)
     plt.title(blurb)
     plt.draw()
-
 
 # Generate a list of log files, based on http://stackoverflow.com/a/14798263
 LogFiles = [os.path.join(dirpath, f)
@@ -321,13 +320,6 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     # ROI and LineROI on top right
     plt.subplot(gs1[0, 2])
     plt.imshow(CroppedImageStretched, cmap='bone', interpolation='none')
-    currentAxis = plt.gca()
-    LineROI = currentAxis.add_patch(Rectangle((xxmin - pad, yymin),
-                                                xxmax - xxmin + pad + pad,
-                                                yymax - yymin,
-                                                facecolor='green',
-                                                edgecolor='black',
-                                                alpha=0.5))
     # Draw $steps horizontal lines in the LineROI
     # IWantHue, dark background, 10 colors, hard
     clr = ["#6B9519", "#9B46C3", "#281B32", "#F29C2F", "#F0418C", "#8DF239",
@@ -340,7 +332,9 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         [CroppedImageStretched[int(round(height)), xxmin - pad:xxmax + pad]
         for height in SelectedHeight]]
     for c, height in enumerate(SelectedHeight):
-        plt.axhline(y=height, linewidth=2, alpha=0.618, color=clr[c])
+        plt.axhline(y=height, xmin=(xxmin - pad) / BigROISize[0],
+            xmax=(xxmax + pad) / BigROISize[0], linewidth=2, alpha=0.618,
+            color=clr[c])
     tellme(' '.join([str(BigROISize[1]), 'x', str(BigROISize[0]),
         'px ROI\nLocation of lines from plots below']))
 
@@ -351,7 +345,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     for c, line in enumerate(SelectedLines):
         plt.plot(line, linewidth=2, alpha=0.618, color=clr[c])
     plt.plot(numpy.mean(SelectedLines, axis=0), 'k', linewidth='2',
-        label=' '.join(['mean of    ', str(steps), 'shown lines']))
+        label=' '.join(['mean of', str(steps), 'shown lines']))
     plt.xlim([0, LineROISize[0]])
     plt.ylim([0, 1])
     plt.legend(loc='best')
@@ -392,4 +386,3 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
 
     time.sleep(2)
     plt.close('all')
-
