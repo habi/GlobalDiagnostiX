@@ -28,35 +28,37 @@ if 'linux' in sys.platform:
 else:
     # If running on Ivans machine, look on the connected harddisk
     RootFolder = 'Volumes/WINDOWS'
-StartingFolder = os.path.join(RootFolder, '20140721')  # 11
-StartingFolder = os.path.join(RootFolder, '20140722')  # 44
-StartingFolder = os.path.join(RootFolder, '20140724')  # 91
-StartingFolder = os.path.join(RootFolder, '20140730')  # 30
-StartingFolder = os.path.join(RootFolder, '20140731')  # 262
-StartingFolder = os.path.join(RootFolder, '20140818')  # 20
-StartingFolder = os.path.join(RootFolder, '20140819')  # 64
-StartingFolder = os.path.join(RootFolder, '20140820')  # 64
-StartingFolder = os.path.join(RootFolder, '20140822')  # 149
-StartingFolder = os.path.join(RootFolder, '20140823')  # 6
-StartingFolder = os.path.join(RootFolder, '20140825')  # 99
-StartingFolder = os.path.join(RootFolder, '20140829')  # 4
+#~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
+#~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
+#~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
+#~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
+#~ StartingFolder = os.path.join(RootFolder, '20140731')  # 262
+#~ StartingFolder = os.path.join(RootFolder, '20140818')  # 20
+#~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
+#~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
+#~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
+#~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
+#~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
+#~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
 #~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
 #~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
-StartingFolder = os.path.join(RootFolder, '20140903')  # 30
-StartingFolder = os.path.join(RootFolder, '20140907')  # 30
+#~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
+#~ StartingFolder = os.path.join(RootFolder, '20140907')  # 30
 
 # Testing
 #~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
     #~ 'Lensation-CHR6020')
 # Testing
-#~ StartingFolder = RootFolder
+StartingFolder = RootFolder
 
 # Setup
 # Draw lines in final plot $pad pixels longer than the selection (left & right)
 pad = 25
 # Draw $steps lines in the final selected ROI
 steps = 10
-
+# Draw rectangles and lines with this alpha
+overlayalpha = 0.125
+linealpha = 3 * overlayalpha
 
 def tellme(blurb):
     print(blurb)
@@ -120,7 +122,6 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         ResolutionFigure = plt.imread(ResolutionFileName)
         plt.imshow(ResolutionFigure)
         currentAxis = plt.gca()
-        overlayalpha = 0.125
         ok = currentAxis.add_patch(Rectangle((0, 0),
                                    ResolutionFigure.shape[1] / 2,
                                    ResolutionFigure.shape[0],
@@ -210,7 +211,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
                                                     ymax - ymin,
                                                     facecolor='red',
                                                     edgecolor='black',
-                                                    alpha=0.25))
+                                                    alpha=overlayalpha))
         tellme('Done? Press any key for yes, click with mouse for no')
         done = plt.waitforbuttonpress()
         # Redraw image if necessary
@@ -236,7 +237,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
                                                     ymax - ymin,
                                                     facecolor='red',
                                                     edgecolor='black',
-                                                    alpha=0.25))
+                                                    alpha=overlayalpha))
     plt.subplot(222)
     plt.cla()
     CroppedImage = OriginalImage[ymin:ymax, xmin:xmax]
@@ -265,7 +266,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
                                                     yymax - yymin,
                                                     facecolor='green',
                                                     edgecolor='black',
-                                                    alpha=0.25))
+                                                    alpha=overlayalpha))
         tellme('Done? Press any key for yes, click with mouse for no')
         done = plt.waitforbuttonpress()
         # Redraw image if necessary
@@ -310,13 +311,14 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
                                                     ymax - ymin,
                                                     facecolor='red',
                                                     edgecolor='black',
-                                                    alpha=0.5))
+                                                    alpha=overlayalpha))
     LineROI = currentAxis.add_patch(Rectangle((xmin + xxmin - pad,
                                                ymin + yymin),
                                                xxmax - xxmin + pad + pad,
                                                yymax - yymin,
                                                facecolor='green',
-                                               edgecolor='black', alpha=0.5))
+                                               edgecolor='black',
+                                               alpha=overlayalpha))
     # ROI and LineROI on top right
     plt.subplot(gs1[0, 2])
     plt.imshow(CroppedImageStretched, cmap='bone', interpolation='none')
@@ -333,8 +335,8 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         for height in SelectedHeight]]
     for c, height in enumerate(SelectedHeight):
         plt.axhline(y=height, xmin=(xxmin - pad) / BigROISize[0],
-            xmax=(xxmax + pad) / BigROISize[0], linewidth=2, alpha=0.618,
-            color=clr[c])
+            xmax=(xxmax + pad) / BigROISize[0], linewidth=2,
+            alpha=linealpha, color=clr[c])
     tellme(' '.join([str(BigROISize[0]), 'x', str(BigROISize[1]),
         'px ROI\nLocation of lines from plots below']))
 
@@ -343,7 +345,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     gs2.update(left=0.05, right=0.95, hspace=0)
     plotoriginal = plt.subplot(gs2[2, :])
     for c, line in enumerate(SelectedLines):
-        plt.plot(line, linewidth=2, alpha=0.618, color=clr[c])
+        plt.plot(line, linewidth=2, alpha=linealpha, color=clr[c])
     plt.plot(numpy.mean(SelectedLines, axis=0), 'k', linewidth='2',
         label=' '.join(['mean of', str(steps), 'shown lines']))
     plt.xlim([0, LineROISize[0]])
@@ -361,7 +363,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     # Plot values for contrast streched image at the bottom
     plotmean = plt.subplot(gs2[-1, :], sharex=plotoriginal)
     for c, line in enumerate(SelectedLinesStretched):
-        plt.plot(line, linewidth=2, alpha=0.618, color=clr[c])
+        plt.plot(line, linewidth=2, alpha=linealpha, color=clr[c])
     plt.plot(numpy.mean(SelectedLinesStretched, axis=0), 'k', linewidth='2',
         label=' '.join(['mean of', str(steps), 'shown lines']))
     plt.xlim([0, LineROISize[0]])
