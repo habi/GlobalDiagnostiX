@@ -220,8 +220,8 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
             plt.imshow(StretchedImage, cmap='bone', interpolation='nearest')
     # Give plot a nice title
     BigROISize = [xmax - xmin, ymax - ymin]
-    tellme(' '.join(['Selected ROI with a size of', str(BigROISize[1]), 'x',
-        str(BigROISize[0]), 'px']))
+    tellme(' '.join(['Selected ROI with a size of', str(BigROISize[0]), 'x',
+        str(BigROISize[1]), 'px']))
     logfile.info('Resolution-Phantom x-ROI: %s-%s (%s px)', xmin, xmax,
         xmax - xmin)
     logfile.info('Resolution-Phantom y-ROI: %s-%s (%s px)', ymin, ymax,
@@ -229,8 +229,8 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     # Show selected ROI and select sub-ROI to plot the line profiles
     plt.subplot(221)
     plt.title(' '.join([ExperimentID[SelectedExperiment] +
-        '.image.corrected.png with', str(BigROISize[1]), 'x',
-        str(BigROISize[0]), 'px ROI']))
+        '.image.corrected.png with', str(BigROISize[0]), 'x',
+        str(BigROISize[1]), 'px ROI']))
     currentAxis = plt.gca()
     BigROI = currentAxis.add_patch(Rectangle((xmin, ymin), xmax - xmin,
                                                     ymax - ymin,
@@ -276,11 +276,11 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
                 interpolation='none')
     # Give plot a nice title
     LineROISize = [xxmax - xxmin + pad + pad, yymax - yymin]
-    tellme(' '.join(['Selected ROI with a size of', str(LineROISize[1]), 'x',
-        str(LineROISize[0]), 'px']))
+    tellme(' '.join(['Selected ROI with a size of', str(LineROISize[0]), 'x',
+        str(LineROISize[1]), 'px']))
     logfile.info(80 * '-')
     logfile.info('Selected region in Resolution-Phantom x-ROI: %s-%s (%s px)',
-        xxmin, xxmax, xxmax - xxmin)
+        xxmin - pad, xxmax + pad, xxmax - xxmin + pad + pad)
     logfile.info('Selected region in Resolution-Phantom y-ROI: %s-%s (%s px)',
         yymin, yymax, yymax - yymin)
     logfile.info(80 * '-')
@@ -302,9 +302,9 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     # Stretched image with both ROIs in top middle
     plt.subplot(gs1[0, 1])
     plt.imshow(StretchedImage, cmap='bone', interpolation='nearest')
-    plt.title(' '.join(['Contrast stretched Image\nROIs', str(BigROISize[1]),
-        'x', str(BigROISize[0]), 'px (red),', str(LineROISize[1]), 'x',
-        str(LineROISize[0]), 'px (green).']))
+    plt.title(' '.join(['Contrast stretched Image\nROIs', str(BigROISize[0]),
+        'x', str(BigROISize[1]), 'px (red),', str(LineROISize[0]), 'x',
+        str(LineROISize[1]), 'px (green).']))
     currentAxis = plt.gca()
     BigROI = currentAxis.add_patch(Rectangle((xmin, ymin), xmax - xmin,
                                                     ymax - ymin,
@@ -335,7 +335,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         plt.axhline(y=height, xmin=(xxmin - pad) / BigROISize[0],
             xmax=(xxmax + pad) / BigROISize[0], linewidth=2, alpha=0.618,
             color=clr[c])
-    tellme(' '.join([str(BigROISize[1]), 'x', str(BigROISize[0]),
+    tellme(' '.join([str(BigROISize[0]), 'x', str(BigROISize[1]),
         'px ROI\nLocation of lines from plots below']))
 
     # Plot values for original image in the middle
@@ -354,8 +354,8 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     # remove "0" y-tick label: http://stackoverflow.com/a/13583251/323100
     yticks = plotoriginal.yaxis.get_major_ticks()
     yticks[0].label1.set_visible(False)
-    plt.title(' '.join(['Brightness in the green', str(LineROISize[1]), 'x',
-        str(LineROISize[0]),
+    plt.title(' '.join(['Brightness in the green', str(LineROISize[0]), 'x',
+        str(LineROISize[1]),
         'px ROI. Top: original image, bottom: contrast stretched image']))
 
     # Plot values for contrast streched image at the bottom
