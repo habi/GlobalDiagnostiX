@@ -27,7 +27,7 @@ if 'linux' in sys.platform:
 else:
     # If running on Ivans machine, look on the connected harddisk
     RootFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/ARO130/Computar-11A/Hand')
-StartingFolder = os.path.join(RootFolder, '20140721')  # 11
+#~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
 #~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
 #~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
 #~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
@@ -36,9 +36,9 @@ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
 #~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
 #~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
 #~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
-StartingFolder = os.path.join(RootFolder, '20140823')  # 6
+#~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
 #~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
-StartingFolder = os.path.join(RootFolder, '20140829')  # 4
+#~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
 #~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
 #~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
 #~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
@@ -48,7 +48,7 @@ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
 # StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
     # 'Lensation-CHR6020')
 # Testing
-#~ StartingFolder = RootFolder
+StartingFolder = RootFolder
 
 # Setup
 # Draw lines in final plot $pad pixels longer than the selection (left & right)
@@ -82,7 +82,7 @@ Sensor = [linecache.getline(i, 10).split(':')[1].strip() for i in LogFiles]
 Scintillator = [linecache.getline(i, 9).split(':')[1].strip()
     for i in LogFiles]
 Lens = [str(linecache.getline(i, 11).split(':')[1].strip()) for i in LogFiles]
-SSD = [float(linecache.getline(i, 13).split(':')[1].split('mm')[0].strip())
+SDD = [float(linecache.getline(i, 13).split(':')[1].split('mm')[0].strip())
     for i in LogFiles]
 Modality = [linecache.getline(i, 14).split(':')[1].strip()
     for i in LogFiles]
@@ -104,7 +104,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     print str(Counter + 1) + '/' + str(len(Experiment)), '|', \
         ExperimentID[SelectedExperiment], '|', \
         Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment], \
-        '|', Lens[SelectedExperiment]
+        '|', Lens[SelectedExperiment], '|', SDD[SelectedExperiment]
     # See if we've already ran the resolution evaluation, i.e. have a
     # 'ExperimentID.resolution.png' file. If we have, show it and let the user
     # decide to rerun, otherwise skip to next
@@ -116,8 +116,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)),
             '|', ExperimentID[SelectedExperiment], '|',
             Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment],
-            '|', Lens[SelectedExperiment], '| Resolution evaluation']),
-            figsize=[16, 9])
+            '|', Lens[SelectedExperiment], '| Resolution evaluation']))
         ResolutionFigure = plt.imread(ResolutionFileName)
         plt.imshow(ResolutionFigure)
         currentAxis = plt.gca()
@@ -131,7 +130,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
                                     facecolor='red', alpha=overlayalpha))
         if 'linux' in sys.platform:
             plt.tight_layout()
-        tellme(' '.join(['click left (green) if you are happy, click right',
+        tellme(' '.join(['click left (green) if you are happy,\nclick right',
             '(red) if you want to redo the evaluation']))
         # If the user clicks in the red, we redo the analysis, if in the green
         # we 'continue' without doing anything
@@ -298,7 +297,8 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment], '|',
         Lens[SelectedExperiment], '| Result']), figsize=[16, 9])
     plt.suptitle(' '.join([Scintillator[SelectedExperiment], '|',
-        Sensor[SelectedExperiment], '|', Lens[SelectedExperiment]]))
+        Sensor[SelectedExperiment], '|', Lens[SelectedExperiment], '|',
+        str(SDD[SelectedExperiment]), 'cm | version', get_git_hash()]))
     # Use gridspec for easier positioning
     gs1 = GridSpec(3, 3)
     gs1.update(left=0.05, right=0.95, hspace=-0.2)
@@ -388,15 +388,15 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     plt.draw()
     plt.ioff()
 
-    plt.savefig(SaveName)
-    print 'Figure saved as', SaveName
-    print 80 * '-'
-
-    time.sleep(2)
-    plt.close('all')
-
     # If we decreased the padding, 'waspad' is set. In this case reset the
     # padding to the original value
     if waspad:
         print 'Setting padding back from', pad, 'to', waspad, 'pixels'
         pad = waspad
+
+    plt.savefig(SaveName)
+    print 'Figure saved as', SaveName
+    print 80 * '-'
+
+    time.sleep(1)
+    plt.close('all')
