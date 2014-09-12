@@ -23,12 +23,11 @@ from functions import get_git_hash
 # Where shall we start?
 if 'linux' in sys.platform:
     # If running at the office, look on AFS
-    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-    'XrayImages')
+    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
 else:
     # If running on Ivans machine, look on the connected harddisk
-    RootFolder = 'Volumes/WINDOWS'
-#~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
+    RootFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/ARO130/Computar-11A/Hand')
+StartingFolder = os.path.join(RootFolder, '20140721')  # 11
 #~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
 #~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
 #~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
@@ -37,19 +36,19 @@ else:
 #~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
 #~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
 #~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
-#~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
+StartingFolder = os.path.join(RootFolder, '20140823')  # 6
 #~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
-#~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
+StartingFolder = os.path.join(RootFolder, '20140829')  # 4
 #~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
 #~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
 #~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
 #~ StartingFolder = os.path.join(RootFolder, '20140907')  # 30
 
 # Testing
-#~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
-    #~ 'Lensation-CHR6020')
+# StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
+    # 'Lensation-CHR6020')
 # Testing
-StartingFolder = RootFolder
+#~ StartingFolder = RootFolder
 
 # Setup
 # Draw lines in final plot $pad pixels longer than the selection (left & right)
@@ -275,6 +274,13 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
             plt.subplot(222)
             plt.imshow(CroppedImageStretched, cmap='bone',
                 interpolation='none')
+    if ((xxmax + pad) - (xxmin - pad) > numpy.shape(CroppedImage)[0]) or ((xxmin - pad) <= 0):
+        print 'Padding the selected ROI would make it bigger than the image'
+        waspad = pad
+        pad = 0
+        print 'Setting padding from', waspad, 'to', pad, 'pixels'
+    else:
+        waspad = []
     # Give plot a nice title
     LineROISize = [xxmax - xxmin + pad + pad, yymax - yymin]
     tellme(' '.join(['Selected ROI with a size of', str(LineROISize[0]), 'x',
@@ -388,3 +394,9 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
 
     time.sleep(2)
     plt.close('all')
+
+    # If we decreased the padding, 'waspad' is set. In this case reset the
+    # padding to the original value
+    if waspad:
+        print 'Setting padding back from', pad, 'to', waspad, 'pixels'
+        pad = waspad

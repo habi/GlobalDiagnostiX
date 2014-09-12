@@ -46,13 +46,13 @@ RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
 #~ StartingFolder = os.path.join(RootFolder, '20140831')
 #~ StartingFolder = os.path.join(RootFolder, '20140901')
 #~ StartingFolder = os.path.join(RootFolder, '20140903')
-StartingFolder = os.path.join(RootFolder, '20140907')
+#~ StartingFolder = os.path.join(RootFolder, '20140907')
 
 # Testing
-StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
-    'Lensation-CHR6020')
+#~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
+    #~ 'Lensation-CHR6020')
 # Testing
-#~ StartingFolder = RootFolder
+StartingFolder = RootFolder
 
 
 def normalizeImage(image, depth=256, verbose=False):
