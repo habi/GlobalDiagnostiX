@@ -15,11 +15,15 @@ import glob
 import os
 import matplotlib.pyplot as plt
 import numpy
+import sys
 import time
 import scipy.misc  # for saving png or tif at the end
 from functions import AskUser
 from functions import get_git_hash
 from functions import myLogger
+
+import matplotlib
+
 
 # Setup
 # If Manual selection is true, the user is asked to select one of the
@@ -29,28 +33,34 @@ ManualSelection = False
 SaveOutputImages = True
 
 # Where shall we start?
-RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-    'XrayImages')
-#~ StartingFolder = os.path.join(RootFolder, '20140721')
-#~ StartingFolder = os.path.join(RootFolder, '20140722')
-#~ StartingFolder = os.path.join(RootFolder, '20140724')
-#~ StartingFolder = os.path.join(RootFolder, '20140730')
-#~ StartingFolder = os.path.join(RootFolder, '20140731')
-#~ StartingFolder = os.path.join(RootFolder, '20140818')
-#~ StartingFolder = os.path.join(RootFolder, '20140819')
-#~ StartingFolder = os.path.join(RootFolder, '20140820')
-#~ StartingFolder = os.path.join(RootFolder, '20140822')
-#~ StartingFolder = os.path.join(RootFolder, '20140823')
-#~ StartingFolder = os.path.join(RootFolder, '20140825')
-#~ StartingFolder = os.path.join(RootFolder, '20140829')
-#~ StartingFolder = os.path.join(RootFolder, '20140831')
-#~ StartingFolder = os.path.join(RootFolder, '20140901')
-#~ StartingFolder = os.path.join(RootFolder, '20140903')
-#~ StartingFolder = os.path.join(RootFolder, '20140907')
+if 'linux' in sys.platform:
+#   # If running at the office, look on AFS
+    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
+else:
+    # If running on Ivans machine, look on the connected harddisk
+    RootFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/AR0130/Computar-11A/Hand')
+    RootFolder = ('/Volumes/exFAT/20140721/Lensation-CHR6020')
+#~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
+#~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
+#~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
+#~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
+#~ StartingFolder = os.path.join(RootFolder, '20140731')  # 262
+#~ StartingFolder = os.path.join(RootFolder, '20140818')  # 20
+#~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
+#~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
+#~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
+#~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
+#~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
+#StartingFolder = os.path.join(RootFolder, '20140829')  # 4
+#~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
+#~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
+#~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
+#~ StartingFolder = os.path.join(RootFolder, '20140907')  # 30
+#~ StartingFolder = os.path.join(RootFolder, '20140914')  # 47
 
 # Testing
-#~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
-    #~ 'Lensation-CHR6020')
+# StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
+    # 'Lensation-CHR6020')
 # Testing
 StartingFolder = RootFolder
 
@@ -339,7 +349,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             linestyle='--')
         plt.xlim([-0.5, NumberOfRadiographies[SelectedExperiment] - 0.5])
         plt.legend(loc='best')
-        plt.tight_layout()
+        if 'linux' in sys.platform:
+            plt.tight_layout()
         plt.subplots_adjust(hspace=.05)
         plt.subplots_adjust(wspace=.05)
         plt.draw()
@@ -393,28 +404,30 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             DarkName = os.path.join(os.path.dirname(
                 Experiment[SelectedExperiment]),
                 ExperimentID[SelectedExperiment] + '.image.dark')
-            scipy.misc.imsave(DarkName + '.png', normalizeImage(MeanDarkImage))
-            scipy.misc.imsave(DarkName + '.stretched.png',
-                contrast_stretch(MeanDarkImage))
+            matplotlib.image.imsave(DarkName + '.png',
+                normalizeImage(MeanDarkImage), cmap=matplotlib.cm.gray)
+            matplotlib.image.imsave(DarkName + '.stretched.png',
+                contrast_stretch(MeanDarkImage), cmap=matplotlib.cm.gray)
             logfile.info('Average of %s dark frames saved as %s.png',
                 len(DarkImages), DarkName)
             print 'Saving summed images'
             SummedName = os.path.join(os.path.dirname(
                 Experiment[SelectedExperiment]),
                 ExperimentID[SelectedExperiment] + '.image.sum')
-            scipy.misc.imsave(SummedName + '.png', normalizeImage(SummedImage))
-            scipy.misc.imsave(SummedName + '.stretched.png',
-                contrast_stretch(SummedImage))
+            matplotlib.image.imsave(SummedName + '.png',
+                normalizeImage(SummedImage), cmap=matplotlib.cm.gray)
+            matplotlib.image.imsave(SummedName + '.stretched.png',
+                contrast_stretch(SummedImage), cmap=matplotlib.cm.gray)
             logfile.info('Sum of %s image frames saved as %s.png',
                 len(RealImages), SummedName)
             print 'Saving corrected image'
             CorrName = os.path.join(os.path.dirname(
                 Experiment[SelectedExperiment]),
                 ExperimentID[SelectedExperiment] + '.image.corrected')
-            scipy.misc.imsave(CorrName + '.png',
-                normalizeImage(CorrectedImage))
-            scipy.misc.imsave(CorrName + '.stretched.png',
-                contrast_stretch(CorrectedImage))
+            matplotlib.image.imsave(CorrName + '.png',
+                normalizeImage(CorrectedImage), cmap=matplotlib.cm.gray)
+            matplotlib.image.imsave(CorrName + '.stretched.png',
+                contrast_stretch(CorrectedImage), cmap=matplotlib.cm.gray)
             logfile.info('Sum of %s images subtracted with the mean of %s ' +
                 'dark frames saved as %s.png', len(RealImages),
                 len(DarkImages), CorrName)
