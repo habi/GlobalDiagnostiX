@@ -36,7 +36,7 @@ def get_git_hash():
     """
     import subprocess
     hashit = subprocess.Popen(['git', 'rev-parse', '--short', '--verify',
-        'HEAD'], stdout=subprocess.PIPE)
+        'HEAD'])
     output, error = hashit.communicate()
     return output
 
