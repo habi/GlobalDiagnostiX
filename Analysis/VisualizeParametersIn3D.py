@@ -18,18 +18,28 @@ import numpy
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
-StartingFolder = os.path.join(RootFolder, '20140721')
-#~ StartingFolder = os.path.join(RootFolder, '20140722')
-#~ StartingFolder = os.path.join(RootFolder, '20140724')
-#~ StartingFolder = os.path.join(RootFolder, '20140730')
-#~ StartingFolder = os.path.join(RootFolder, '20140731')
-#~ StartingFolder = os.path.join(RootFolder, '20140818')
-#~ StartingFolder = os.path.join(RootFolder, '20140819')
-#~ StartingFolder = os.path.join(RootFolder, '20140820')
-#~ StartingFolder = os.path.join(RootFolder, '20140822')
-#~ StartingFolder = os.path.join(RootFolder, '20140823')
-#~ StartingFolder = os.path.join(RootFolder, '20140825')
-StartingFolder = os.path.join(RootFolder)
+#~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
+#~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
+#~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
+#~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
+#~ StartingFolder = os.path.join(RootFolder, '20140731')  # 262
+#~ StartingFolder = os.path.join(RootFolder, '20140818')  # 20
+#~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
+#~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
+#~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
+#~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
+#~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
+#~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
+#~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
+#~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
+#~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
+#~ StartingFolder = os.path.join(RootFolder, '20140907')  # 30
+
+# Testing
+#~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
+    #~ 'Lensation-CHR6020')
+# Testing
+StartingFolder = RootFolder
 
 # Generate a list of log files, based on http://stackoverflow.com/a/14798263
 LogFiles = [os.path.join(dirpath, f)
@@ -46,7 +56,7 @@ Sensor = [linecache.getline(i, 10).split(':')[1].strip() for i in LogFiles]
 Scintillator = [linecache.getline(i, 9).split(':')[1].strip()
     for i in LogFiles]
 Lens = [str(linecache.getline(i, 11).split(':')[1].strip()) for i in LogFiles]
-SSD = [float(linecache.getline(i, 13).split(':')[1].split('mm')[0].strip())
+SDD = [float(linecache.getline(i, 13).split(':')[1].split('mm')[0].strip())
     for i in LogFiles]
 Modality = [linecache.getline(i, 14).split(':')[1].strip()
     for i in LogFiles]
@@ -79,6 +89,8 @@ print '\t- ', len(set(Modality)), 'modalities:'
 for i in set(Modality):
     print '\t\t-', i
 
+textalpha = 0.309
+move = 0.01
 # Plot figure
 ## CMOS-Distance
 fig = plt.figure(figsize=[16, 9])
@@ -86,12 +98,14 @@ fig.suptitle(' '.join(['Data from', str(len(LogFiles)),
     'log files from', StartingFolder, 'colored by STD']))
 ax = fig.add_subplot(121, projection='3d')
 plot = ax.scatter(
-    SSD, Mean, Max,
+    SDD, Mean, Max,
     'o', c=STD, edgecolor='', cmap='hot', s=250, alpha=0.5)
-for x, y, z, label in zip(
-    SSD, Mean, Max,
-    zip(Sensor, Lens)):
-    ax.text(x, y + 0.2, z + 0.2, ' / '.join(label), alpha=0.25)
+#~ for x, y, z, label in zip(
+    #~ SDD, Mean, Max,
+    #~ zip(Sensor, Lens)):
+    #~#~ zip(Scintillator, Sensor, Lens)):
+    #~ ax.text(x + move, y + move, z  + move, ' / '.join(label),
+        #~ alpha=textalpha)
 
 #~ ax.set_xlim([66, 222])
 #~ ax.set_ylim([0, 750])
@@ -104,10 +118,14 @@ plt.title('Modality')
 
 # Select only a subset of items to present in the second plot, according to
 # http://stackoverflow.com/a/3555387/323100
-MaskedX = [item for item, flag in zip(Max, Scintillator) if 'AppS' in flag]
-MaskedY = [item for item, flag in zip(Mean, Scintillator) if 'AppS' in flag]
-MaskedZ = [item for item, flag in zip(STD, Scintillator) if 'AppS' in flag]
-MaskedC = [item for item, flag in zip(STD, Scintillator) if 'AppS' in flag]
+#~ Selector = 'Hamamatsu'
+#~ Selector = 'Pingseng'
+#~ Selector = 'Toshiba'
+Selector = 'AppScinTech'
+MaskedX = [item for item, flag in zip(Max, Scintillator) if Selector in flag]
+MaskedY = [item for item, flag in zip(Mean, Scintillator) if Selector in flag]
+MaskedZ = [item for item, flag in zip(STD, Scintillator) if Selector in flag]
+MaskedC = [item for item, flag in zip(STD, Scintillator) if Selector in flag]
 MaskedI = [str(item) for item, flag in zip(ExperimentID, Scintillator) if
     'AppS' in flag]
 
@@ -119,18 +137,18 @@ plot = ax.scatter(
 for x, y, z, label in zip(
     MaskedX, MaskedY, MaskedZ,
     zip(MaskedI)):
-    ax.text(x, y + 0.2, z + 0.2, ' / '.join(label), alpha=0.25)
+    ax.text(x + move, y + move, z + move, ' / '.join(label), alpha=textalpha)
 
 ax.set_xlabel('Max')
 ax.set_ylabel('Mean')
 ax.set_zlabel('STD')
 plt.title(' '.join([str(len(MaskedX)),
-    'values where Scintillator=AppScinTech']))
+    'images for', Selector]))
 
 plt.tight_layout()
 
-OutputImage = os.path.join(StartingFolder, '_Overview.png')
+OutputImage = os.path.join(StartingFolder, 'Overview_' + Selector + '.png')
 print 'Saving figure as', OutputImage
-plt.savefig(OutputImage, transparent=False)
+plt.savefig(OutputImage, transparent=True)
 
 plt.show()
