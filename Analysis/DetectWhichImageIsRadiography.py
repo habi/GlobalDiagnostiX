@@ -34,35 +34,35 @@ SaveOutputImages = True
 
 # Where shall we start?
 if 'linux' in sys.platform:
-#   # If running at the office, look on AFS
-    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
+    # If running at the office, grep AFS
+    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
+        'XrayImages')
+    #~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
+    #~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
+    #~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
+    #~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
+    #~ StartingFolder = os.path.join(RootFolder, '20140731')  # 262
+    #~ StartingFolder = os.path.join(RootFolder, '20140818')  # 20
+    #~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
+    #~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
+    #~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
+    #~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
+    #~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
+    #~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
+    #~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
+    #~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
+    #~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
+    #~ StartingFolder = os.path.join(RootFolder, '20140907')  # 30
+    StartingFolder = os.path.join(RootFolder, '20140914')  # 47
 else:
     # If running on Ivans machine, look on the connected harddisk
-    RootFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/AR0130/Computar-11A/Hand')
-    RootFolder = ('/Volumes/exFAT/20140721/Lensation-CHR6020')
-#~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
-#~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
-#~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
-#~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
-#~ StartingFolder = os.path.join(RootFolder, '20140731')  # 262
-#~ StartingFolder = os.path.join(RootFolder, '20140818')  # 20
-#~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
-#~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
-#~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
-#~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
-#~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
-#StartingFolder = os.path.join(RootFolder, '20140829')  # 4
-#~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
-#~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
-#~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
-#~ StartingFolder = os.path.join(RootFolder, '20140907')  # 30
-#~ StartingFolder = os.path.join(RootFolder, '20140914')  # 47
+    StartingFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/AR0130/Computar-11A/')
+    StartingFolder = ('/Volumes/exFAT')
 
 # Testing
 # StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
     # 'Lensation-CHR6020')
 # Testing
-StartingFolder = RootFolder
 
 
 def normalizeImage(image, depth=256, verbose=False):

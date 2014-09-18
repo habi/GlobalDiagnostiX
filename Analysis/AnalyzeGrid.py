@@ -22,33 +22,36 @@ from functions import get_git_hash
 
 # Where shall we start?
 if 'linux' in sys.platform:
-    # If running at the office, look on AFS
-    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
+    # If running at the office, grep AFS
+    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
+        'XrayImages')
+    #~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
+    #~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
+    #~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
+    #~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
+    #~ StartingFolder = os.path.join(RootFolder, '20140731')  # 262
+    #~ StartingFolder = os.path.join(RootFolder, '20140818')  # 20
+    #~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
+    #~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
+    #~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
+    #~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
+    #~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
+    #~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
+    #~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
+    #~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
+    #~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
+    #~ StartingFolder = os.path.join(RootFolder, '20140907')  # 30
+    StartingFolder = os.path.join(RootFolder, '20140914')  # 47
 else:
     # If running on Ivans machine, look on the connected harddisk
-    RootFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/ARO130/Computar-11A/Hand')
-#~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
-#~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
-#~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
-#~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
-#~ StartingFolder = os.path.join(RootFolder, '20140731')  # 262
-#~ StartingFolder = os.path.join(RootFolder, '20140818')  # 20
-#~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
-#~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
-#~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
-#~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
-#~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
-#~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
-#~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
-#~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
-#~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
-#~ StartingFolder = os.path.join(RootFolder, '20140907')  # 30
+    StartingFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/AR0130/Computar-11A/')
+    StartingFolder = ('/Volumes/exFAT')
 
 # Testing
 # StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
     # 'Lensation-CHR6020')
 # Testing
-StartingFolder = RootFolder
+
 
 # Setup
 # Draw lines in final plot $pad pixels longer than the selection (left & right)
@@ -58,6 +61,7 @@ steps = 10
 # Draw rectangles and lines with this alpha
 overlayalpha = 0.125
 linealpha = 3 * overlayalpha
+
 
 def tellme(blurb):
     print(blurb)
@@ -101,10 +105,11 @@ Experiment = [item[:-len('.analysis.log')] for item in LogFiles]
 # Go through each selected experiment (in the shuffled list)
 for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     plt.ion()
-    print str(Counter + 1) + '/' + str(len(Experiment)), '|', \
+    print str(Counter + 1) + '/' + str(len(Experiment)), '| ID', \
         ExperimentID[SelectedExperiment], '|', \
         Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment], \
-        '|', Lens[SelectedExperiment], '|', SDD[SelectedExperiment]
+        '|', Lens[SelectedExperiment], '|', SDD[SelectedExperiment], \
+        'mm | git version', get_git_hash()
     # See if we've already ran the resolution evaluation, i.e. have a
     # 'ExperimentID.resolution.png' file. If we have, show it and let the user
     # decide to rerun, otherwise skip to next
@@ -165,10 +170,11 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     logfile.info(80 * '-')
 
     # Show original images with histograms
-    plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)), '|',
-        ExperimentID[SelectedExperiment], '|',
+    plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)),
+        '| ID', ExperimentID[SelectedExperiment], '|',
         Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment], '|',
-        Lens[SelectedExperiment], '| Originals and Histograms']),
+        Lens[SelectedExperiment], '|', str(SDD[SelectedExperiment]),
+        'mm | git version', get_git_hash(), '| Originals and Histograms']),
         figsize=[16, 9])
     plt.subplot(221)
     plt.imshow(OriginalImage, cmap='bone', interpolation='nearest')
@@ -273,7 +279,8 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
             plt.subplot(222)
             plt.imshow(CroppedImageStretched, cmap='bone',
                 interpolation='none')
-    if ((xxmax + pad) - (xxmin - pad) > numpy.shape(CroppedImage)[0]) or ((xxmin - pad) <= 0):
+    if ((xxmax + pad) - (xxmin - pad) > numpy.shape(CroppedImage)[0]) or \
+        ((xxmin - pad) <= 0):
         print 'Padding the selected ROI would make it bigger than the image'
         waspad = pad
         pad = 0
@@ -356,7 +363,11 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         label=' '.join(['mean of', str(steps), 'shown lines']))
     plt.xlim([0, LineROISize[0]])
     plt.ylim([0, 1])
-    plt.legend(loc='best')
+    if 'linux' in sys.platform:
+        plt.legend(loc='best')
+    else:
+        plt.legend([' '.join(['mean of', str(steps), 'shown lines'])],
+            loc='best')
     # Turn off x-ticks: http://stackoverflow.com/a/12998531/323100
     plt.tick_params(axis='x', which='both', labelbottom='off')
     # remove "0" y-tick label: http://stackoverflow.com/a/13583251/323100
@@ -374,8 +385,11 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         label=' '.join(['mean of', str(steps), 'shown lines']))
     plt.xlim([0, LineROISize[0]])
     plt.ylim([0, 1])
-    plt.legend(loc='best')
-
+    if 'linux' in sys.platform:
+        plt.legend(loc='best')
+    else:
+        plt.legend([' '.join(['mean of', str(steps), 'shown lines'])],
+            loc='best')
     # Write mean plot values to log file
     logfile.info('Mean brightness along %s equally spaced lines in ROI', steps)
     for i in numpy.mean(SelectedLines, axis=0):

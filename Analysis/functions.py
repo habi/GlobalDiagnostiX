@@ -5,6 +5,7 @@ Functions that we use for each and every script in the folder
 /afs/psi.ch/project/EssentialMed/Dev/Analysis
 """
 
+
 def AskUser(Blurb, Choices):
     """
     Ask for user input.
@@ -32,13 +33,14 @@ def get_git_hash():
     """
     Get the current git hash from the repository.
     Good for saving this information into the log files of process.
-    Based on http://stackoverflow.com/a/949391/323100
+    Based on http://stackoverflow.com/a/949391/323100 and
+    http://stackoverflow.com/a/18283905/323100
     """
-    import subprocess
-    hashit = subprocess.Popen(['git', 'rev-parse', '--short', '--verify',
-        'HEAD'])
-    output, error = hashit.communicate()
-    return output
+    from subprocess import Popen, PIPE
+    gitprocess = Popen(['git', 'rev-parse', '--short', '--verify',
+        'HEAD'], stdout=PIPE)
+    (output, _) = gitprocess.communicate()
+    return output.strip()
 
 
 def myLogger(Folder, LogFileName):
