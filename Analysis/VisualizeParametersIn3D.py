@@ -14,32 +14,35 @@ import linecache
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy
+import sys
 
 # Where shall we start?
-RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-    'XrayImages')
-#~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
-#~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
-#~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
-#~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
-#~ StartingFolder = os.path.join(RootFolder, '20140731')  # 262
-#~ StartingFolder = os.path.join(RootFolder, '20140818')  # 20
-#~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
-#~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
-#~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
-#~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
-#~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
-#~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
-#~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
-#~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
-#~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
-#~ StartingFolder = os.path.join(RootFolder, '20140907')  # 30
-
-# Testing
-#~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
-    #~ 'Lensation-CHR6020')
-# Testing
-StartingFolder = RootFolder
+if 'linux' in sys.platform:
+    # If running at the office, grep AFS
+    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
+        'XrayImages')
+    #~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
+    #~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
+    #~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
+    #~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
+    #~ StartingFolder = os.path.join(RootFolder, '20140731')  # 262
+    #~ StartingFolder = os.path.join(RootFolder, '20140818')  # 20
+    #~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
+    #~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
+    #~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
+    #~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
+    #~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
+    #~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
+    #~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
+    #~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
+    #~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
+    #~ StartingFolder = os.path.join(RootFolder, '20140907')  # 277
+    #~ StartingFolder = os.path.join(RootFolder, '20140914')  # 47
+    StartingFolder = RootFolder
+else:
+    # If running on Ivans machine, look on the connected harddisk
+    StartingFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/AR0130/Computar-11A/')
+    StartingFolder = ('/Volumes/exFAT')
 
 # Generate a list of log files, based on http://stackoverflow.com/a/14798263
 LogFiles = [os.path.join(dirpath, f)
@@ -68,11 +71,6 @@ Mean = [float(linecache.getline(i, 26).split(':')[1].strip())
     for i in LogFiles]
 STD = [float(linecache.getline(i, 27).split(':')[1].strip())
     for i in LogFiles]
-#~ for i in LogFiles:
-    #~ print i
-    #~ print float(linecache.getline(i, 25).split(':')[1].strip())
-    #~ print 80*'-'
-#~ exit()
 
 # Information about what we did
 print 'In these log files, we have data for'
@@ -89,65 +87,73 @@ print '\t- ', len(set(Modality)), 'modalities:'
 for i in set(Modality):
     print '\t\t-', i
 
-textalpha = 0.309
-move = 0.01
 # Plot figure
-## CMOS-Distance
+## Setup plot
+#~ plt.xkcd()
+textalpha = 0.618
+
+## Do the plot
 fig = plt.figure(figsize=[16, 9])
-fig.suptitle(' '.join(['Data from', str(len(LogFiles)),
-    'log files from', StartingFolder, 'colored by STD']))
-ax = fig.add_subplot(121, projection='3d')
-plot = ax.scatter(
-    SDD, Mean, Max,
-    'o', c=STD, edgecolor='', cmap='hot', s=250, alpha=0.5)
-#~ for x, y, z, label in zip(
-    #~ SDD, Mean, Max,
-    #~ zip(Sensor, Lens)):
-    #~#~ zip(Scintillator, Sensor, Lens)):
-    #~ ax.text(x + move, y + move, z  + move, ' / '.join(label),
-        #~ alpha=textalpha)
+#~ fig.suptitle(' '.join(['Data from', str(len(LogFiles)), 'log files from',
+    #~ StartingFolder, 'colored by maximal brightness']))
 
-#~ ax.set_xlim([66, 222])
-#~ ax.set_ylim([0, 750])
-#~ ax.set_zlim([0, 1000])
+#~ ## Subplots
+#~ ax = fig.add_subplot(221, projection='3d')
+#~ plot = ax.scatter(SDD, Mean, STD,
+    #~ 'o', c=Max, edgecolor='', cmap='hot', s=250, alpha=0.5)
+#~ for x, y, z, label in zip(SDD, Mean, Max, zip(Lens, Scintillator, Modality, Lens)):
+    #~ ax.text(x, y, z, '\n'.join(label))
+#~ ax.set_xlabel('Scintillator-CMOS distance [mm]')
+#~ ax.set_ylabel('Mean brightness of best image')
+#~ ax.set_zlabel('ExperimentID')
 
-ax.set_xlabel('Scintillator-CMOS distance [mm]')
-ax.set_ylabel('Mean Brightness of best image')
-ax.set_zlabel('Max Brightness of best image')
-plt.title('Modality')
+def subset(Selector, label=False):
+    '''
+    Select only a subset of items to present in the second plot, according to
+    http://stackoverflow.com/a/3555387/323100
+    '''
+    MaskedX = [item for item, flag in zip(SDD, Scintillator) if Selector in flag]
+    MaskedY = [item for item, flag in zip(Mean, Scintillator) if Selector in flag]
+    MaskedZ = [item for item, flag in zip(STD, Scintillator) if Selector in flag]
+    MaskedC = [item for item, flag in zip(STD, Scintillator) if Selector in flag]
+    MaskedI = [str(item) for item, flag in zip(ExperimentID, Scintillator) if
+        Selector in flag]
+    plot = ax.scatter(
+        MaskedX, MaskedY, MaskedZ,
+        'o', c=MaskedC, cmap='hot', s=250)
+    if label:
+        for x, y, z, label in zip(MaskedX, MaskedY, MaskedZ, MaskedI):
+            ax.text(x, y, z, label)
+    ax.set_xlabel('Scintillator-CMOS distance [mm]')
+    ax.set_ylabel('Mean brightness of best image')
+    ax.set_zlabel('Standard deviation')
 
-# Select only a subset of items to present in the second plot, according to
-# http://stackoverflow.com/a/3555387/323100
-#~ Selector = 'Hamamatsu'
-#~ Selector = 'Pingseng'
-#~ Selector = 'Toshiba'
-Selector = 'AppScinTech'
-MaskedX = [item for item, flag in zip(Max, Scintillator) if Selector in flag]
-MaskedY = [item for item, flag in zip(Mean, Scintillator) if Selector in flag]
-MaskedZ = [item for item, flag in zip(STD, Scintillator) if Selector in flag]
-MaskedC = [item for item, flag in zip(STD, Scintillator) if Selector in flag]
-MaskedI = [str(item) for item, flag in zip(ExperimentID, Scintillator) if
-    'AppS' in flag]
+    ax.set_xlim([50, 300])
+    ax.set_ylim([0, 500])
+    ax.set_zlim([0, 100])
 
-## AppScinTech
-ax = fig.add_subplot(122, projection='3d')
-plot = ax.scatter(
-    MaskedX, MaskedY, MaskedZ,
-    'o', c=MaskedC, cmap='hot', s=250)
-for x, y, z, label in zip(
-    MaskedX, MaskedY, MaskedZ,
-    zip(MaskedI)):
-    ax.text(x + move, y + move, z + move, ' / '.join(label), alpha=textalpha)
+    plt.title(' '.join([str(len(MaskedX)),
+        'images for', Selector]))
+    return Selector
 
-ax.set_xlabel('Max')
-ax.set_ylabel('Mean')
-ax.set_zlabel('STD')
-plt.title(' '.join([str(len(MaskedX)),
-    'images for', Selector]))
+## Subplot Hamamatsu
+ax = fig.add_subplot(221, projection='3d')
+subset('Hamamatsu')
+
+## Subplot Pingseng
+ax = fig.add_subplot(222, projection='3d')
+subset('Pingseng')
+
+## Subplot Toshiba
+ax = fig.add_subplot(223, projection='3d')
+subset('Toshiba')
+
+## Subplot AppScinTech
+ax = fig.add_subplot(224, projection='3d')
+subset('AppScinTech')
 
 plt.tight_layout()
-
-OutputImage = os.path.join(StartingFolder, 'Overview_' + Selector + '.png')
+OutputImage = os.path.join(StartingFolder, 'Overview.png')
 print 'Saving figure as', OutputImage
 plt.savefig(OutputImage, transparent=True)
 
