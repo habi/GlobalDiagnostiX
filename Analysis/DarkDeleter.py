@@ -46,10 +46,10 @@ if 'linux' in sys.platform:
     #~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
     #~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
     #~ StartingFolder = os.path.join(RootFolder, '20140907')  # 277
-    StartingFolder = os.path.join(RootFolder, '20140914')  # 47
+    #~ StartingFolder = os.path.join(RootFolder, '20140914')  # 47
     #~ StartingFolder = os.path.join(RootFolder, '20140916')  # 51
-    #~ StartingFolder = os.path.join(RootFolder, '20140920')  #
-    #~ StartingFolder = os.path.join(RootFolder, '20140921')  #
+    #~ StartingFolder = os.path.join(RootFolder, '20140920')  # 94
+    StartingFolder = os.path.join(RootFolder, '20140921')  # 227
 
 # Look for all folders matching the naming convention
 Experiment, ExperimentID = get_experiment_list(StartingFolder)
