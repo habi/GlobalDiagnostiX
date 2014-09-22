@@ -14,6 +14,8 @@ import os
 import time
 import subprocess
 import sys
+
+from functions import get_experiment_list
 from functions import get_git_hash
 from functions import myLogger
 
@@ -55,17 +57,7 @@ else:
 
 
 # Look for all folders matching the naming convention
-Experiment = []
-ExperimentID = []
-for root, dirs, files in os.walk(StartingFolder):
-    #~ print 'Looking for experiment IDs in folder', os.path.basename(root)
-    if (len(os.path.basename(root)) == 7 or len(os.path.basename(root)) == 8)\
-        and not 'Toshiba' in os.path.basename(root) and \
-        not 'MT9' in os.path.basename(root) and \
-        not 'AR0' in os.path.basename(root):
-        Experiment.append(root)
-        ExperimentID.append(os.path.basename(root))
-
+Experiment, ExperimentID = get_experiment_list(StartingFolder)
 print 'I found', len(Experiment), 'experiment IDs in', StartingFolder
 
 AnalyisList = []
