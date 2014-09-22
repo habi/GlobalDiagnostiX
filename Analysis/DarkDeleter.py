@@ -15,43 +15,47 @@ import glob
 import os
 import time
 import numpy
+import sys
+from functions import AskUser
+from functions import get_git_hash
+from functions import myLogger
 
 # Setup
 ReallyRemove = True
 
 # Where shall we start?
-RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-    'XrayImages')
-#~ StartingFolder = os.path.join(RootFolder, '20140721')
-#~ StartingFolder = os.path.join(RootFolder, '20140722')
-#~ StartingFolder = os.path.join(RootFolder, '20140724')
-#~ StartingFolder = os.path.join(RootFolder, '20140730')
-#~ StartingFolder = os.path.join(RootFolder, '20140731')
-#~ StartingFolder = os.path.join(RootFolder, '20140818')
-#~ StartingFolder = os.path.join(RootFolder, '20140819')
-#~ StartingFolder = os.path.join(RootFolder, '20140820')
-#~ StartingFolder = os.path.join(RootFolder, '20140822')
-#~ StartingFolder = os.path.join(RootFolder, '20140823')
-#~ StartingFolder = os.path.join(RootFolder, '20140825')
-#~ StartingFolder = os.path.join(RootFolder, '20140829')
-#~ StartingFolder = os.path.join(RootFolder, '20140831')
-#~ StartingFolder = os.path.join(RootFolder, '20140901')
-#~ StartingFolder = os.path.join(RootFolder, '20140903')
-StartingFolder = os.path.join(RootFolder, '20140907')
-
-# Testing
-#~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
-    #~ 'Lensation-CHR6020')
-# Testing
-#~ StartingFolder = RootFolder
+if 'linux' in sys.platform:
+    # If running at the office, grep AFS
+    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
+        'XrayImages')
+    #~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
+    #~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
+    #~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
+    #~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
+    #~ StartingFolder = os.path.join(RootFolder, '20140731')  # 262
+    #~ StartingFolder = os.path.join(RootFolder, '20140818')  # 20
+    #~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
+    #~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
+    #~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
+    #~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
+    #~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
+    #~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
+    #~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
+    #~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
+    #~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
+    #~ StartingFolder = os.path.join(RootFolder, '20140907')  # 277
+    StartingFolder = os.path.join(RootFolder, '20140914')  # 47
+    #~ StartingFolder = os.path.join(RootFolder, '20140916')  # 51
+    #~ StartingFolder = os.path.join(RootFolder, '20140920')  #
+    #~ StartingFolder = os.path.join(RootFolder, '20140921')  #
 
 # Look for all folders matching the naming convention
 Experiment = []
 ExperimentID = []
 for root, dirs, files in os.walk(StartingFolder):
     #~ print 'Looking for experiment IDs in folder', os.path.basename(root)
-    if len(os.path.basename(root)) == 7 and \
-        not 'Toshiba' in os.path.basename(root) and \
+    if (len(os.path.basename(root)) == 7 or len(os.path.basename(root)) == 8)\
+        and not 'Toshiba' in os.path.basename(root) and \
         not 'MT9' in os.path.basename(root) and \
         not 'AR0' in os.path.basename(root):
         Experiment.append(root)

@@ -13,6 +13,7 @@ image(s) of all the exposures.
 from __future__ import division
 import glob
 import os
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy
 import sys
@@ -21,8 +22,6 @@ import scipy.misc  # for saving png or tif at the end
 from functions import AskUser
 from functions import get_git_hash
 from functions import myLogger
-
-import matplotlib
 
 
 # Setup
@@ -52,8 +51,11 @@ if 'linux' in sys.platform:
     #~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
     #~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
     #~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
-    #~ StartingFolder = os.path.join(RootFolder, '20140907')  # 30
-    StartingFolder = os.path.join(RootFolder, '20140914')  # 47
+    #~ StartingFolder = os.path.join(RootFolder, '20140907')  # 277
+    #~ StartingFolder = os.path.join(RootFolder, '20140914')  # 47
+    StartingFolder = os.path.join(RootFolder, '20140916')  # 51
+    #~ StartingFolder = os.path.join(RootFolder, '20140920')  #
+    #~ StartingFolder = os.path.join(RootFolder, '20140921')  #
 else:
     # If running on Ivans machine, look on the connected harddisk
     StartingFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/AR0130/Computar-11A/')
@@ -104,8 +106,8 @@ Experiment = []
 ExperimentID = []
 for root, dirs, files in os.walk(StartingFolder):
     #~ print 'Looking for experiment IDs in folder', os.path.basename(root)
-    if len(os.path.basename(root)) == 7 and \
-        not 'Toshiba' in os.path.basename(root) and \
+    if (len(os.path.basename(root)) == 7 or len(os.path.basename(root)) == 8)\
+        and not 'Toshiba' in os.path.basename(root) and \
         not 'MT9' in os.path.basename(root) and \
         not 'AR0' in os.path.basename(root):
         Experiment.append(root)
