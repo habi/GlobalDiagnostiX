@@ -87,35 +87,20 @@ print '\t- ', len(set(Modality)), 'modalities:'
 for i in set(Modality):
     print '\t\t-', i
 
-# Plot figure
-## Setup plot
-#~ plt.xkcd()
-textalpha = 0.618
-
-## Do the plot
-fig = plt.figure(figsize=[16, 9])
-#~ fig.suptitle(' '.join(['Data from', str(len(LogFiles)), 'log files from',
-    #~ StartingFolder, 'colored by maximal brightness']))
-
-#~ ## Subplots
-#~ ax = fig.add_subplot(221, projection='3d')
-#~ plot = ax.scatter(SDD, Mean, STD,
-    #~ 'o', c=Max, edgecolor='', cmap='hot', s=250, alpha=0.5)
-#~ for x, y, z, label in zip(SDD, Mean, Max, zip(Lens, Scintillator, Modality, Lens)):
-    #~ ax.text(x, y, z, '\n'.join(label))
-#~ ax.set_xlabel('Scintillator-CMOS distance [mm]')
-#~ ax.set_ylabel('Mean brightness of best image')
-#~ ax.set_zlabel('ExperimentID')
 
 def subset(Selector, label=False):
     '''
     Select only a subset of items to present in the second plot, according to
     http://stackoverflow.com/a/3555387/323100
     '''
-    MaskedX = [item for item, flag in zip(SDD, Scintillator) if Selector in flag]
-    MaskedY = [item for item, flag in zip(Mean, Scintillator) if Selector in flag]
-    MaskedZ = [item for item, flag in zip(STD, Scintillator) if Selector in flag]
-    MaskedC = [item for item, flag in zip(STD, Scintillator) if Selector in flag]
+    MaskedX = [item for item, flag in zip(SDD, Scintillator) if Selector in
+        flag]
+    MaskedY = [item for item, flag in zip(Mean, Scintillator) if Selector in
+        flag]
+    MaskedZ = [item for item, flag in zip(STD, Scintillator) if Selector in
+        flag]
+    MaskedC = [item for item, flag in zip(STD, Scintillator) if Selector in
+        flag]
     MaskedI = [str(item) for item, flag in zip(ExperimentID, Scintillator) if
         Selector in flag]
     plot = ax.scatter(
@@ -135,6 +120,13 @@ def subset(Selector, label=False):
     plt.title(' '.join([str(len(MaskedX)),
         'images for', Selector]))
     return Selector
+
+## Do the plot
+fig = plt.figure(figsize=[16, 9])
+# Plot figure
+## Setup plot
+plt.xkcd()
+textalpha = 0.618
 
 ## Subplot Hamamatsu
 ax = fig.add_subplot(221, projection='3d')
