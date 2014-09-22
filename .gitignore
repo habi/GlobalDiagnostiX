@@ -20,3 +20,5 @@ Desktop/*
 ImageJ/*
 Config
 .DS_Store
+geany_run_script.sh
+test.py
