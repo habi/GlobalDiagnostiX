@@ -178,7 +178,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         logfile.info('Log file for Experiment ID %s, Analsyis performed on %s',
             ExperimentID[SelectedExperiment],
             time.strftime('%d.%m.%Y at %H:%M:%S'))
-        logfile.info('\nMade with "%s" at Revision %s',
+        logfile.info('\nMade with "%s" at Revision %s\n',
             os.path.basename(__file__), get_git_hash())
         logfile.info(80 * '-')
         logfile.info('All image files are to be found in %s', StartingFolder)
