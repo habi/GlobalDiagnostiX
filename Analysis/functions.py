@@ -37,8 +37,9 @@ def get_git_hash():
     http://stackoverflow.com/a/18283905/323100
     """
     from subprocess import Popen, PIPE
-    gitprocess = Popen(['git', 'rev-parse', '--short', '--verify',
-        'HEAD'], stdout=PIPE)
+    gitprocess = Popen(['git', '--git-dir',
+        '/afs/psi.ch/user/h/haberthuer/EssentialMed/Dev/.git', 'rev-parse',
+        '--short', '--verify', 'HEAD'], stdout=PIPE)
     (output, _) = gitprocess.communicate()
     return output.strip()
 
