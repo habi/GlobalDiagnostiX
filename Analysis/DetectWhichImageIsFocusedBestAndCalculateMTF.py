@@ -259,8 +259,9 @@ plt.title('2D FFT')
 plt.subplot(245)
 plt.imshow(CameraImage, interpolation='none', cmap='gray')
 Title = ' '.join(['Best focus@' +
-                   os.path.basename(Images[STD.index(max(STD))]).split('_')[-1].split('.')[0] +
-                   '\nmin/max=' + str(numpy.min(CameraImage)) + '/' +
+                   os.path.basename(Images[STD.index(max(STD))]).split('_')
+                   [-1].split('.')[0] + '\nmin/max=' +
+                   str(numpy.min(CameraImage)) + '/' +
                    str(numpy.max(CameraImage))])
 plt.title(Title)
 plt.subplot(246)
