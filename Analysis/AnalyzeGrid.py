@@ -189,9 +189,13 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     # Histograms
     bins = 256
     plt.subplot(223)
-    plt.hist(OriginalImage.flatten(), bins, fc='k', ec='k')
+    plt.hist(OriginalImage.flatten(), bins, histtype='stepfilled',
+        normed=True)
+    #~ plt.xlim([0, 0.95])
     plt.subplot(224)
-    plt.hist(StretchedImage.flatten(), bins, fc='k', ec='k')
+    plt.hist(StretchedImage.flatten(), bins, histtype='stepfilled',
+        normed=True)
+    #~ plt.xlim([0, 0.95])
     if 'linux' in sys.platform:
         plt.tight_layout()
 
@@ -414,6 +418,6 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     plt.savefig(SaveName)
     print 'Figure saved as', SaveName
     print 80 * '-'
-
+    plt.pause(0.001)
     time.sleep(1)
     plt.close('all')
