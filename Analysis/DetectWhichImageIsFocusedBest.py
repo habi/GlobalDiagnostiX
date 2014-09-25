@@ -139,4 +139,3 @@ plt.imshow(plt.imread(Images[STD.index(max(STD))]), cmap='gray')
 plt.title('best@' + os.path.basename(Images[STD.index(max(STD))]))
 plt.savefig(Directories[ChosenFolder] + '.png')
 plt.show()
-
