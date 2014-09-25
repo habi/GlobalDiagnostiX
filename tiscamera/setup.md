@@ -35,7 +35,7 @@ To actually look at the image I started `mplayer` with the command below:
 > mplayer tv:// -tv driver=v4l2:device=/dev/video0
 
 This gives a 640x480 window (top left) of the total chip (and made me question
-my screwdriver skills, because I suspected that I atteched the lens holder
+my screwdriver skills, because I suspected that I attached the lens holder
 completely wrong).
 So, to see the whole chip, start mplayer like this
 > mplayer tv:// -tv driver=v4l2:width=2592:height=1922:device=/dev/video0·
