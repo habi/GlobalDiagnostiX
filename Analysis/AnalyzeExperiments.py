@@ -17,6 +17,7 @@ if 'linux' in sys.platform:
     RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
         'XrayImages')
     StartingFolder = os.path.join(RootFolder, '20140921')  # 4
+    StartingFolder = RootFolder
 else:
     # If running on Ivans machine, look on the connected harddisk
     StartingFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/AR0130/Computar-11A/')
@@ -28,43 +29,63 @@ Files = [os.path.join(dirpath, f)
     for f in files if f.endswith('.image.corrected.stretched.png')]
 print 'I found', len(Files), 'images to work with in', StartingFolder
 
-Files = Files[:6]
-print 'Working with the first', len(Files), 'images'
+# Select every n'th image (http://stackoverflow.com/a/1404229/323100)
+Files = [Files[i] for i in xrange(0, len(Files), 156)]
 
-ExperimentID = [ os.path.split(i)[1].split('.')[0] for i in Files]
-Images = [ plt.imread(i) for i in Files]
-Mean = [ np.mean(i) * 255 for i in Images]
-STD = [ np.std(i) * 255 for i in Images]
+# Grab data from these files
+ExperimentID = [os.path.split(i)[1].split('.')[0] for i in Files]
+Images = [plt.imread(i) for i in Files]
+Mean = [np.mean(i) * 255 for i in Images]
+STD = [np.std(i) * 255 for i in Images]
 
-# Sort according to defined value
-sortedIDs = [x for (y,x) in sorted(zip(Mean,ExperimentID), reverse=True)]
-sortedImages = [x for (y,x) in sorted(zip(Mean,Images), reverse=True)]
-sortedSTD = [x for (y,x) in sorted(zip(Mean,STD), reverse=True)]
+print 'Working with', len(Files), 'images in', \
+    os.path.dirname(os.path.commonprefix(Files))
+for c, item in enumerate(Files):
+    print c, 'of', len(Files)
+    print '\t', \
+        str(item)[len(os.path.dirname(os.path.commonprefix(Files))) + 1:]
+    print '\tMean:', round(Mean[c], 1)
+    print '\tSTD:', round(STD[c], 1)
 
-plt.figure(figsize=[16, 16])
+# Sort according to something
+sort = 'std'
+if sort == 'std':
+    sortedIDs = [x for (y, x) in sorted(zip(STD, ExperimentID),
+        reverse=True)]
+    sortedImages = [x for (y, x) in sorted(zip(STD, Images), reverse=True)]
+    sortedMean = [x for (y, x) in sorted(zip(STD, Mean), reverse=True)]
+    sortedSTD = [x for (y, x) in sorted(zip(STD, STD), reverse=True)]
+elif sort == 'mean':
+    sortedIDs = [x for (y, x) in sorted(zip(Mean, ExperimentID),
+        reverse=True)]
+    sortedImages = [x for (y, x) in sorted(zip(Mean, Images), reverse=True)]
+    sortedMean = [x for (y, x) in sorted(zip(Mean, Mean), reverse=True)]
+    sortedSTD = [x for (y, x) in sorted(zip(Mean, STD), reverse=True)]
+elif sort == 'id':
+    sortedIDs = [x for (y, x) in sorted(zip(ExperimentID, ExperimentID),
+        reverse=True)]
+    sortedImages = [x for (y, x) in sorted(zip(ExperimentID, Images),
+        reverse=True)]
+    sortedMean = [x for (y, x) in sorted(zip(ExperimentID, Mean),
+        reverse=True)]
+    sortedSTD = [x for (y, x) in sorted(zip(ExperimentID, STD),
+        reverse=True)]
+
+plt.figure(figsize=[23, 8])
 bins = 255
-for c, i in enumerate(Images):
-    print c + 1, 'Displaying image'
-    plt.subplot(4, len(Files), c + 1)
-    plt.imshow(i, cmap='bone')
-    plt.title(' '.join([ExperimentID[c], '\n', str(round(Mean[c], 3)), '|',
-        str(round(STD[c], 3))]))
-    plt.axis('off')
-    plt.subplot(4, len(Files), c + len(Files) + 1)
-    print '  Generating histogram'
-    plt.hist(i.flatten(), bins, fc='k', ec='k')
-    plt.ylim([0,1.2e5])
 for c, i in enumerate(sortedImages):
-    print c + 1, 'Displaying images sorted by Mean'
-    plt.subplot(4, len(Files), c + 2 * len(Files) + 1 )
+    sys.stdout.write(''.join(['\rImage %d/' % c, str(len(Images))]))
+    plt.subplot(2, len(Files), c + 1)
     plt.imshow(i, cmap='bone')
-    plt.title(' '.join([sortedIDs[c], '\n', str(round(sorted(Mean,reverse=True)[c], 3)), '|',
-        str(round(sortedSTD[c], 3))]))
+    plt.title(' '.join([sortedIDs[c], '\nMean', str(round(sortedMean[c], 1)),
+        '\nSTD', str(round(sortedSTD[c], 1))]))
     plt.axis('off')
-    plt.subplot(4, len(Files), c + 3 * len(Files) + 1 )
-    print '  Generating histogram'
-    plt.hist(i.flatten(), bins, fc='k', ec='k')
-    plt.ylim([0,1.2e5])
+    plt.subplot(2, len(Files), c + len(Files) + 1)
+    plt.hist(i.flatten(), bins, histtype='stepfilled')
+    plt.ylim([0, 1.2e5])
+    sys.stdout.flush()
+
+print '\nShowing plot'
 
 plt.tight_layout()
 plt.show()
