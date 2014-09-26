@@ -177,21 +177,25 @@ ax4 = fig.add_subplot(224, projection='3d')
 subset('AppScinTech', label=False)
 
 plt.tight_layout()
-plt.ion()
-plt.pause(0.0001)
 
-for ii in range(0, 361, 1):
-    ax1.azim = 60 + ii
-    ax2.azim = 60 + ii
-    ax3.azim = 60 + ii
-    ax4.azim = 60 + ii
-    sys.stdout.write("\rwriting angle %d/360" % ii)
-    plt.savefig('movie_' + str(ii).zfill(3) + '.png', transparent=True)
-    sys.stdout.flush()
+animate = True
+
+if animate:
+    plt.ion()
     plt.pause(0.0001)
-    plt.draw()
-sys.stdout.write("\n") # move the cursor to the next line
-
-OutputImage = os.path.join(StartingFolder, 'Overview.png')
-print 'Saving figure as', OutputImage
-plt.savefig(OutputImage, transparent=True)
+    for ii in range(0, 361, 1):
+        ax1.azim = 60 + ii
+        ax2.azim = 60 + ii
+        ax3.azim = 60 + ii
+        ax4.azim = 60 + ii
+        sys.stdout.write("\rwriting angle %d/360" % ii)
+        plt.savefig('movie_' + str(ii).zfill(3) + '.png', transparent=False)
+        sys.stdout.flush()
+        plt.pause(0.0001)
+        plt.draw()
+    sys.stdout.write("\n") # move the cursor to the next line
+else:
+    OutputImage = os.path.join(StartingFolder, 'Overview.png')
+    print 'Saving figure as', OutputImage
+    plt.savefig(OutputImage, transparent=False)
+    plt.show()
