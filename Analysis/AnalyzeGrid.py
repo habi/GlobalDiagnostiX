@@ -21,40 +21,32 @@ from functions import myLogger
 from functions import get_git_hash
 
 # Where shall we start?
-if 'linux' in sys.platform:
-    # If running at the office, grep AFS
-    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-        'XrayImages')
-    #~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
-    #~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
-    #~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
-    #~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
-    #~ StartingFolder = os.path.join(RootFolder, '20140731')  # 262
-    #~ StartingFolder = os.path.join(RootFolder, '20140818')  # 20
-    #~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
-    #~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
-    #~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
-    #~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
-    #~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
-    #~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
-    #~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
-    #~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
-    #~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
-    #~ StartingFolder = os.path.join(RootFolder, '20140907')  # 277
-    #~ StartingFolder = os.path.join(RootFolder, '20140914')  # 47
-    #~ StartingFolder = os.path.join(RootFolder, '20140916')  # 51
-    #~ StartingFolder = os.path.join(RootFolder, '20140920')  # 94
-    StartingFolder = os.path.join(RootFolder, '20140921')  # 227
-else:
-    # If running on Ivans machine, look on the connected harddisk
-    StartingFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/AR0130/Computar-11A/')
-    StartingFolder = ('/Volumes/exFAT')
+RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
+#~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
+#~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
+#~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
+#~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
+#~ StartingFolder = os.path.join(RootFolder, '20140731')  # 262
+#~ StartingFolder = os.path.join(RootFolder, '20140818')  # 20
+#~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
+#~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
+#~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
+#~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
+#~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
+StartingFolder = os.path.join(RootFolder, '20140829')  # 4
+#StartingFolder = os.path.join(RootFolder, '20140831')  # 309
+#~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
+#~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
+#~ StartingFolder = os.path.join(RootFolder, '20140907')  # 277
+#~ StartingFolder = os.path.join(RootFolder, '20140914')  # 47
+#~ StartingFolder = os.path.join(RootFolder, '20140916')  # 51
+#~ StartingFolder = os.path.join(RootFolder, '20140920')  # 94
+#~ StartingFolder = os.path.join(RootFolder, '20140921')  # 226
 
 # Testing
 #~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
     #~ 'Lensation-CHR6020')
 # Testing
-
 
 # Setup
 # Draw lines in final plot $pad pixels longer than the selection (left & right)
@@ -105,6 +97,13 @@ STD = [float(linecache.getline(i, 27).split(':')[1].strip())
 # Generate folder names
 Experiment = [item[:-len('.analysis.log')] for item in LogFiles]
 
+# Get git hash once for the session, so it doesn't take so long for Ivan...
+git_hash = get_git_hash()
+if 'linux' in sys.platform:
+    git_hash = git_hash + ' (from Linux)'
+else:
+    git_hash = git_hash + ' (from OS X)'
+
 # Go through each selected experiment (in the shuffled list)
 for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     plt.ion()
@@ -112,7 +111,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         ExperimentID[SelectedExperiment], '|', \
         Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment], \
         '|', Lens[SelectedExperiment], '|', SDD[SelectedExperiment], \
-        'mm | git version', get_git_hash()
+        'mm | git version', git_hash
     # See if we've already ran the resolution evaluation, i.e. have a
     # 'ExperimentID.resolution.png' file. If we have, show it and let the user
     # decide to rerun, otherwise skip to next
@@ -120,11 +119,15 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     ResolutionFileName = os.path.join(
         os.path.dirname(Experiment[SelectedExperiment]),
         ExperimentID[SelectedExperiment] + '.resolution.png')
+    decide = True
     if os.path.isfile(ResolutionFileName):
+        decide = False
         plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)),
-            '|', ExperimentID[SelectedExperiment], '|',
-            Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment],
-            '|', Lens[SelectedExperiment], '| Resolution evaluation']))
+            '| Redo evaluation | ID', ExperimentID[SelectedExperiment],
+            '|', Scintillator[SelectedExperiment], '|',
+            Sensor[SelectedExperiment], '|', Lens[SelectedExperiment], '|',
+            str(SDD[SelectedExperiment]), 'mm | git version', git_hash]),
+            figsize=[20, 12])
         ResolutionFigure = plt.imread(ResolutionFileName)
         plt.imshow(ResolutionFigure)
         currentAxis = plt.gca()
@@ -149,6 +152,43 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         else:
             print 'We redo the evaluation of experiment', \
                 ExperimentID[SelectedExperiment]
+    if decide:
+        # Load the image and let the user decide if he wants to do the
+        # evaluation or directly skip to the next experiment ID
+        print 'See if we want to do the evaluation'
+        SelectionFileName = os.path.join(
+            os.path.dirname(Experiment[SelectedExperiment]),
+            ExperimentID[SelectedExperiment] +
+            '.image.corrected.stretched.png')
+        SelectionImage = plt.imread(SelectionFileName)
+        plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)),
+            '| Decision | ID', ExperimentID[SelectedExperiment], '|',
+            Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment],
+            '|', Lens[SelectedExperiment], '|', str(SDD[SelectedExperiment]),
+            'mm | git version', git_hash]), figsize=(16, 12))
+        plt.imshow(SelectionImage, cmap='bone')
+        currentAxis = plt.gca()
+        ok = currentAxis.add_patch(Rectangle((0, 0),
+                                   SelectionImage.shape[1] / 2,
+                                   SelectionImage.shape[0],
+                                   facecolor='green', alpha=overlayalpha))
+        nok = currentAxis.add_patch(Rectangle((SelectionImage.shape[1] / 2,
+                                    0), SelectionImage.shape[1] / 2,
+                                    SelectionImage.shape[0],
+                                    facecolor='red', alpha=overlayalpha))
+        tellme(' '.join(['click left (green) if you want to do the',
+            'evaluation,\nclick right (red) if you want to skip experiment',
+            ExperimentID[SelectedExperiment]]))
+        # If the user clicks in the red, we do the analysis, if in the green
+        # we 'continue' to the next experiment ID
+        if plt.ginput(1, timeout=-1)[0][0] > SelectionImage.shape[1] / 2:
+            print 'We skip',  ExperimentID[SelectedExperiment]
+            plt.close('all')
+            continue
+        else:
+            print 'We evaluate experiment', ExperimentID[SelectedExperiment]
+    else:
+        wediditalready = False
     logfile = myLogger(os.path.dirname(Experiment[SelectedExperiment]),
         ExperimentID[SelectedExperiment] + '.resolution.log')
     logfile.info(
@@ -156,7 +196,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         ExperimentID[SelectedExperiment],
         time.strftime('%d.%m.%Y at %H:%M:%S'))
     logfile.info('\nMade with "%s" at Revision %s', os.path.basename(__file__),
-        get_git_hash())
+        git_hash)
     logfile.info(80 * '-')
     # either read original or contrast-stretched corrected image
     OriginalImage = plt.imread(os.path.join(
@@ -174,11 +214,10 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
 
     # Show original images with histograms
     plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)),
-        '| ID', ExperimentID[SelectedExperiment], '|',
+        '| Originals & Histogram | ID', ExperimentID[SelectedExperiment], '|',
         Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment], '|',
         Lens[SelectedExperiment], '|', str(SDD[SelectedExperiment]),
-        'mm | git version', get_git_hash(), '| Originals and Histograms']),
-        figsize=[16, 9])
+        'mm | git version', git_hash]), figsize=[16, 9])
     plt.subplot(221)
     plt.imshow(OriginalImage, cmap='bone', interpolation='nearest')
     plt.title(ExperimentID[SelectedExperiment] + '.image.corrected.png')
@@ -211,7 +250,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
             pts = numpy.asarray(plt.ginput(2, timeout=-1))
             if len(pts) < 2:
                 tellme('Too few points, starting over')
-                time.sleep(1)  # Wait a second
+                time.sleep(0.1)  # Wait a second
         # Get region of interest from user input and draw it
         xmin = int(round(min(pts[:, 0])))
         xmax = int(round(max(pts[:, 0])))
@@ -265,7 +304,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
             pts = numpy.asarray(plt.ginput(2, timeout=-1))
             if len(pts) < 2:
                 tellme('Too few points, starting over')
-                time.sleep(1)  # Wait a second
+                time.sleep(0.1)  # Wait a second
         # Get region of interest from user input and draw it
         xxmin = int(round(min(pts[:, 0])))
         xxmax = int(round(max(pts[:, 0])))
@@ -307,12 +346,12 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
 
     # Final plot
     fig = plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)),
-        '|', ExperimentID[SelectedExperiment], '|',
+        '| Result | ID', ExperimentID[SelectedExperiment], '|',
         Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment], '|',
-        Lens[SelectedExperiment], '| Result']), figsize=[16, 9])
+        Lens[SelectedExperiment]]), figsize=[16, 9])
     plt.suptitle(' '.join([Scintillator[SelectedExperiment], '|',
         Sensor[SelectedExperiment], '|', Lens[SelectedExperiment], '|',
-        str(SDD[SelectedExperiment]), 'cm | version', get_git_hash()]))
+        str(SDD[SelectedExperiment]), 'mm | version', git_hash]))
     # Use gridspec for easier positioning
     gs1 = GridSpec(3, 3)
     gs1.update(left=0.05, right=0.95, hspace=-0.2)
