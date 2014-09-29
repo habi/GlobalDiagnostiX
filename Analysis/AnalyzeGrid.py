@@ -44,6 +44,7 @@ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
 #~ StartingFolder = os.path.join(RootFolder, '20140921')  # 226
 
 # Select one
+# ProgressReport 2014-09-30
 StartingFolder = os.path.join(RootFolder, '20140901', 'Hamamatsu', 'MT9M001',
     'Lensation-CHR4020', 'Hand')
 StartingFolder = os.path.join(RootFolder, '20140730', 'Pingseng', 'MT9M001',
@@ -56,6 +57,10 @@ StartingFolder = os.path.join(RootFolder, '20140907', 'Hamamatsu', 'AR0130',
     'TIS-TBL-6C-3MP', 'Hand')
 StartingFolder = os.path.join(RootFolder, '20140920', 'Hamamatsu', 'AR0132',
     'Framos-DSL949A-NIR-F2.0', 'Lung05mAs')
+StartingFolder = os.path.join(RootFolder, '20140920', 'Hamamatsu', 'AR0132',
+    'TIS-TBL-6C-3MP', 'Lung63mAs')
+StartingFolder = os.path.join(RootFolder, '20140831', 'Hamamatsu', 'AR0132',
+    'Framos-DSL311A-NIR-F2.8', 'Hand')
 # Testing
 
 # Setup

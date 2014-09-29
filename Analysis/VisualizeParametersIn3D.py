@@ -204,7 +204,7 @@ if Animate:
     # Call the actual animation function.
     numframes = 360
     Movie = animation.FuncAnimation(fig, animate_camera, init_func=init,
-                                   frames = numframes, interval=10, blit=True)
+                                   frames=numframes, interval=10, blit=True)
 
     # Save the animation as an mp4.
     Movie.save('scintillators.mp4', fps=24, extra_args=['-vcodec', 'libx264'])

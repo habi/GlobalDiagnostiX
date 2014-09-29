@@ -87,7 +87,7 @@ if not options.kV in Voltage:
 
 ChosenVoltage = Voltage.index(options.kV)
 # Load spectra
-SpectraPath = os.path.join(os.getcwd(), 'Spectra')
+SpectraPath = '/afs/psi.ch/project/EssentialMed/Dev/Spectra'
 # Construct file names, then load the data with the filenames (we could do this
 # in one step, but like this it's easier to debug. 'SpectrumData' is the data
 # without comments, thus we read the mean energy on line 7 in a second step
@@ -144,7 +144,7 @@ print 'This SED can be calculated back to a number of photons with',\
 eta = 1e-9  # *ZV
 # Calculate the number of photons from the tube to the sample
 #~ N0 = (VI/E)*eta*(A/4Pir²)
-N0 = (options.kV * ((options.mAs * 1000) / (options.Exposuretime/1000))) /\
+N0 = (options.kV * ((options.mAs * 1000) / (options.Exposuretime / 1000))) /\
     PhotonEnergy * eta *\
     ((options.Length ** 2) / (4 * np.pi * options.Distance ** 2))
 print '%.4e' % N0, 'photons with a mean energy of,', PhotonEnergy
@@ -158,6 +158,8 @@ print 'With an exposure time of', options.Exposuretime, 'ms the',\
     '%.3e' % Flux, 'photons per second (from the source to the patient',\
     'surface.'
 
+exit()
+
 # Attenuation in Patient
 AttenuationCoefficient = 0.5  # For calculation we just simply assume 50%.
 # We NEED to read the data from the NIST tables, but they're in shutdown now...
@@ -165,27 +167,17 @@ print 'Attenuation coefficient set to', AttenuationCoefficient, 'cm^-1 (@' +\
     str(Voltage[ChosenVoltage]), 'kV)'
 # Number of absorbed photons
 # N = N0(e^-uT)
-N = N0 * (np.exp((-AttenuationCoefficient * (options.Thickness/100))))
+N = N0 * (np.exp((-AttenuationCoefficient * (options.Thickness / 100))))
 print 'Assuming an attenuation coefficient of', AttenuationCoefficient, 'and',\
     'a penetration depth of', options.Thickness, 'cm we have (according to',\
     'the Beer-Lambert law (N = N0 * e^-uT)'
 print '   *', '%.3e' % N, 'photons after the xrays have passed the patient'
 print '   * thus', '%.3e' % (N0 - N), 'photons were absorbed'
-print '   * the intensity dropped to', round((N/N0)*100, 2), '%'
+print '   * the intensity dropped to', round((N / N0) * 100, 2), '%'
 
 print
 print
 print 'Use nist-attenuation-scraper.py to get the correct attenuation!'
-
-exit()
-
-
-
-
-
-
-
-
 
 # Attenuation Coefficients
 # @40kV, half bone, half muscle

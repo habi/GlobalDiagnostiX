@@ -25,7 +25,7 @@ print 'I found', len(Files), 'images to work with in', StartingFolder
 randomizator = True
 if randomizator:
     # Randomly select some files
-    Files = random.sample(Files, 250)
+    Files = random.sample(Files, 265)
 else:
     # Select every n'th image (http://stackoverflow.com/a/1404229/323100)
     Files = [Files[i] for i in xrange(0, len(Files), 12)]
@@ -40,8 +40,16 @@ Images = [plt.imread(i) for i in Files]
 Mean = [np.mean(i) * 255 for i in Images]
 STD = [np.std(i) * 255 for i in Images]
 
+#~ # Give out info
+#~ for c, item in enumerate(ExperimentID):
+    #~ print str(c).rjust(2), 'of', len(ExperimentID), '| Mean:', \
+        #~ str(round(Mean[c], 1)).rjust(5), '| STD:', \
+        #~ str(round(STD[c], 1)).rjust(4), '|', \
+        #~ os.path.join(Folder[c],
+            #~ ExperimentID[c] + '.image.corrected.stretched.png')
+
 # Sort according to something
-sort = 'std'
+sort = 'mean'
 if sort == 'std':
     sortedIDs = [x for (y, x) in sorted(zip(STD, ExperimentID),
         reverse=True)]
@@ -91,7 +99,11 @@ for c, i in enumerate(sortedImages):
     plt.imshow(i, cmap='gray')
     plt.title(' '.join([str(c), '|', sortedIDs[c], '\nMean',
         str(round(sortedMean[c], 1)), '\nSTD',
-        str(round(sortedSTD[c], 1))]))
+        str(round(sortedSTD[c], 1)), '\n',
+        sortedFolder[c].split('/')[8], '-', sortedFolder[c].split('/')[9],
+        '-', sortedFolder[c].split('/')[10]]))
+    plt.axis('off')
+plt.suptitle(' '.join(['sorted by', sort]))
 plt.tight_layout()
 plt.show()
 exit()
@@ -115,13 +127,12 @@ for c, i in enumerate(sortedImages):
     plt.subplots_adjust(wspace=0.05)
     plt.subplots_adjust(hspace=0.05)
     plt.axis('off')
-    plt.suptitle(' '.join(['sorted by', sort]))
     #~ plt.subplot(2, len(Files), c + len(Files) + 1)
     #~ plt.hist(i.flatten(), bins=256, histtype='stepfilled')
     #~ plt.ylim([0, 1.2e5])
     sys.stdout.flush()
 
 print '\nShowing plot'
-
+plt.suptitle(' '.join(['sorted by', sort]))
 plt.tight_layout()
 plt.show()
