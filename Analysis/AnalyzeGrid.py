@@ -22,30 +22,40 @@ from functions import get_git_hash
 
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
-#~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
-#~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
-#~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
-#~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
-#~ StartingFolder = os.path.join(RootFolder, '20140731')  # 262
-#~ StartingFolder = os.path.join(RootFolder, '20140818')  # 20
-#~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
-#~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
-#~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
-#~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
+#StartingFolder = os.path.join(RootFolder, '20140721')  # 11
+#StartingFolder = os.path.join(RootFolder, '20140722')  # 44
+#StartingFolder = os.path.join(RootFolder, '20140724')  # 91
+#StartingFolder = os.path.join(RootFolder, '20140730')  # 30
+#StartingFolder = os.path.join(RootFolder, '20140731')  # 262
+#StartingFolder = os.path.join(RootFolder, '20140818')  # 20
+#StartingFolder = os.path.join(RootFolder, '20140819')  # 64
+#StartingFolder = os.path.join(RootFolder, '20140820')  # 64
+StartingFolder = os.path.join(RootFolder, '20140822')  # 149
+#StartingFolder = os.path.join(RootFolder, '20140823')  # 6
 #~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
-StartingFolder = os.path.join(RootFolder, '20140829')  # 4
-#StartingFolder = os.path.join(RootFolder, '20140831')  # 309
+#StartingFolder = os.path.join(RootFolder, '20140829')  # 4
+#~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
 #~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
 #~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
-#~ StartingFolder = os.path.join(RootFolder, '20140907')  # 277
-#~ StartingFolder = os.path.join(RootFolder, '20140914')  # 47
+#StartingFolder = os.path.join(RootFolder, '20140907')  # 277
+#StartingFolder = os.path.join(RootFolder, '20140914')  # 47
 #~ StartingFolder = os.path.join(RootFolder, '20140916')  # 51
 #~ StartingFolder = os.path.join(RootFolder, '20140920')  # 94
 #~ StartingFolder = os.path.join(RootFolder, '20140921')  # 226
 
-# Testing
-#~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
-    #~ 'Lensation-CHR6020')
+# Select one
+StartingFolder = os.path.join(RootFolder, '20140901', 'Hamamatsu', 'MT9M001',
+    'Lensation-CHR4020', 'Hand')
+StartingFolder = os.path.join(RootFolder, '20140730', 'Pingseng', 'MT9M001',
+    'Lensation-CHR4020')
+StartingFolder = os.path.join(RootFolder, '20140907', 'Hamamatsu', 'AR0130',
+    'Framos-DSL949A-NIR-F2.0')
+StartingFolder = os.path.join(RootFolder, '20140921', 'Hamamatsu', 'MT9M001',
+    'Lensation-CHR6020', 'Lung63mAs')
+StartingFolder = os.path.join(RootFolder, '20140907', 'Hamamatsu', 'AR0130',
+    'TIS-TBL-6C-3MP', 'Hand')
+StartingFolder = os.path.join(RootFolder, '20140920', 'Hamamatsu', 'AR0132',
+    'Framos-DSL949A-NIR-F2.0', 'Lung05mAs')
 # Testing
 
 # Setup
@@ -409,11 +419,11 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         label=' '.join(['mean of', str(steps), 'shown lines']))
     plt.xlim([0, LineROISize[0]])
     plt.ylim([0, 1])
-    if 'linux' in sys.platform:
-        plt.legend(loc='best')
-    else:
-        plt.legend([' '.join(['mean of', str(steps), 'shown lines'])],
-            loc='best')
+    #~ if 'linux' in sys.platform:
+        #~ plt.legend(loc='best')
+    #~ else:
+        #~ plt.legend([' '.join(['mean of', str(steps), 'shown lines'])],
+            #~ loc='best')
     # Turn off x-ticks: http://stackoverflow.com/a/12998531/323100
     plt.tick_params(axis='x', which='both', labelbottom='off')
     # remove "0" y-tick label: http://stackoverflow.com/a/13583251/323100
@@ -421,7 +431,8 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     yticks[0].label1.set_visible(False)
     plt.title(' '.join(['Brightness in the green', str(LineROISize[0]), 'x',
         str(LineROISize[1]),
-        'px ROI. Top: original image, bottom: contrast stretched image']))
+        'px ROI. Top: original image, bottom: contrast stretched image.',
+        '\ncolor: selected lines, black: mean of selected lines']))
 
     # Plot values for contrast streched image at the bottom
     plotmean = plt.subplot(gs2[-1, :], sharex=plotoriginal)
@@ -431,11 +442,11 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         label=' '.join(['mean of', str(steps), 'shown lines']))
     plt.xlim([0, LineROISize[0]])
     plt.ylim([0, 1])
-    if 'linux' in sys.platform:
-        plt.legend(loc='best')
-    else:
-        plt.legend([' '.join(['mean of', str(steps), 'shown lines'])],
-            loc='best')
+    #~ if 'linux' in sys.platform:
+        #~ plt.legend(loc='best')
+    #~ else:
+        #~ plt.legend([' '.join(['mean of', str(steps), 'shown lines'])],
+            #~ loc='best')
     # Write mean plot values to log file
     logfile.info('Mean brightness along %s equally spaced lines in ROI', steps)
     for i in numpy.mean(SelectedLines, axis=0):
