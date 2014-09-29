@@ -182,12 +182,12 @@ subset_seletor('AppScinTech', label=False)
 
 plt.tight_layout()
 
-Animate = True
+Animate = False
 if Animate:
     # Initialization function: Initialize plot, move the camera
     def init():
-        Azimuth = 66
-        Elevation = 15
+        Azimuth = 45
+        Elevation = 30
         for axis in (ax1, ax2, ax3, ax4):
             axis.azim = Azimuth
             axis.elev = Elevation
@@ -212,12 +212,16 @@ if Animate:
     plt.show()
 else:
     # Choose view
+    # Like in movie: 66/15
     # Brightness-Distance 0/90
     # STD-Distance 90/0
     # STD-Brightness 0/0
-    Azimuth = 0
-    Elevation = 0
+    Azimuth = 45
+    Elevation = 30
     for axis in (ax1, ax2, ax3, ax4):
         axis.azim = Azimuth
         axis.elev = Elevation
+    ImageName = 'Overview_az_' + str(Azimuth) + '_el_' + str(Elevation) + \
+        '.png'
+    plt.savefig(ImageName, transparent=True)
     plt.show()
