@@ -12,7 +12,7 @@ import random
 from functions import myLogger
 from functions import get_git_hash
 
-StartingFolder= ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
+StartingFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
         'XrayImages')
 
 # Go through all the results in the folder and show the images.
@@ -25,41 +25,37 @@ print 'I found', len(Files), 'images to work with in', StartingFolder
 randomizator = True
 if randomizator:
     # Randomly select some files
-    Files = random.sample(Files, 15)
+    Files = random.sample(Files, 250)
 else:
     # Select every n'th image (http://stackoverflow.com/a/1404229/323100)
-    Files = [Files[i] for i in xrange(0, len(Files), 100)][:10]
+    Files = [Files[i] for i in xrange(0, len(Files), 12)]
+
+print 'Reading', len(Files), 'images in', \
+    os.path.dirname(os.path.commonprefix(Files))
 
 # Extract data from the images
 ExperimentID = [os.path.split(i)[1].split('.')[0] for i in Files]
+Folder = [os.path.join(os.path.dirname(i)) for i in Files]
 Images = [plt.imread(i) for i in Files]
 Mean = [np.mean(i) * 255 for i in Images]
 STD = [np.std(i) * 255 for i in Images]
 
-print 'Working with', len(Files), 'images in', \
-    os.path.dirname(os.path.commonprefix(Files))
-for c, item in enumerate(Files):
-    print c, 'of', len(Files)
-    print '\t', \
-        str(item)[len(os.path.dirname(os.path.commonprefix(Files))) + 1:]
-    print '\tMean:', round(Mean[c], 1)
-    print '\tSTD:', round(STD[c], 1)
-
 # Sort according to something
-sort = 'mean'
-
+sort = 'std'
 if sort == 'std':
     sortedIDs = [x for (y, x) in sorted(zip(STD, ExperimentID),
         reverse=True)]
     sortedImages = [x for (y, x) in sorted(zip(STD, Images), reverse=True)]
     sortedMean = [x for (y, x) in sorted(zip(STD, Mean), reverse=True)]
     sortedSTD = [x for (y, x) in sorted(zip(STD, STD), reverse=True)]
+    sortedFolder = [x for (y, x) in sorted(zip(STD, Folder), reverse=True)]
 elif sort == 'mean':
     sortedIDs = [x for (y, x) in sorted(zip(Mean, ExperimentID),
         reverse=True)]
     sortedImages = [x for (y, x) in sorted(zip(Mean, Images), reverse=True)]
     sortedMean = [x for (y, x) in sorted(zip(Mean, Mean), reverse=True)]
     sortedSTD = [x for (y, x) in sorted(zip(Mean, STD), reverse=True)]
+    sortedFolder = [x for (y, x) in sorted(zip(Mean, Folder), reverse=True)]
 elif sort == 'id':
     sortedIDs = [x for (y, x) in sorted(zip(ExperimentID, ExperimentID),
         reverse=True)]
@@ -69,9 +65,40 @@ elif sort == 'id':
         reverse=True)]
     sortedSTD = [x for (y, x) in sorted(zip(ExperimentID, STD),
         reverse=True)]
+    sortedFolder = [x for (y, x) in sorted(zip(ExperimentID, Folder),
+        reverse=True)]
+
+# Select n top items from sorting criterion
+n = 10
+print 'Selecting', n, 'images, sorted by', sort
+sortedIDs = sortedIDs[:n]
+sortedImages = sortedImages[:n]
+sortedMean = sortedMean[:n]
+sortedSTD = sortedSTD[:n]
+sortedFolder = sortedFolder[:n]
+
+# Give out info
+for c, item in enumerate(sortedIDs):
+    print str(c).rjust(2), 'of', len(sortedIDs), '| Mean:', \
+        str(round(sortedMean[c], 1)).rjust(5), '| STD:', \
+        str(round(sortedSTD[c], 1)).rjust(4), '|', \
+        os.path.join(sortedFolder[c],
+            sortedIDs[c] + '.image.corrected.stretched.png')
+
+plt.figure(figsize=[23, 10])
+for c, i in enumerate(sortedImages):
+    plt.subplot(2, len(sortedImages) / 2, c + 1)
+    plt.imshow(i, cmap='gray')
+    plt.title(' '.join([str(c), '|', sortedIDs[c], '\nMean',
+        str(round(sortedMean[c], 1)), '\nSTD',
+        str(round(sortedSTD[c], 1))]))
+plt.tight_layout()
+plt.show()
+exit()
+
 
 # full screen figure
-plt.figure(figsize=[25, 25])
+plt.figure(figsize=[23, 10])
 
 for c, i in enumerate(sortedImages):
     sys.stdout.write(''.join(['\rImage %d/' % (c + 1), str(len(Images))]))
@@ -79,12 +106,12 @@ for c, i in enumerate(sortedImages):
         plt.subplot(int(np.ceil(len(Files) / 4)),
             int(np.ceil(len(Files) / 3)), c + 1)
     else:
-        plt.subplot(2, 5, c + 1)
+        plt.subplot(1, len(sortedImages), c + 1)
     plt.imshow(i, cmap='bone')
     currentDirName = os.path.dirname(Files[ExperimentID.index(sortedIDs[1])])[
         len(os.path.dirname(os.path.commonprefix(Files))) + 1:]
-    plt.title(' '.join([sortedIDs[c], '| Mean', str(round(sortedMean[c], 1)), '| STD',
-        str(round(sortedSTD[c], 1))]))
+    plt.title(' '.join([sortedIDs[c], '| Mean', str(round(sortedMean[c], 1)),
+        '| STD', str(round(sortedSTD[c], 1))]))
     plt.subplots_adjust(wspace=0.05)
     plt.subplots_adjust(hspace=0.05)
     plt.axis('off')
