@@ -15,6 +15,7 @@ import os
 import subprocess
 import sys
 import fnmatch
+import glob
 
 from functions import get_experiment_list
 from functions import get_git_hash
@@ -29,8 +30,8 @@ for root, dirnames, filenames in os.walk(os.path.join(RootFolder, StartingFolder
   for filename in fnmatch.filter(filenames, '*.gz'):
       ListOfTARs.append(os.path.join(root, filename))
 
-for item in ListOfTARs[:1]:
-    print 'unpacking', item
+for counter, item in enumerate(ListOfTARs):
+    print counter, 'of', len(ListOfTARs), '| unpacking', item
     UnpackCommand = ['tar', '-xf', item, '--directory', os.path.dirname(item)]
     unpackit = subprocess.Popen(UnpackCommand, stdout=subprocess.PIPE)
     output, error = unpackit.communicate()
@@ -38,4 +39,23 @@ for item in ListOfTARs[:1]:
         print output
     if error:
         print error
-    print '\nBooyaka!\n'
+    print '\nUnpacking done, now removing', item
+    try:
+        os.remove(item)
+    except:
+        print 'It is already gone!'
+    ExperimentID = os.path.splitext(os.path.splitext(item)[0])[0]
+    DeletionLog = ExperimentID + '.deletion.log'
+    print 'Deletion done, now also removing', os.path.basename(DeletionLog), \
+        'and results from Analyis (all', \
+        os.path.basename(ExperimentID) + '*.png)'
+    try:
+        os.remove(DeletionLog)
+        for i in glob.glob(ExperimentID + '*.png'):
+            try:
+                os.remove(i)
+            except:
+                print 'The analysis images are already gone!'
+    except:
+            print 'The log file is already gone!'
+
