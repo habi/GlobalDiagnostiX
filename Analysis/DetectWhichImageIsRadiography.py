@@ -56,8 +56,8 @@ if 'linux' in sys.platform:
     #~ StartingFolder = os.path.join(RootFolder, '20140907')  # 277
     #~ StartingFolder = os.path.join(RootFolder, '20140914')  # 47
     #~ StartingFolder = os.path.join(RootFolder, '20140916')  # 51
-    #~ StartingFolder = os.path.join(RootFolder, '20140920')  # 94
-    StartingFolder = os.path.join(RootFolder, '20140921')  # 227
+    StartingFolder = os.path.join(RootFolder, '20140920')  # 94
+    #~ StartingFolder = os.path.join(RootFolder, '20140921')  # 227
 else:
     # If running on Ivans machine, look on the connected harddisk
     StartingFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/AR0130/Computar-11A/')
@@ -397,30 +397,28 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             DarkName = os.path.join(os.path.dirname(
                 Experiment[SelectedExperiment]),
                 ExperimentID[SelectedExperiment] + '.image.dark')
-            matplotlib.image.imsave(DarkName + '.png',
-                normalizeImage(MeanDarkImage), cmap=matplotlib.cm.gray)
-            matplotlib.image.imsave(DarkName + '.stretched.png',
-                contrast_stretch(MeanDarkImage), cmap=matplotlib.cm.gray)
+            scipy.misc.imsave(DarkName + '.png', normalizeImage(MeanDarkImage))
+            scipy.misc.imsave(DarkName + '.stretched.png',
+                contrast_stretch(MeanDarkImage))
             logfile.info('Average of %s dark frames saved as %s.png',
                 len(DarkImages), DarkName)
             print 'Saving summed images'
             SummedName = os.path.join(os.path.dirname(
                 Experiment[SelectedExperiment]),
                 ExperimentID[SelectedExperiment] + '.image.sum')
-            matplotlib.image.imsave(SummedName + '.png',
-                normalizeImage(SummedImage), cmap=matplotlib.cm.gray)
-            matplotlib.image.imsave(SummedName + '.stretched.png',
-                contrast_stretch(SummedImage), cmap=matplotlib.cm.gray)
+            scipy.misc.imsave(SummedName + '.png', normalizeImage(SummedImage))
+            scipy.misc.imsave(SummedName + '.stretched.png',
+                contrast_stretch(SummedImage))
             logfile.info('Sum of %s image frames saved as %s.png',
                 len(RealImages), SummedName)
             print 'Saving corrected image'
             CorrName = os.path.join(os.path.dirname(
                 Experiment[SelectedExperiment]),
                 ExperimentID[SelectedExperiment] + '.image.corrected')
-            matplotlib.image.imsave(CorrName + '.png',
-                normalizeImage(CorrectedImage), cmap=matplotlib.cm.gray)
-            matplotlib.image.imsave(CorrName + '.stretched.png',
-                contrast_stretch(CorrectedImage), cmap=matplotlib.cm.gray)
+            scipy.misc.imsave(CorrName + '.png',
+                normalizeImage(CorrectedImage))
+            scipy.misc.imsave(CorrName + '.stretched.png',
+                contrast_stretch(CorrectedImage))
             logfile.info('Sum of %s images subtracted with the mean of %s ' +
                 'dark frames saved as %s.png', len(RealImages),
                 len(DarkImages), CorrName)
