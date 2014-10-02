@@ -22,27 +22,27 @@ from functions import get_git_hash
 
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
-#StartingFolder = os.path.join(RootFolder, '20140721')  # 11
-#StartingFolder = os.path.join(RootFolder, '20140722')  # 44
-#StartingFolder = os.path.join(RootFolder, '20140724')  # 91
-#StartingFolder = os.path.join(RootFolder, '20140730')  # 30
-#StartingFolder = os.path.join(RootFolder, '20140731')  # 262
-#StartingFolder = os.path.join(RootFolder, '20140818')  # 20
-#StartingFolder = os.path.join(RootFolder, '20140819')  # 64
-#StartingFolder = os.path.join(RootFolder, '20140820')  # 64
-#StartingFolder = os.path.join(RootFolder, '20140822')  # 149
-#StartingFolder = os.path.join(RootFolder, '20140823')  # 6
-#StartingFolder = os.path.join(RootFolder, '20140825')  # 99
-StartingFolder = os.path.join(RootFolder, '20140829')  # 4
+#~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
+#~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
+#~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
+#~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
+#~ StartingFolder = os.path.join(RootFolder, '20140731')  # 262
+#~ StartingFolder = os.path.join(RootFolder, '20140818')  # 20
+#~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
+#~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
+#~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
+#~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
+#~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
+#~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
 #~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
-#StartingFolder = os.path.join(RootFolder, '20140901')  # 149
-#StartingFolder = os.path.join(RootFolder, '20140903')  # 30
-#StartingFolder = os.path.join(RootFolder, '20140907')  # 277
-#StartingFolder = os.path.join(RootFolder, '20140914')  # 47
-#StartingFolder = os.path.join(RootFolder, '20140916')  # 51
+#~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
+#~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
+#~ StartingFolder = os.path.join(RootFolder, '20140907')  # 277
+#~ StartingFolder = os.path.join(RootFolder, '20140914')  # 47
+#~ StartingFolder = os.path.join(RootFolder, '20140916')  # 51
 #~ StartingFolder = os.path.join(RootFolder, '20140920')  # 94
-#~ StartingFolder = os.path.join(RootFolder, '20140921')  # 226
-#~ StartingFolder = RootFolder
+StartingFolder = os.path.join(RootFolder, '20140921')  # 226
+StartingFolder = RootFolder
 
 # Testing
 #~ StartingFolder = os.path.join(RootFolder, '20140920', 'Hamamatsu',
@@ -60,7 +60,7 @@ linealpha = 3 * overlayalpha
 
 
 def tellme(blurb):
-    print(blurb)
+    #~ print(blurb)
     plt.title(blurb)
     plt.draw()
 
@@ -220,10 +220,10 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         Lens[SelectedExperiment], '|', str(SDD[SelectedExperiment]),
         'mm | git version', git_hash]), figsize=[16, 9])
     plt.subplot(221)
-    plt.imshow(OriginalImage, cmap='bone', interpolation='nearest')
+    plt.imshow(OriginalImage, cmap='bone', interpolation='bicubic')
     plt.title(ExperimentID[SelectedExperiment] + '.image.corrected.png')
     plt.subplot(222)
-    plt.imshow(StretchedImage, cmap='bone', interpolation='nearest')
+    plt.imshow(StretchedImage, cmap='bone', interpolation='bicubic')
     plt.title(ExperimentID[SelectedExperiment] +
         '.image.corrected.stretched.png')
     # Histograms
@@ -242,7 +242,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     # Let the user select the ROI of the resolution phantom on the contrast
     # stretched image
     plt.subplot(222)
-    plt.imshow(StretchedImage, cmap='bone', interpolation='nearest')
+    plt.imshow(StretchedImage, cmap='bone', interpolation='bicubic')
     done = False
     while not done:
         pts = []
@@ -269,7 +269,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         if not done:
             plt.cla()
             plt.subplot(222)
-            plt.imshow(StretchedImage, cmap='bone', interpolation='nearest')
+            plt.imshow(StretchedImage, cmap='bone', interpolation='bicubic')
     # Give plot a nice title
     BigROISize = [xmax - xmin, ymax - ymin]
     tellme(' '.join(['Selected ROI with a size of', str(BigROISize[0]), 'x',
@@ -293,7 +293,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     plt.cla()
     CroppedImage = OriginalImage[ymin:ymax, xmin:xmax]
     CroppedImageStretched = StretchedImage[ymin:ymax, xmin:xmax]
-    plt.imshow(CroppedImageStretched, cmap='bone', interpolation='none')
+    plt.imshow(CroppedImageStretched, cmap='bone', interpolation='bicubic')
     if 'linux' in sys.platform:
         plt.tight_layout()
     # Select ROI of resolution phantom.
@@ -325,7 +325,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
             plt.cla()
             plt.subplot(222)
             plt.imshow(CroppedImageStretched, cmap='bone',
-                interpolation='none')
+                interpolation='bicubic')
     if ((xxmax + pad) - (xxmin - pad) > numpy.shape(CroppedImage)[0]) or \
         ((xxmin - pad) <= 0):
         print 'Padding the selected ROI would make it bigger than the image'
@@ -358,11 +358,11 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     gs1.update(left=0.05, right=0.95, hspace=-0.2)
     # Show original image on top left
     plt.subplot(gs1[0, 0])
-    plt.imshow(OriginalImage, cmap='bone', interpolation='nearest')
+    plt.imshow(OriginalImage, cmap='bone', interpolation='bicubic')
     plt.title('Original Image')
     # Stretched image with both ROIs in top middle
     plt.subplot(gs1[0, 1])
-    plt.imshow(StretchedImage, cmap='bone', interpolation='nearest')
+    plt.imshow(StretchedImage, cmap='bone', interpolation='bicubic')
     plt.title(' '.join(['Contrast stretched Image\nROIs', str(BigROISize[0]),
         'x', str(BigROISize[1]), 'px (red),', str(LineROISize[0]), 'x',
         str(LineROISize[1]), 'px (green).']))
@@ -381,7 +381,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
                                                alpha=overlayalpha))
     # ROI and LineROI on top right
     plt.subplot(gs1[0, 2])
-    plt.imshow(CroppedImageStretched, cmap='bone', interpolation='none')
+    plt.imshow(CroppedImageStretched, cmap='bone', interpolation='bicubic')
     # Draw $steps horizontal lines in the LineROI
     # IWantHue, dark background, 10 colors, hard
     clr = ["#6B9519", "#9B46C3", "#281B32", "#F29C2F", "#F0418C", "#8DF239",
@@ -415,10 +415,9 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     yticks = plotoriginal.yaxis.get_major_ticks()
     yticks[0].label1.set_visible(False)
     plt.title(' '.join(['Brightness in the green', str(LineROISize[0]), 'x',
-        str(LineROISize[1]),
-        'px ROI. Top: original image, bottom: contrast stretched image',
-        '\ncolor: lines from top right, black: mean of', str(steps),
-        'lines']))
+        str(LineROISize[1]), 'px ROI. Top: original image, bottom: contrast',
+        'stretched image\nColor: lines from top right, black: mean of',
+        str(steps), 'lines']))
 
     # Plot values for contrast streched image at the bottom
     plotmean = plt.subplot(gs2[-1, :], sharex=plotoriginal)
@@ -451,3 +450,5 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     plt.pause(0.001)
     time.sleep(1)
     plt.close('all')
+
+print 'Fertig!'
