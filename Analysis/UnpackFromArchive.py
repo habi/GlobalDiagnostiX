@@ -23,12 +23,11 @@ from functions import myLogger
 
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
-StartingFolder = os.path.join(RootFolder, '20140920')  # 94
 
 ListOfTARs = []
-for root, dirnames, filenames in os.walk(os.path.join(RootFolder, StartingFolder)):
-  for filename in fnmatch.filter(filenames, '*.gz'):
-      ListOfTARs.append(os.path.join(root, filename))
+for root, dirnames, filenames in os.walk(os.path.join(RootFolder)):
+    for filename in fnmatch.filter(filenames, '*.gz'):
+        ListOfTARs.append(os.path.join(root, filename))
 
 for counter, item in enumerate(ListOfTARs):
     print counter, 'of', len(ListOfTARs), '| unpacking', item
@@ -39,7 +38,7 @@ for counter, item in enumerate(ListOfTARs):
         print output
     if error:
         print error
-    print '\nUnpacking done, now removing', item
+    print 'Unpacking done, now removing', item
     try:
         os.remove(item)
     except:
@@ -58,4 +57,4 @@ for counter, item in enumerate(ListOfTARs):
                 print 'The analysis images are already gone!'
     except:
             print 'The log file is already gone!'
-
+    print
