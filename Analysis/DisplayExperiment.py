@@ -19,6 +19,8 @@ ID = [
     9074884,
     9071872,
     8466170,
+    9080226,
+    7733379
 ]
 
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
@@ -58,13 +60,13 @@ Images = [plt.imread(i + '.image.corrected.stretched.png') for i in Folder]
 Mean = [np.mean(i) * 255 for i in Images]
 STD = [np.std(i) * 255 for i in Images]
 
-plt.figure(figsize=[20,3])
+plt.figure(figsize=[20, 3])
 for c, i in enumerate(Images):
     print 'Reading and preparing image', c, 'of', len(Folder)
     plt.subplot(1, len(Folder), c + 1)
     plt.imshow(i, cmap='bone')
     title = '\n'.join(['ID ' + str(ExperimentID[c]),
-        'Mean ' + str(round(Mean[c],1)), 'STD ' + str(round(STD[c],1))])
+        'Mean ' + str(round(Mean[c], 1)), 'STD ' + str(round(STD[c], 1))])
     plt.title(title)
     plt.axis('off')
 plt.tight_layout()
