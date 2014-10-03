@@ -87,3 +87,31 @@ def get_experiment_list(StartingFolder):
             pbar.update(len(ExperimentID))
     pbar.finish()
     return Experiment, ExperimentID
+
+
+def distance(Folder, chatty=False):
+    import os
+    import glob
+    RawFileName = glob.glob(os.path.join(Folder, '*.raw'))[0]
+    ScintillatorCMOSDistance = int(RawFileName.split('_')[5][:-5])
+    if chatty:
+        print 'Experiment', os.path.basename(Folder), \
+            'was performed with a scintillator-CMOS-distance of', \
+            ScintillatorCMOSDistance, 'mm'
+    return ScintillatorCMOSDistance
+
+
+def estimate_image_noise(image):
+    '''
+    # Noise estimation according to http://stackoverflow.com/a/25436112/323100
+    # based on Immerkær1996
+    '''
+    height, width = image.shape
+    M = [[1, -2, 1],
+        [-2, 4, -2],
+        [1, -2, 1]]
+    from scipy.signal import convolve2d
+    import numpy as np
+    sigma = np.sum(np.sum(np.absolute(convolve2d(image, M))))
+    sigma = sigma * np.sqrt(0.5 * np.pi) / (6 * (width - 2) * (height - 2))
+    return sigma
