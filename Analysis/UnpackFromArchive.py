@@ -22,15 +22,19 @@ from functions import get_git_hash
 from functions import myLogger
 
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-    'XrayImages')
+    'XrayImages/20140920')
 
 ListOfTARs = []
 for root, dirnames, filenames in os.walk(os.path.join(RootFolder)):
     for filename in fnmatch.filter(filenames, '*.gz'):
         ListOfTARs.append(os.path.join(root, filename))
 
+if not ListOfTARs:
+    print 'Nothing to do!'
+
 for counter, item in enumerate(ListOfTARs):
-    print counter, 'of', len(ListOfTARs), '| unpacking', item
+    print counter, 'of', len(ListOfTARs), '| unpacking', \
+        item[len(RootFolder) + 1:]
     UnpackCommand = ['tar', '-xf', item, '--directory', os.path.dirname(item)]
     unpackit = subprocess.Popen(UnpackCommand, stdout=subprocess.PIPE)
     output, error = unpackit.communicate()
@@ -38,14 +42,14 @@ for counter, item in enumerate(ListOfTARs):
         print output
     if error:
         print error
-    print 'Unpacking done, now removing', item
+    print 'Unpacking done, now removing', item[len(RootFolder) + 1:],
     try:
         os.remove(item)
     except:
         print 'It is already gone!'
     ExperimentID = os.path.splitext(os.path.splitext(item)[0])[0]
     DeletionLog = ExperimentID + '.deletion.log'
-    print 'Deletion done, now also removing', os.path.basename(DeletionLog), \
+    print 'as well as', os.path.basename(DeletionLog), \
         'and results from Analyis (all', \
         os.path.basename(ExperimentID) + '*.png)'
     try:
@@ -57,4 +61,5 @@ for counter, item in enumerate(ListOfTARs):
                 print 'The analysis images are already gone!'
     except:
             print 'The log file is already gone!'
-    print
+    print 80 * '-'
+print 'Fertig'
