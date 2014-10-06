@@ -31,7 +31,7 @@ RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
 #~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
 #~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
 #~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
-#~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
+StartingFolder = os.path.join(RootFolder, '20140823')  # 6
 #~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
 #~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
 #~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
@@ -41,12 +41,12 @@ RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
 #~ StartingFolder = os.path.join(RootFolder, '20140914')  # 47
 #~ StartingFolder = os.path.join(RootFolder, '20140916')  # 51
 #~ StartingFolder = os.path.join(RootFolder, '20140920')  # 94
-StartingFolder = os.path.join(RootFolder, '20140921')  # 226
-StartingFolder = RootFolder
+#~ StartingFolder = os.path.join(RootFolder, '20140921')  # 226
+#~ StartingFolder = RootFolder
 
 # Testing
-#~ StartingFolder = os.path.join(RootFolder, '20140920', 'Hamamatsu',
-    #~ 'AR0130', 'Framos-DSL219D-650-F2.0', 'Lung')
+#~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
+    #~ 'Lensation-CHR6020')
 # Testing
 
 # Setup
@@ -98,7 +98,7 @@ STD = [float(linecache.getline(i, 27).split(':')[1].strip())
 # Generate folder names
 Experiment = [item[:-len('.analysis.log')] for item in LogFiles]
 
-# Get git hash once for the session, so it doesn't take so long for Ivan...
+# Get git hash once per session, so it doesn't take so long for Ivan...
 git_hash = get_git_hash()
 if 'linux' in sys.platform:
     git_hash = git_hash + ' (from Linux)'
@@ -131,6 +131,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
             figsize=[20, 12])
         ResolutionFigure = plt.imread(ResolutionFileName)
         plt.imshow(ResolutionFigure)
+        plt.axis('off')
         currentAxis = plt.gca()
         ok = currentAxis.add_patch(Rectangle((0, 0),
                                    ResolutionFigure.shape[1] / 2,
@@ -168,6 +169,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
             '|', Lens[SelectedExperiment], '|', str(SDD[SelectedExperiment]),
             'mm | git version', git_hash]), figsize=(16, 12))
         plt.imshow(SelectionImage, cmap='bone')
+        plt.axis('off')
         currentAxis = plt.gca()
         ok = currentAxis.add_patch(Rectangle((0, 0),
                                    SelectionImage.shape[1] / 2,
@@ -177,6 +179,8 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
                                     0), SelectionImage.shape[1] / 2,
                                     SelectionImage.shape[0],
                                     facecolor='red', alpha=overlayalpha))
+        if 'linux' in sys.platform:
+            plt.tight_layout()
         tellme(' '.join(['click left (green) if you want to do the',
             'evaluation,\nclick right (red) if you want to skip experiment',
             ExperimentID[SelectedExperiment]]))
@@ -221,11 +225,15 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
         'mm | git version', git_hash]), figsize=[16, 9])
     plt.subplot(221)
     plt.imshow(OriginalImage, cmap='bone', interpolation='bicubic')
-    plt.title(ExperimentID[SelectedExperiment] + '.image.corrected.png')
+    plt.title(' '.join([ExperimentID[SelectedExperiment] +
+        '.image.corrected.png (' + str(OriginalImage.shape[1]), 'x',
+        str(OriginalImage.shape[0]), 'px)']))
+    plt.axis('off')
     plt.subplot(222)
     plt.imshow(StretchedImage, cmap='bone', interpolation='bicubic')
-    plt.title(ExperimentID[SelectedExperiment] +
-        '.image.corrected.stretched.png')
+    plt.title(' '.join([ExperimentID[SelectedExperiment] +
+        '.image.corrected.stretched.png (' + str(StretchedImage.shape[1]), 'x',
+        str(StretchedImage.shape[0]), 'px)']))
     # Histograms
     bins = 256
     plt.subplot(223)
@@ -238,7 +246,6 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     #~ plt.xlim([0, 0.95])
     if 'linux' in sys.platform:
         plt.tight_layout()
-
     # Let the user select the ROI of the resolution phantom on the contrast
     # stretched image
     plt.subplot(222)
@@ -251,7 +258,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
             pts = numpy.asarray(plt.ginput(2, timeout=-1))
             if len(pts) < 2:
                 tellme('Too few points, starting over')
-                time.sleep(0.1)  # Wait a second
+                time.sleep(0.1)
         # Get region of interest from user input and draw it
         xmin = int(round(min(pts[:, 0])))
         xmax = int(round(max(pts[:, 0])))
@@ -264,7 +271,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
                                                     edgecolor='black',
                                                     alpha=overlayalpha))
         tellme('Done? Press any key for yes, click with mouse for no')
-        done = plt.waitforbuttonpress()
+        done = plt.waitforbuttonpress(timeout=-1)
         # Redraw image if necessary
         if not done:
             plt.cla()
@@ -319,7 +326,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
                                                     edgecolor='black',
                                                     alpha=overlayalpha))
         tellme('Done? Press any key for yes, click with mouse for no')
-        done = plt.waitforbuttonpress()
+        done = plt.waitforbuttonpress(timeout=-1)
         # Redraw image if necessary
         if not done:
             plt.cla()
@@ -359,13 +366,16 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     # Show original image on top left
     plt.subplot(gs1[0, 0])
     plt.imshow(OriginalImage, cmap='bone', interpolation='bicubic')
-    plt.title('Original Image')
+    plt.axis('off')
+    plt.title(' '.join(['Original Image with a size of',
+        str(OriginalImage.shape[1]), 'x', str(OriginalImage.shape[0]), 'px']))
     # Stretched image with both ROIs in top middle
     plt.subplot(gs1[0, 1])
     plt.imshow(StretchedImage, cmap='bone', interpolation='bicubic')
-    plt.title(' '.join(['Contrast stretched Image\nROIs', str(BigROISize[0]),
-        'x', str(BigROISize[1]), 'px (red),', str(LineROISize[0]), 'x',
-        str(LineROISize[1]), 'px (green).']))
+    plt.axis('off')
+    plt.title(' '.join(['Contrast stretched Original\nROIs',
+        str(BigROISize[0]), 'x', str(BigROISize[1]), 'px (red),',
+        str(LineROISize[0]), 'x', str(LineROISize[1]), 'px (green).']))
     currentAxis = plt.gca()
     BigROI = currentAxis.add_patch(Rectangle((xmin, ymin), xmax - xmin,
                                                     ymax - ymin,
@@ -415,15 +425,15 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     yticks = plotoriginal.yaxis.get_major_ticks()
     yticks[0].label1.set_visible(False)
     plt.title(' '.join(['Brightness in the green', str(LineROISize[0]), 'x',
-        str(LineROISize[1]), 'px ROI. Top: original image, bottom: contrast',
-        'stretched image\nColor: lines from top right, black: mean of',
+        str(LineROISize[1]), 'px ROI.\nTop: original image, bottom: contrast',
+        'stretched image. Color: lines from above right, Black: Mean of',
         str(steps), 'lines']))
-
     # Plot values for contrast streched image at the bottom
     plotmean = plt.subplot(gs2[-1, :], sharex=plotoriginal)
     for c, line in enumerate(SelectedLinesStretched):
         plt.plot(line, linewidth=2, alpha=linealpha, color=clr[c])
-    plt.plot(numpy.mean(SelectedLinesStretched, axis=0), 'k', linewidth='2')
+    plt.plot(numpy.mean(SelectedLinesStretched, axis=0), 'k', linewidth='2',
+        label=' '.join(['mean of', str(steps), 'shown lines']))
     plt.xlim([0, LineROISize[0]])
     plt.ylim([0, 1])
     # Write mean plot values to log file
@@ -450,5 +460,3 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     plt.pause(0.001)
     time.sleep(1)
     plt.close('all')
-
-print 'Fertig!'
