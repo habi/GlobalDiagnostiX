@@ -53,15 +53,15 @@ for experiment in IDHD:
             FolderHD[IDHD.index(experiment)][len(RootFolderHD) + 1:]))
         print 'Experiment', experiment, 'was not found on AFS'
         print
-        print 'It should be moved from'
-        print InputPath
+        print 'It will be copied from'
+        print os.path.dirname(InputPath)
         print 'to'
         print OutputPath
         # rsync can only mkdir ONE level, so we first make the path to copy to
         try:
             os.makedirs(OutputPath)
         except:
-            print OutputPath, 'already exist'
+            pass
         rsynccommand = ['rsync', '-ar', InputPath, OutputPath]
         print
         print 'rsyncing it now with the command'
@@ -77,6 +77,5 @@ for experiment in IDHD:
         print FolderHD[IDHD.index(experiment)]
         print 'is already on AFS at'
         print FolderAFS[IDAFS.index(experiment)]
-    print
-    print 'Done with experiment', experiment
     print 80 * '-'
+    time.sleep(1)

@@ -77,7 +77,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     if not os.path.isfile(ArchivalLog):
         ReallyRemove = False
         print 'I could not find an archival log file for experiment', \
-            ExperimentID[SelectedExperiment]
+            ExperimentID[SelectedExperiment], 'at', ArchivalLog
         print 'I thus set "ReallyRemove" to false'
         print
         print 'Please archive the data first with TarToArchive.py, then', \
@@ -98,6 +98,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     if not os.path.isfile(AnalysisLogFile):
         print 'The analysis of experiment', \
             ExperimentID[SelectedExperiment], 'has not been done yet'
+        print 'Run DetectWhichImageIsRadiography.py on', \
+            Experiment[SelectedExperiment]
         break
     Keepers = []
     for line in open(AnalysisLogFile, 'r'):
