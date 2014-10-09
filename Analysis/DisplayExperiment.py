@@ -6,6 +6,7 @@ of component
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+from functions import estimate_image_noise
 
 ID = [
     8466438,
@@ -23,12 +24,17 @@ ID = [
     7733379
 ]
 
-RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-    'XrayImages')
+#~ ID = [8162826]
+
+getfromHD = False
+if getfromHD:
+    RootFolder = ('/media/WINDOWS')
+else:
+    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
+        'XrayImages')
 
 # Get all folders (Experiment) and ExperimentIDs inside StartingFolder
-# Setup progress bar
-print 'Looking for the folder with the Experiment ID'
+    print 'Looking for the folder with the given Experiment IDs '
 Folder = []
 ExperimentID = []
 for root, dirs, files in os.walk(RootFolder):
@@ -47,6 +53,10 @@ for root, dirs, files in os.walk(RootFolder):
     except:
         continue
 
+if getfromHD:
+    print 'The experiment', ID, 'is in the folder', Folder, 'on', RootFolder
+    exit()
+
 # Warn the user if we were not able to find an image...
 if len(ExperimentID) != len(ID):
     for i in ID:
@@ -59,14 +69,20 @@ print 'Reading and preparing images'
 Images = [plt.imread(i + '.image.corrected.stretched.png') for i in Folder]
 Mean = [np.mean(i) * 255 for i in Images]
 STD = [np.std(i) * 255 for i in Images]
+Noise = [estimate_image_noise(i) * 255 for i in Images]
 
-plt.figure(figsize=[20, 3])
+print 'Mean goes from', round(min(Mean), 1), 'to', round(max(Mean), 1)
+print 'STD goes from', round(min(STD), 1), 'to', round(max(STD), 1)
+print 'Noise goes from', round(min(Noise), 1), 'to', round(max(Noise), 1)
+
+plt.figure(figsize=[20, 4])
 for c, i in enumerate(Images):
     print 'Reading and preparing image', c, 'of', len(Folder)
     plt.subplot(1, len(Folder), c + 1)
     plt.imshow(i, cmap='bone')
     title = '\n'.join(['ID ' + str(ExperimentID[c]),
-        'Mean ' + str(round(Mean[c], 1)), 'STD ' + str(round(STD[c], 1))])
+        'Mean ' + str(round(Mean[c], 1)), 'STD ' + str(round(STD[c], 1)),
+        'Noise ' + str(round(Noise[c]))])
     plt.title(title)
     plt.axis('off')
 plt.tight_layout()
