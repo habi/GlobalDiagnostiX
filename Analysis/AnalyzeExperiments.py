@@ -29,7 +29,7 @@ print 'I found', len(Files), 'images to work with in', StartingFolder
 randomizator = True
 if randomizator:
     # Randomly select some files
-    Files = random.sample(Files, 50)
+    Files = random.sample(Files, 100)
 else:
     # Select every n'th image (http://stackoverflow.com/a/1404229/323100)
     Files = [Files[i] for i in xrange(0, len(Files), 12)]
@@ -168,7 +168,7 @@ for c, item in enumerate(sortedIDs):
 plt.figure(figsize=[23, 10])
 for c, i in enumerate(sortedImages):
     plt.subplot(2, len(sortedImages) / 2, c + 1)
-    plt.imshow(i, cmap='gray')
+    plt.imshow(i, cmap='gray', interpolation='bicubic')
     plt.title(' '.join([str(c), '|', sortedIDs[c], '\nMean',
         str(round(sortedMean[c], 1)), '\nSTD',
         str(round(sortedSTD[c], 1)), '\nNoise',
@@ -181,35 +181,11 @@ if HighestFirst:
     plt.suptitle(' '.join(['Images sorted from highest to lowest', sort]))
 else:
     plt.suptitle(' '.join(['Images sorted from lowest to highest', sort]))
+
+plt.subplots_adjust(wspace=0.05)
+plt.subplots_adjust(hspace=0.05)
+plt.axis('off')
 plt.tight_layout()
-plt.show()
-exit()
-
-
-# full screen figure
-plt.figure(figsize=[23, 10])
-
-for c, i in enumerate(sortedImages):
-    sys.stdout.write(''.join(['\rImage %d/' % (c + 1), str(len(Images))]))
-    if len(Files) > 10:
-        plt.subplot(int(np.ceil(len(Files) / 4)),
-            int(np.ceil(len(Files) / 3)), c + 1)
-    else:
-        plt.subplot(1, len(sortedImages), c + 1)
-    plt.imshow(i, cmap='bone')
-    currentDirName = os.path.dirname(Files[ExperimentID.index(sortedIDs[1])])[
-        len(os.path.dirname(os.path.commonprefix(Files))) + 1:]
-    plt.title(' '.join([sortedIDs[c], '| Mean', str(round(sortedMean[c], 1)),
-        '| STD', str(round(sortedSTD[c], 1))]))
-    plt.subplots_adjust(wspace=0.05)
-    plt.subplots_adjust(hspace=0.05)
-    plt.axis('off')
-    #~ plt.subplot(2, len(Files), c + len(Files) + 1)
-    #~ plt.hist(i.flatten(), bins=256, histtype='stepfilled')
-    #~ plt.ylim([0, 1.2e5])
-    sys.stdout.flush()
 
 print '\nShowing plot'
-plt.suptitle(' '.join(['sorted by', sort]))
-plt.tight_layout()
 plt.show()
