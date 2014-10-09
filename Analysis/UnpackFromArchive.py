@@ -22,7 +22,7 @@ from functions import get_git_hash
 from functions import myLogger
 
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-    'XrayImages/20140920')
+    'XrayImages')
 
 ListOfTARs = []
 for root, dirnames, filenames in os.walk(os.path.join(RootFolder)):
