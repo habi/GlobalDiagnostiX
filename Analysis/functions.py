@@ -104,7 +104,7 @@ def distance(Folder, chatty=False):
 def estimate_image_noise(image):
     '''
     # Noise estimation according to http://stackoverflow.com/a/25436112/323100
-    # based on Immerkær1996
+    # based on Immerkaer1996
     '''
     height, width = image.shape
     M = [[1, -2, 1],
