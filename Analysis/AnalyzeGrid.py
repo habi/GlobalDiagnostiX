@@ -31,8 +31,9 @@ RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
 #~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
 #~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
 #~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
-StartingFolder = os.path.join(RootFolder, '20140823')  # 6
+#~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
 #~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
+StartingFolder = os.path.join(RootFolder, '20140827')  # 50
 #~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
 #~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
 #~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
@@ -41,7 +42,7 @@ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
 #~ StartingFolder = os.path.join(RootFolder, '20140914')  # 47
 #~ StartingFolder = os.path.join(RootFolder, '20140916')  # 51
 #~ StartingFolder = os.path.join(RootFolder, '20140920')  # 94
-#~ StartingFolder = os.path.join(RootFolder, '20140921')  # 226
+#~ StartingFolder = os.path.join(RootFolder, '20140921')  # 225
 #~ StartingFolder = RootFolder
 
 # Testing
@@ -141,8 +142,6 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
                                     0), ResolutionFigure.shape[1] / 2,
                                     ResolutionFigure.shape[0],
                                     facecolor='red', alpha=overlayalpha))
-        if 'linux' in sys.platform:
-            plt.tight_layout()
         tellme(' '.join(['click left (green) if you are happy,\nclick right',
             '(red) if you want to redo the evaluation']))
         # If the user clicks in the red, we redo the analysis, if in the green
@@ -179,8 +178,6 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
                                     0), SelectionImage.shape[1] / 2,
                                     SelectionImage.shape[0],
                                     facecolor='red', alpha=overlayalpha))
-        if 'linux' in sys.platform:
-            plt.tight_layout()
         tellme(' '.join(['click left (green) if you want to do the',
             'evaluation,\nclick right (red) if you want to skip experiment',
             ExperimentID[SelectedExperiment]]))

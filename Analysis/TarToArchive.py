@@ -41,6 +41,7 @@ if 'linux' in sys.platform:
     #~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
     #~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
     #~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
+    #~ StartingFolder = os.path.join(RootFolder, '20140827')  # 50
     #~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
     #~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
     #~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
@@ -49,7 +50,8 @@ if 'linux' in sys.platform:
     #~ StartingFolder = os.path.join(RootFolder, '20140914')  # 47
     #~ StartingFolder = os.path.join(RootFolder, '20140916')  # 51
     #~ StartingFolder = os.path.join(RootFolder, '20140920')  # 94
-    StartingFolder = os.path.join(RootFolder, '20140921')  # 227
+    #~ StartingFolder = os.path.join(RootFolder, '20140921')  # 227
+    StartingFolder = RootFolder
 else:
     # If running on Ivans machine, look on the connected harddisk
     StartingFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/AR0130/Computar-11A/')
