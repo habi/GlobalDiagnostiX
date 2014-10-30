@@ -80,9 +80,9 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             ExperimentID[SelectedExperiment], 'at', ArchivalLog
         print 'I thus set "ReallyRemove" to false'
         print
-        print 'Please archive the data first with TarToArchive.py, then', \
-            'run this script again'
-        break
+        print 'Please archive the data for this Experiment with',\
+            'TarToArchive.py, then run this script again'
+        time.sleep(5)
     print 80 * '-'
     #~ print str(Counter + 1) + '/' + str(len(AnalyisList)) + \
         #~ ': Deleting darks experiment', ExperimentID[SelectedExperiment]
