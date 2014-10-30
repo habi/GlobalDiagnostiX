@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
 
 """
 Tiny tool to calculate the surface entrance dose of a certain x-ray measurement
@@ -55,7 +54,7 @@ K = 0.1
 # values as the XLS-calculator from BAG (http://is.gd/oTpniQ) which I copied to
 # /afs/psi.ch/project/EssentialMed/PresentationsAndInfo/BAG/R-0 DRWCalc 5.0.xls
 BSF = 1.35
-# BSF as found in BAG2012. "Der über verschiedene Anlagen gemittelte
+# BSF as found in BAG2012. "Der ueber verschiedene Anlagen gemittelte
 # Korrekturfaktor betrug 1.15"
 #BSF = 1.15
 
