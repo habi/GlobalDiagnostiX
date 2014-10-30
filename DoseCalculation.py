@@ -13,6 +13,9 @@ import os
 import numpy as np
 from scipy import constants
 
+# Clear command line
+os.system('clear')
+
 # Use Pythons Optionparser to define and read the options, and also
 # give some help to the user
 parser = OptionParser()
@@ -66,7 +69,7 @@ parser.add_option('-c', '--chatty', dest='chatty',
 if options.kV is None:
     parser.print_help()
     print 'Example:'
-    print 'The command below calculates the dose for a peak tube voltage of',\
+    print 'The command below calculates the dose for a peak tube voltage of', \
         '60 kV.'
     print
     print sys.argv[0], '-v 60'
@@ -75,7 +78,7 @@ if options.kV is None:
 # Inform the user that we only have certain values to work with
 Voltage = [46, 53, 60, 70, 80, 90, 100, 120]
 if not options.kV in Voltage:
-    print 'You can only enter one of these voltages:',\
+    print 'You can only enter one of these voltages:', \
         str(Voltage).strip('[]'), 'kV'
     print
     print 'Try again with the nearest allowed value:'
@@ -102,15 +105,20 @@ if options.chatty:
     for v, e in zip(Voltage, MeanEnergy):
         print 'Peak tube voltage', v, 'kV = mean energy', int(round(e)), 'keV'
 
-print 'For a peak tube voltage of', options.kV, 'kV and a current of',\
-    int(round(options.mAs / (options.Exposuretime / 1000.))), 'mAs (exp.',\
-    'time', options.Exposuretime, 'ms) we get a mean energy of',\
+print 'For a peak tube voltage of', options.kV, 'kV and a current of', \
+    int(round(options.mAs / (options.Exposuretime / 1000.))), 'mAs (exp.', \
+    'time', options.Exposuretime, 'ms) we get a mean energy of', \
     round(MeanEnergy[ChosenVoltage], 3), 'keV.'
 print
 
 # Calculate the numbers of photons emitted from the tube.
-PhotonEnergy = (MeanEnergy[ChosenVoltage] / 1000) * constants.e  # Joules
-print 'At this mean energy, a single photon has an energy of',\
+# DEBUG
+# to get the same value as Zhentians calculation, also change eta to 1 instead
+# of 1.1, that's an error in his document :)
+# MeanEnergy[ChosenVoltage] = 40
+# DEBUG
+PhotonEnergy = (MeanEnergy[ChosenVoltage] * 1000) * constants.e  # Joules
+print 'At this mean energy, a single photon has an energy of', \
     '%.3e' % PhotonEnergy, 'J.'
 print
 
@@ -128,35 +136,41 @@ print 'The surface entrance dose for an x-ray pulse with'
 print '   * U =', options.kV, 'kV'
 print '   * Q =', options.mAs, 'mAs'
 print '   * FOD =', options.Distance / 100, 'm'
-print '   * K =', K, 'mGy*m²/mAs'
+print '   * K =', K, 'mGy*m^2/mAs'
 print '   * BSF =', BSF
 print 'is SED = K*(U/100)^2*Q*(1/FOD)^2*BSF =', round(SED, 3), 'mGy (mJ/kg).'
 print
 
 # Correspond SED to photon count
 N0 = SED / PhotonEnergy
-print 'A SED of', '%.3e' % (SED / 1000), 'Gy (mJ/kg) corresponds to',\
-    '%.3e' % N0, 'absorbed photons per kg (with a photon',\
+print 'A SED of', '%.3e' % (SED / 1000), 'Gy (mJ/kg) corresponds to', \
+    '%.3e' % N0, 'absorbed photons per kg (with a photon', \
     'energy of', '%.3e' % PhotonEnergy, 'J per photon).'
-print 'This SED can be calculated back to a number of photons with',\
-    'N=(UI/E)*eta*(Area/4πr²) and corresponds to',
+print 'This SED can be calculated back to a number of photons with', \
+    'N=(UI/E)*eta*(Area/4*Pi*r^2) and corresponds to',
 
-eta = 1e-9  # *ZV
 # Calculate the number of photons from the tube to the sample
-#~ N0 = (VI/E)*eta*(A/4Pir²)
-N0 = (options.kV * ((options.mAs * 1000) / (options.Exposuretime / 1000))) /\
-    PhotonEnergy * eta *\
-    ((options.Length ** 2) / (4 * np.pi * options.Distance ** 2))
-print '%.4e' % N0, 'photons with a mean energy of,', PhotonEnergy
+# N0 = (VI/E)*eta*(A/4Pir^2)
+# Calculate efficiency for a Tungsten anode according to Krestel1990, chapter
+# 3.1.5
+eta = 1.1e-9 * 74 * MeanEnergy[ChosenVoltage] * 1000
 
-print 'We assume these photons are all the photons that reached the patient,',\
-    'and thus can calculate the photon flux from this.'
+N0 = (MeanEnergy[ChosenVoltage] * 1000 * \
+    ((options.mAs / 1000) / (options.Exposuretime / 1000)) / (PhotonEnergy)) *\
+    eta *\
+    ((options.Length / 100) ** 2 / (4 * np.pi * (options.Distance / 100) ** 2))
+
+print '%.3e' % N0, 'photons with a mean energy of', '%.3e' % PhotonEnergy, \
+    'each'
+
+print 'We assume these photons are all the photons that reached the', \
+    'patient, and thus can calculate the photon flux from this.'
 
 Flux = N0 / (options.Exposuretime / 1000)
-print 'With an exposure time of', options.Exposuretime, 'ms the',\
-    'aforementioned number of photons corresponds to a photon flux of',\
-    '%.3e' % Flux, 'photons per second (from the source to the patient',\
-    'surface.'
+print 'With an exposure time of', options.Exposuretime, 'ms the', \
+    'aforementioned number of photons corresponds to a photon flux of', \
+    '%.3e' % Flux, 'photons per second (from the source to the patient', \
+    'surface).'
 
 exit()
 
@@ -168,9 +182,9 @@ print 'Attenuation coefficient set to', AttenuationCoefficient, 'cm^-1 (@' +\
 # Number of absorbed photons
 # N = N0(e^-uT)
 N = N0 * (np.exp((-AttenuationCoefficient * (options.Thickness / 100))))
-print 'Assuming an attenuation coefficient of', AttenuationCoefficient, 'and',\
-    'a penetration depth of', options.Thickness, 'cm we have (according to',\
-    'the Beer-Lambert law (N = N0 * e^-uT)'
+print 'Assuming an attenuation coefficient of', AttenuationCoefficient, \
+    'and a penetration depth of', options.Thickness, \
+    'cm we have (according to the Beer-Lambert law (N = N0 * e^-uT)'
 print '   *', '%.3e' % N, 'photons after the xrays have passed the patient'
 print '   * thus', '%.3e' % (N0 - N), 'photons were absorbed'
 print '   * the intensity dropped to', round((N / N0) * 100, 2), '%'
@@ -182,14 +196,14 @@ print 'Use nist-attenuation-scraper.py to get the correct attenuation!'
 # Attenuation Coefficients
 # @40kV, half bone, half muscle
 AttenuationCoefficient = []
-AttenuationCoefficient.append(np.mean((2.685e-1, 6.655-1)))
+AttenuationCoefficient.append(np.mean((2.685e-1, 6.655e-1)))
 # @70kV (0.5*60+0.5*80), both half bone, half muscle
 AttenuationCoefficient.append(np.mean((np.mean((2.048e-01, 3.148e-01)),
                                        np.mean((1.823e-01, 2.229e-01)))))
 
 '''
 Skeletal muscle (http://is.gd/D88OFv)
-    Energy         μ/ρ       μen/ρ
+    Energy         mu/rho       mu_en/rho
     (MeV)       (cm2/g)    (cm2/g)
     1.00000E-02  5.356E+00  4.964E+00
     1.50000E-02  1.693E+00  1.396E+00
@@ -203,7 +217,7 @@ Skeletal muscle (http://is.gd/D88OFv)
     1.50000E-01  1.492E-01  2.745E-02
     2.00000E-01  1.358E-01  2.942E-02
 Cortical bone (http://is.gd/2176eQ)
-    Energy         μ/ρ       μen/ρ
+    Energy         mu/rho       mu_en/rho
     (MeV)       (cm2/g)    (cm2/g)
     1.00000E-02  2.851E+01  2.680E+01
     1.50000E-02  9.032E+00  8.388E+00
@@ -226,8 +240,9 @@ QFactor = 1  # http://en.wikipedia.org/wiki/Dosimetry#Equivalent_Dose
 WeightingFactor = 0.12  # http://en.wikipedia.org/wiki/Dosimetry#Effective_dose
 ExposureTime = 1000e-3  # s
 
+
 # Calculate the number of photons from the tube to the sample
-#~ N0 = (VI/E)*eta*(A/4Pir²)
+#~ N0 = (VI/E)*eta*(A/4*Pi*r^2)
 N0 = (Voltage * Current) / (Voltage * eV) * \
     eta * Z * Voltage * \
     Area / (4 * np.pi * r ** 2)
@@ -237,17 +252,17 @@ print '    - the tube emitts %.4e' % N0, 'photons per second'
 #~ Da = Eneregy / Weight  # J/kg per second
 Da = N * AverageEnergy[case] * 1000 * eV / Weight
 
-print '    -', round(Da * 1000, 4), 'mGy/s are absorbed by the sample,',\
+print '    -', round(Da * 1000, 4), 'mGy/s are absorbed by the sample,', \
     ' if we assume it is', Weight, 'kg'
 
 # Effective dose per second
 #~ De = Da * Wr, WR = Q * N
 De = Da * QFactor * WeightingFactor
 
-print '    -', round(De*1000, 4), 'mSv/s is the effective dose'
+print '    -', round(De * 1000, 4), 'mSv/s is the effective dose'
 
 # Total effective dose on the sample
 D = De * ExposureTime
 
-print '    -', round(D*1000, 4), 'mSv is the effective dose on the',\
+print '    -', round(D * 1000, 4), 'mSv is the effective dose on the', \
     'sample for an exposure time of =', ExposureTime, 's)'
