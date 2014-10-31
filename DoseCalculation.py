@@ -112,12 +112,15 @@ print 'For a peak tube voltage of', options.kV, 'kV and a current of', \
 print
 
 # Calculate the numbers of photons emitted from the tube.
+PhotonEnergy = (MeanEnergy[ChosenVoltage] * 1000) * constants.e  # Joules
 # DEBUG
 # to get the same value as Zhentians calculation, also change eta to 1 instead
 # of 1.1, that's an error in his document :)
-# MeanEnergy[ChosenVoltage] = 40
+# options.kV = 40
+# PhotonEnergy = (options.kV * 1000) * constants.e  # Joules
+# python DoseCalculation.py -v 46 -m 25 -e 1000 -d 120 -l 5
 # DEBUG
-PhotonEnergy = (MeanEnergy[ChosenVoltage] * 1000) * constants.e  # Joules
+
 print 'At this mean energy, a single photon has an energy of', \
     '%.3e' % PhotonEnergy, 'J.'
 print
@@ -136,6 +139,7 @@ print 'The surface entrance dose for an x-ray pulse with'
 print '   * U =', options.kV, 'kV'
 print '   * Q =', options.mAs, 'mAs'
 print '   * FOD =', options.Distance / 100, 'm'
+print '   * A =', int(options.Length ** 2), 'cm^2'
 print '   * K =', K, 'mGy*m^2/mAs'
 print '   * BSF =', BSF
 print 'is SED = K*(U/100)^2*Q*(1/FOD)^2*BSF =', round(SED, 3), 'mGy (mJ/kg).'
@@ -146,22 +150,20 @@ N0 = SED / PhotonEnergy
 print 'A SED of', '%.3e' % (SED / 1000), 'Gy (mJ/kg) corresponds to', \
     '%.3e' % N0, 'absorbed photons per kg (with a photon', \
     'energy of', '%.3e' % PhotonEnergy, 'J per photon).'
-print 'This SED can be calculated back to a number of photons with', \
-    'N=(UI/E)*eta*(Area/4*Pi*r^2) and corresponds to',
 
 # Calculate the number of photons from the tube to the sample
 # N0 = (VI/E)*eta*(A/4Pir^2)
 # Calculate efficiency for a Tungsten anode according to Krestel1990, chapter
 # 3.1.5
-eta = 1.1e-9 * 74 * MeanEnergy[ChosenVoltage] * 1000
+eta = 1.1e-9 * 74 * options.kV * 1000
 
-N0 = (MeanEnergy[ChosenVoltage] * 1000 * \
+N0 = (options.kV * 1000 * \
     ((options.mAs / 1000) / (options.Exposuretime / 1000)) / (PhotonEnergy)) *\
     eta *\
     ((options.Length / 100) ** 2 / (4 * np.pi * (options.Distance / 100) ** 2))
 
-print '%.3e' % N0, 'photons with a mean energy of', '%.3e' % PhotonEnergy, \
-    'each'
+print 'The source emits %.3e' % N0, \
+    'photons with a mean energy of', '%.3e' % PhotonEnergy, 'each'
 
 print 'We assume these photons are all the photons that reached the', \
     'patient, and thus can calculate the photon flux from this.'
@@ -239,7 +241,6 @@ eV = 1.602e-19  # J
 QFactor = 1  # http://en.wikipedia.org/wiki/Dosimetry#Equivalent_Dose
 WeightingFactor = 0.12  # http://en.wikipedia.org/wiki/Dosimetry#Effective_dose
 ExposureTime = 1000e-3  # s
-
 
 # Calculate the number of photons from the tube to the sample
 #~ N0 = (VI/E)*eta*(A/4*Pi*r^2)
