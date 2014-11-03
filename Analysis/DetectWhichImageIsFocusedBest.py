@@ -18,6 +18,7 @@ import numpy
 
 # Setup
 Root = '/afs/psi.ch/project/EssentialMed/Images/13-Aptina_Focus_Test/'
+#~ Root = '/Volumes/WINDOWS'
 #~ Root = '/scratch/tmp/DevWareX/AR0130'
 #~ Root = '/scratch/tmp/DevWareX/A-1300'
 
