@@ -17,33 +17,31 @@ import time
 import logging
 import linecache
 import random
-from functions import myLogger
-from functions import get_git_hash
+import functions
 
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
-#~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
-#~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
-#~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
-#~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
-#~ StartingFolder = os.path.join(RootFolder, '20140731')  # 262
-#~ StartingFolder = os.path.join(RootFolder, '20140818')  # 20
-#~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
-#~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
-#~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
-#~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
-#~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
-#~ StartingFolder = os.path.join(RootFolder, '20140827')  # 50
-#~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
-#~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
-#~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
-#~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
-#~ StartingFolder = os.path.join(RootFolder, '20140907')  # 277
-#~ StartingFolder = os.path.join(RootFolder, '20140914')  # 47
-#~ StartingFolder = os.path.join(RootFolder, '20140916')  # 51
-#~ StartingFolder = os.path.join(RootFolder, '20140920')  # 94
-#~ StartingFolder = os.path.join(RootFolder, '20140921')  # 225
+# Look for images of only one scintillator
+StartingFolder = os.path.join(RootFolder, 'AppScinTech-HE')
+StartingFolder = os.path.join(RootFolder, 'Hamamatsu')
+StartingFolder = os.path.join(RootFolder, 'Pingseng')
+StartingFolder = os.path.join(RootFolder, 'Toshiba')
+# Look through all folders
 StartingFolder = RootFolder
+
+# Look for a special folder
+#~ StartingFolder = os.path.join(RootFolder, 'Hamamatsu', 'MT9M001',
+    #~ 'TIS-TBL-6C-3MP')
+
+# Ask user for a special case
+Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
+Sensors = ('AR0130', 'AR0132', 'MT9M001')
+
+ChosenScintillator = functions.AskUser(
+    'Which scintillator do you want to look at?', Scintillators)
+ChosenSensor = functions.AskUser('Which sensor do you want to look at?',
+    Sensors)
+StartingFolder = os.path.join(RootFolder, ChosenScintillator, ChosenSensor)
 
 # Testing
 #~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
@@ -89,6 +87,16 @@ Modality = [linecache.getline(i, 14).split(':')[1].strip()
     for i in LogFiles]
 Exposuretime = [float(linecache.getline(i, 18)
     .split(':')[1].split('ms')[0].strip()) for i in LogFiles]
+
+# DEBUG
+debug = False
+if debug:
+    for i in LogFiles:
+        print i, 'max of', \
+            float(linecache.getline(i, 25).split(':')[1].strip())
+    exit()
+# DEBUG
+
 Max = [float(linecache.getline(i, 25).split(':')[1].strip())
     for i in LogFiles]
 Mean = [float(linecache.getline(i, 26).split(':')[1].strip())
@@ -100,7 +108,7 @@ STD = [float(linecache.getline(i, 27).split(':')[1].strip())
 Experiment = [item[:-len('.analysis.log')] for item in LogFiles]
 
 # Get git hash once per session, so it doesn't take so long for Ivan...
-git_hash = get_git_hash()
+git_hash = functions.get_git_hash()
 if 'linux' in sys.platform:
     git_hash = git_hash + ' (from Linux)'
 else:
@@ -109,10 +117,10 @@ else:
 # Go through each selected experiment (in the shuffled list)
 for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     plt.ion()
-    print str(Counter + 1) + '/' + str(len(Experiment)), '| ID', \
-        ExperimentID[SelectedExperiment], '|', \
+    print str(Counter + 1) + '/' + str(len(Experiment)), '|', \
         Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment], \
-        '|', Lens[SelectedExperiment], '|', SDD[SelectedExperiment], \
+        '|', Lens[SelectedExperiment], '|', \
+        ExperimentID[SelectedExperiment], '|', SDD[SelectedExperiment], \
         'mm | git version', git_hash
     # See if we've already ran the resolution evaluation, i.e. have a
     # 'ExperimentID.resolution.png' file. If we have, show it and let the user
@@ -125,11 +133,11 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
     if os.path.isfile(ResolutionFileName):
         decide = False
         plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)),
-            '| Redo evaluation | ID', ExperimentID[SelectedExperiment],
-            '|', Scintillator[SelectedExperiment], '|',
+            '| Redo evaluation |', Scintillator[SelectedExperiment], '|',
             Sensor[SelectedExperiment], '|', Lens[SelectedExperiment], '|',
+            ExperimentID[SelectedExperiment], '|',
             str(SDD[SelectedExperiment]), 'mm | git version', git_hash]),
-            figsize=[20, 12])
+            figsize=(20, 12))
         ResolutionFigure = plt.imread(ResolutionFileName)
         plt.imshow(ResolutionFigure)
         plt.axis('off')
@@ -151,7 +159,7 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
             plt.close('all')
             continue
         else:
-            print 'We redo the evaluation of experiment', \
+            print 'We redo the evaluation of', \
                 ExperimentID[SelectedExperiment]
     if decide:
         # Load the image and let the user decide if he wants to do the
@@ -163,10 +171,11 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
             '.image.corrected.stretched.png')
         SelectionImage = plt.imread(SelectionFileName)
         plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)),
-            '| Decision | ID', ExperimentID[SelectedExperiment], '|',
-            Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment],
-            '|', Lens[SelectedExperiment], '|', str(SDD[SelectedExperiment]),
-            'mm | git version', git_hash]), figsize=(16, 12))
+            '| Decision |', Scintillator[SelectedExperiment], '|',
+            Sensor[SelectedExperiment], '|', Lens[SelectedExperiment], '|',
+            ExperimentID[SelectedExperiment], '|',
+            str(SDD[SelectedExperiment]), 'mm | git version', git_hash]),
+            figsize=(16, 12))
         plt.imshow(SelectionImage, cmap='bone')
         plt.axis('off')
         currentAxis = plt.gca()
@@ -188,13 +197,14 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
             plt.close('all')
             continue
         else:
-            print 'We evaluate experiment', ExperimentID[SelectedExperiment]
+            print 'We evaluate', ExperimentID[SelectedExperiment]
     else:
         wediditalready = False
-    logfile = myLogger(os.path.dirname(Experiment[SelectedExperiment]),
+    logfile = functions.myLogger(
+        os.path.dirname(Experiment[SelectedExperiment]),
         ExperimentID[SelectedExperiment] + '.resolution.log')
     logfile.info(
-        'Log file for Experiment ID %s, Resolution analsyis performed on %s',
+        'Log file for Experiment %s, Resolution analsyis performed on %s',
         ExperimentID[SelectedExperiment],
         time.strftime('%d.%m.%Y at %H:%M:%S'))
     logfile.info('\nMade with "%s" at Revision %s', os.path.basename(__file__),
@@ -216,10 +226,11 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
 
     # Show original images with histograms
     plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)),
-        '| Originals & Histogram | ID', ExperimentID[SelectedExperiment], '|',
-        Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment], '|',
-        Lens[SelectedExperiment], '|', str(SDD[SelectedExperiment]),
-        'mm | git version', git_hash]), figsize=[16, 9])
+        '| Originals & Histograms |', Scintillator[SelectedExperiment], '|',
+        Sensor[SelectedExperiment], '|', Lens[SelectedExperiment], '|',
+        ExperimentID[SelectedExperiment], '|',
+        str(SDD[SelectedExperiment]), 'mm | git version', git_hash]),
+        figsize=(16, 9))
     plt.subplot(221)
     plt.imshow(OriginalImage, cmap='bone', interpolation='bicubic')
     plt.title(' '.join([ExperimentID[SelectedExperiment] +
@@ -351,9 +362,11 @@ for Counter, SelectedExperiment in enumerate(range(len(Experiment))):
 
     # Final plot
     fig = plt.figure(' '.join([str(Counter + 1) + '/' + str(len(Experiment)),
-        '| Result | ID', ExperimentID[SelectedExperiment], '|',
-        Scintillator[SelectedExperiment], '|', Sensor[SelectedExperiment], '|',
-        Lens[SelectedExperiment]]), figsize=[16, 9])
+        '| Result |', Scintillator[SelectedExperiment], '|',
+        Sensor[SelectedExperiment], '|', Lens[SelectedExperiment], '|',
+        ExperimentID[SelectedExperiment], '|', str(SDD[SelectedExperiment]),
+        'mm | git version', git_hash]),
+        figsize=(16, 9))
     plt.suptitle(' '.join([Scintillator[SelectedExperiment], '|',
         Sensor[SelectedExperiment], '|', Lens[SelectedExperiment], '|',
         str(SDD[SelectedExperiment]), 'mm | version', git_hash]))
