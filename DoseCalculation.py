@@ -90,7 +90,7 @@ if not options.kV in Voltage:
 
 ChosenVoltage = Voltage.index(options.kV)
 # Load spectra
-SpectraPath = '/afs/psi.ch/project/EssentialMed/Dev/Spectra'
+SpectraPath = 'Spectra'
 # Construct file names, then load the data with the filenames (we could do this
 # in one step, but like this it's easier to debug. 'SpectrumData' is the data
 # without comments, thus we read the mean energy on line 7 in a second step
