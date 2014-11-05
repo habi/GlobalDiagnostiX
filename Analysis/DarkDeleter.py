@@ -25,33 +25,16 @@ from functions import myLogger
 # Setup
 ReallyRemove = True
 
-# Where shall we start?
-if 'linux' in sys.platform:
-    # If running at the office, grep AFS
-    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-        'XrayImages')
-    StartingFolder = os.path.join(RootFolder, '20140721')  # 11
-    StartingFolder = os.path.join(RootFolder, '20140722')  # 44
-    StartingFolder = os.path.join(RootFolder, '20140724')  # 91
-    StartingFolder = os.path.join(RootFolder, '20140730')  # 30
-    StartingFolder = os.path.join(RootFolder, '20140731')  # 262
-    StartingFolder = os.path.join(RootFolder, '20140818')  # 20
-    StartingFolder = os.path.join(RootFolder, '20140819')  # 64
-    StartingFolder = os.path.join(RootFolder, '20140820')  # 64
-    StartingFolder = os.path.join(RootFolder, '20140822')  # 149
-    StartingFolder = os.path.join(RootFolder, '20140823')  # 6
-    StartingFolder = os.path.join(RootFolder, '20140825')  # 99
-    StartingFolder = os.path.join(RootFolder, '20140827')  # 49
-    StartingFolder = os.path.join(RootFolder, '20140829')  # 4
-    StartingFolder = os.path.join(RootFolder, '20140831')  # 309
-    StartingFolder = os.path.join(RootFolder, '20140901')  # 149
-    StartingFolder = os.path.join(RootFolder, '20140903')  # 30
-    StartingFolder = os.path.join(RootFolder, '20140907')  # 277
-    StartingFolder = os.path.join(RootFolder, '20140914')  # 47
-    StartingFolder = os.path.join(RootFolder, '20140916')  # 51
-    StartingFolder = os.path.join(RootFolder, '20140920')  # 94
-    StartingFolder = os.path.join(RootFolder, '20140921')  # 227
-    StartingFolder = RootFolder
+# If running at the office, grep AFS
+RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
+    'XrayImages')
+# Look for images of only one scintillator
+StartingFolder = os.path.join(RootFolder, 'AppScinTechHE')
+StartingFolder = os.path.join(RootFolder, 'Hamamatsu')
+StartingFolder = os.path.join(RootFolder, 'Pingseng')
+StartingFolder = os.path.join(RootFolder, 'Toshiba')
+# Look through all folders
+StartingFolder = RootFolder
 
 # Look for all folders matching the naming convention
 Experiment, ExperimentID = get_experiment_list(StartingFolder)

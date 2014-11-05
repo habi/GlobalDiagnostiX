@@ -75,7 +75,7 @@ print 'Mean goes from', round(min(Mean), 1), 'to', round(max(Mean), 1)
 print 'STD goes from', round(min(STD), 1), 'to', round(max(STD), 1)
 print 'Noise goes from', round(min(Noise), 1), 'to', round(max(Noise), 1)
 
-plt.figure(figsize=[20, 4])
+plt.figure(figsize=(20, 4))
 for c, i in enumerate(Images):
     print 'Reading and preparing image', c, 'of', len(Folder)
     plt.subplot(1, len(Folder), c + 1)

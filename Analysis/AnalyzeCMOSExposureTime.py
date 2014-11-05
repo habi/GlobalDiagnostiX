@@ -71,7 +71,7 @@ plt.ion()
 for counter, item in enumerate(Experiment):
     # First figure shows single frames and plot of max, mean and STD with an
     # appropriate size
-    plt.figure(figsize=[NumberOfRadiographies[counter], 5])
+    plt.figure(figsize=(NumberOfRadiographies[counter], 5))
     plt.title(os.path.basename(Experiment[counter]))
     print str(counter + 1) + '/' + str(len(Experiment)) + \
         ': Looking at experiment', os.path.basename(Experiment[counter])
@@ -176,7 +176,7 @@ for counter, item in enumerate(Experiment):
     SummedImage = numpy.sum(SummedImage, axis=2)
     DarkImage = numpy.nanmean(DarkImage, axis=2)
     # Show image
-    plt.figure(figsize=[16, 6])
+    plt.figure(figsize=(16, 6))
     plt.subplot(131)
     plt.imshow(DarkImage, cmap='gray')
     plt.axis('off')
@@ -270,7 +270,7 @@ TotalSummedBrightness = numpy.asarray([x for (y, x) in
 print 'Displaying final result'
 # Final result
 plt.ioff()
-plt.figure(figsize=[16, 9])
+plt.figure(figsize=(16, 9))
 for i in range(len(Experiment)):
     plt.subplot(2, len(Experiment), i + 1)
     plt.imshow(plt.imread(CorrectedImages[i]), cmap='gray')

@@ -165,7 +165,7 @@ for c, item in enumerate(sortedIDs):
             sortedIDs[c] +
             '.image.corrected.stretched.png')[len(StartingFolder):]
 
-plt.figure(figsize=[23, 10])
+plt.figure(figsize=(23, 10))
 for c, i in enumerate(sortedImages):
     plt.subplot(2, len(sortedImages) / 2, c + 1)
     plt.imshow(i, cmap='gray', interpolation='bicubic')

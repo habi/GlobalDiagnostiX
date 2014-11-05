@@ -72,7 +72,7 @@ if normalize:
     STD = STD - numpy.mean(STD)
     STD = STD.tolist()
 
-plt.figure(figsize=[16, 9])
+plt.figure(figsize=(16, 9))
 plt.subplot(311)
 plt.title(' '.join([str(len(Images)), 'Images read from',
     os.path.basename(Directories[ChosenFolder])]))
