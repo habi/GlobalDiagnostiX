@@ -27,16 +27,19 @@ ManualSelection = False
 
 # Where shall we start?
 if 'linux' in sys.platform:
-    # If running at the office, grep AFS
-    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-        'XrayImages')
+    # Where shall we start?
+    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
     # Look for images of only one scintillator
     StartingFolder = os.path.join(RootFolder, 'AppScinTechHE')
-    StartingFolder = os.path.join(RootFolder, 'Hamamatsu')
-    StartingFolder = os.path.join(RootFolder, 'Pingseng')
-    StartingFolder = os.path.join(RootFolder, 'Toshiba')
+    StartingFolder = os.path.join(RootFolder, 'Hamamatsu', 'MT9M001',
+        'TIS-TBL-6C-3MP')
+    #~ StartingFolder = os.path.join(RootFolder, 'Pingseng')
+    #~ StartingFolder = os.path.join(RootFolder, 'Toshiba')
     # Look through all folders
-    StartingFolder = RootFolder
+    #~ StartingFolder = RootFolder
+    # Look for a special folder
+    #~ StartingFolder = os.path.join(RootFolder, 'Hamamatsu', 'MT9M001',
+        #~ 'TIS-TBL-6C-3MP', 'Hand')
 else:
     # If running on Ivans machine, look on the connected harddisk
     StartingFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/AR0130/Computar-11A/')
