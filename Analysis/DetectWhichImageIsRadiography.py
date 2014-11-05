@@ -20,10 +20,7 @@ import sys
 import time
 import scipy.misc  # for saving png or tif at the end
 
-from functions import get_experiment_list
-from functions import AskUser
-from functions import get_git_hash
-from functions import myLogger
+import functions
 
 
 # Setup
@@ -37,16 +34,27 @@ SaveOutputImages = True
 if 'linux' in sys.platform:
     # Where shall we start?
     RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
+
     # Look for images of only one scintillator
-    StartingFolder = os.path.join(RootFolder, 'AppScinTechHE')
-    StartingFolder = os.path.join(RootFolder, 'Hamamatsu')
-    StartingFolder = os.path.join(RootFolder, 'Pingseng')
-    StartingFolder = os.path.join(RootFolder, 'Toshiba')
+    #~ StartingFolder = os.path.join(RootFolder, 'AppScinTechHE')
+    #~ StartingFolder = os.path.join(RootFolder, 'Hamamatsu', 'MT9M001')
+    #~ StartingFolder = os.path.join(RootFolder, 'Pingseng')
+    #~ StartingFolder = os.path.join(RootFolder, 'Toshiba')
+
     # Look through all folders
-    StartingFolder = RootFolder
+    #~ StartingFolder = RootFolder
+
     # Look for a special folder
-    StartingFolder = os.path.join(RootFolder, 'Hamamatsu', 'MT9M001',
-        'TIS-TBL-6C-3MP', 'Hand')
+    #~ StartingFolder = os.path.join(RootFolder, 'Hamamatsu', 'MT9M001',
+        #~ 'TIS-TBL-6C-3MP', 'Hand')
+    # Ask for it
+    Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
+    Sensors = ('AR0130', 'AR0132', 'MT9M001')
+    ChosenScintillator = functions.AskUser(
+        'Which scintillator do you want to look at?', Scintillators)
+    ChosenSensor = functions.AskUser('Which sensor do you want to look at?',
+        Sensors)
+    StartingFolder = os.path.join(RootFolder, ChosenScintillator, ChosenSensor)
 else:
     # If running on Ivans machine, look on the connected harddisk
     StartingFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/AR0130/Computar-11A/')
@@ -92,7 +100,7 @@ def contrast_stretch(image, verbose=False):
     return normalizeImage(clippedimage)
 
 # Look for all folders matching the naming convention
-Experiment, ExperimentID = get_experiment_list(StartingFolder)
+Experiment, ExperimentID = functions.get_experiment_list(StartingFolder)
 print 'I found', len(Experiment), 'experiment IDs in', StartingFolder
 
 # Get list of files in each folder, these are all the radiographies we acquired
@@ -120,7 +128,7 @@ if ManualSelection:
     ## http://stackoverflow.com/a/22642307/323100
     Choices = ['{} with {} images'.format(x, y)
                for x, y in zip(ExperimentID, NumberOfRadiographies)]
-    Choice = AskUser('Which one do you want to look at?', Choices)
+    Choice = functions.AskUser('Which one do you want to look at?', Choices)
     AnalyisList.append(Choices.index(Choice))
     print
     plt.ion()
@@ -162,13 +170,14 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print
     else:
         # Otherwise do all the work now!
-        logfile = myLogger(os.path.dirname(Experiment[SelectedExperiment]),
+        logfile = functions.myLogger(os.path.dirname(
+            Experiment[SelectedExperiment]),
             ExperimentID[SelectedExperiment] + '.analysis.log')
         logfile.info('Log file for Experiment ID %s, Analsyis performed on %s',
             ExperimentID[SelectedExperiment],
             time.strftime('%d.%m.%Y at %H:%M:%S'))
         logfile.info('\nMade with "%s" at Revision %s\n',
-            os.path.basename(__file__), get_git_hash())
+            os.path.basename(__file__), functions.get_git_hash())
         logfile.info(80 * '-')
         logfile.info('All image files are to be found in %s', StartingFolder)
         logfile.info('This experiment ID can be found in the subfolder %s',
