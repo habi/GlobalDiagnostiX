@@ -15,9 +15,7 @@ import time
 import subprocess
 import sys
 
-from functions import get_experiment_list
-from functions import get_git_hash
-from functions import myLogger
+import functions
 
 # Setup
 # If Manual selection is true, the user is asked to select one of the
@@ -26,28 +24,39 @@ from functions import myLogger
 ManualSelection = False
 
 # Where shall we start?
-if 'linux' in sys.platform:
-    # Where shall we start?
-    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
+RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
+    'XrayImages')
+case = 3
+if case == 1:
     # Look for images of only one scintillator
-    StartingFolder = os.path.join(RootFolder, 'AppScinTechHE')
-    StartingFolder = os.path.join(RootFolder, 'Hamamatsu', 'MT9M001',
-        'TIS-TBL-6C-3MP')
+    StartingFolder = os.path.join(RootFolder, 'AppScinTech-HE')
+    #~ StartingFolder = os.path.join(RootFolder, 'Hamamatsu')
     #~ StartingFolder = os.path.join(RootFolder, 'Pingseng')
     #~ StartingFolder = os.path.join(RootFolder, 'Toshiba')
+elif case == 2:
     # Look through all folders
-    #~ StartingFolder = RootFolder
-    # Look for a special folder
-    #~ StartingFolder = os.path.join(RootFolder, 'Hamamatsu', 'MT9M001',
-        #~ 'TIS-TBL-6C-3MP', 'Hand')
-else:
-    # If running on Ivans machine, look on the connected harddisk
-    StartingFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/AR0130/Computar-11A/')
-    StartingFolder = ('/Volumes/exFAT')
-
+    StartingFolder = RootFolder
+elif case == 3:
+    # Ask for what to do
+    Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
+    Sensors = ('AR0130', 'AR0132', 'MT9M001')
+    Lenses = ('Computar-11A', 'Framos-DSL219D-650-F2.0',
+        'Framos-DSL224D-650-F2.0', 'Framos-DSL311A-NIR-F2.8',
+        'Framos-DSL949A-NIR-F2.0', 'Lensation-CHR4020',
+        'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
+        'TIS-TBL-6C-3MP', '')
+    ChosenScintillator = functions.AskUser(
+        'Which scintillator do you want to look at?', Scintillators)
+    ChosenSensor = functions.AskUser(
+        'Which sensor do you want to look at?', Sensors)
+    ChosenLens = functions.AskUser(
+        'Which lens do you want to look at? ("empty" = "all")',
+        Lenses)
+    StartingFolder = os.path.join(RootFolder, ChosenScintillator,
+        ChosenSensor, ChosenLens)
 
 # Look for all folders matching the naming convention
-Experiment, ExperimentID = get_experiment_list(StartingFolder)
+Experiment, ExperimentID = functions.get_experiment_list(StartingFolder)
 print 'I found', len(Experiment), 'experiment IDs in', StartingFolder
 
 AnalyisList = []
@@ -95,13 +104,13 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print
     else:
         # Archive it!
-        logfile = myLogger(os.path.dirname(Experiment[SelectedExperiment]),
+        logfile = functions.myLogger(os.path.dirname(Experiment[SelectedExperiment]),
             ExperimentID[SelectedExperiment] + '.archive.log')
         logfile.info('Archival log file for Experiment ID %s, archived on %s',
             ExperimentID[SelectedExperiment],
             time.strftime('%d.%m.%Y at %H:%M:%S'))
         logfile.info('\nMade with "%s" at Revision %s',
-            os.path.basename(__file__), get_git_hash())
+            os.path.basename(__file__), functions.get_git_hash())
         logfile.info(80 * '-')
         # Tar the selected folder
         TarCommand = ['tar', '-czf',

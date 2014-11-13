@@ -62,4 +62,4 @@ for counter, item in enumerate(ListOfTARs):
     except:
             print 'The log file is already gone!'
     print 80 * '-'
-print 'Fertig'
+print 'Done'
