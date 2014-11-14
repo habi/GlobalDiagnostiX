@@ -67,7 +67,7 @@ for i, scintillator in enumerate(Scintillators):
             plt.plot(Mean, '-o', label='Mean')
         plt.legend(loc='best')
         if normalized:
-            plt.ylim([0,1])
+            plt.ylim([0, 1])
         else:
             plt.ylim(ymin=0)
         plt.xlim([0, 35])

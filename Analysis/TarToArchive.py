@@ -26,7 +26,7 @@ ManualSelection = False
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
-case = 3
+case = 2
 if case == 1:
     # Look for images of only one scintillator
     StartingFolder = os.path.join(RootFolder, 'AppScinTech-HE')
@@ -104,7 +104,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print
     else:
         # Archive it!
-        logfile = functions.myLogger(os.path.dirname(Experiment[SelectedExperiment]),
+        logfile = functions.myLogger(
+            os.path.dirname(Experiment[SelectedExperiment]),
             ExperimentID[SelectedExperiment] + '.archive.log')
         logfile.info('Archival log file for Experiment ID %s, archived on %s',
             ExperimentID[SelectedExperiment],

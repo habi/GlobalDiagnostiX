@@ -87,7 +87,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     print 80 * '-'
     #~ print str(Counter + 1) + '/' + str(len(AnalyisList)) + \
         #~ ': Deleting darks experiment', ExperimentID[SelectedExperiment]
-    logfile = functions.myLogger(os.path.dirname(Experiment[SelectedExperiment]),
+    logfile = functions.myLogger(
+        os.path.dirname(Experiment[SelectedExperiment]),
         ExperimentID[SelectedExperiment] + '.deletion.log')
 
     # Go through the log file. Under the 'Details' section we specify if the
