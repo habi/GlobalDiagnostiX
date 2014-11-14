@@ -230,7 +230,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         logfile.info('Modality: %s', Modality)
         logfile.info('Source kV: %s', Voltage)
         logfile.info('Source mAs: %s', mAs)
-        logfile.info('Source expsure time: %s ms', SourceExposuretime)
+        logfile.info('Source exposure time: %s ms', SourceExposuretime)
         logfile.info('CMOS exposure time: %s ms', CMOSExposuretime)
         logfile.info(80 * '-')
 
