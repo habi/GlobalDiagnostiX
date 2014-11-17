@@ -19,29 +19,15 @@ import sys
 
 # Where shall we start?
 if 'linux' in sys.platform:
-    # If running at the office, grep AFS
+    # If running at the office, grep folders from AFS
     RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
         'XrayImages')
-    StartingFolder = os.path.join(RootFolder, '20140721')  # 11
-    #~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
-    #~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
-    #~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
-    #~ StartingFolder = os.path.join(RootFolder, '20140731')  # 262
-    #~ StartingFolder = os.path.join(RootFolder, '20140818')  # 20
-    #~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
-    #~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
-    #~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
-    #~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
-    #~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
-    #~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
-    #~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
-    #~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
-    #~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
-    #~ StartingFolder = os.path.join(RootFolder, '20140907')  # 277
-    #~ StartingFolder = os.path.join(RootFolder, '20140914')  # 47
-    #~ StartingFolder = os.path.join(RootFolder, '20140916')  # 51
-    #~ StartingFolder = os.path.join(RootFolder, '20140920')  # 94
-    #~ StartingFolder = os.path.join(RootFolder, '20140921')  # 227
+    # Look for images of only one scintillator
+    StartingFolder = os.path.join(RootFolder, 'AppScinTechHE')
+    StartingFolder = os.path.join(RootFolder, 'Hamamatsu')
+    StartingFolder = os.path.join(RootFolder, 'Pingseng')
+    StartingFolder = os.path.join(RootFolder, 'Toshiba')
+    # Look through all folders
     StartingFolder = RootFolder
 else:
     # If running on Ivans machine, look on the connected harddisk
@@ -69,8 +55,13 @@ Modality = [linecache.getline(i, 14).split(':')[1].strip()
     for i in LogFiles]
 Exposuretime = [float(linecache.getline(i, 18)
     .split(':')[1].split('ms')[0].strip()) for i in LogFiles]
+
+#~ for i in LogFiles:
+    #~ print i, linecache.getline(i, 25).split(':')[1].strip()
+#~ exit()
 Max = [float(linecache.getline(i, 25).split(':')[1].strip())
     for i in LogFiles]
+
 Mean = [float(linecache.getline(i, 26).split(':')[1].strip())
     for i in LogFiles]
 STD = [float(linecache.getline(i, 27).split(':')[1].strip())
@@ -102,7 +93,7 @@ print
 
 histograms = False
 if histograms:
-    plt.figure(figsize=[16, 9])
+    plt.figure(figsize=(16, 9))
     plt.subplot(151)
     plt.hist(Exposuretime, bins=128, normed=False, histtype='stepfilled')
     plt.title('Exposure times')
@@ -158,7 +149,7 @@ def subset_seletor(Selector, label=False):
     return Selector
 
 ## Prepare the plot
-fig = plt.figure(figsize=[16, 9])
+fig = plt.figure(figsize=(16, 9))
 # Plot figure
 ## Setup plot
 #~ plt.xkcd()

@@ -20,10 +20,7 @@ import sys
 import time
 import scipy.misc  # for saving png or tif at the end
 
-from functions import get_experiment_list
-from functions import AskUser
-from functions import get_git_hash
-from functions import myLogger
+import functions
 
 
 # Setup
@@ -35,31 +32,37 @@ SaveOutputImages = True
 
 # Where shall we start?
 if 'linux' in sys.platform:
-    # If running at the office, grep AFS
+    # Where shall we start?
     RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
         'XrayImages')
-    #~ StartingFolder = os.path.join(RootFolder, '20140721')  # 11
-    #~ StartingFolder = os.path.join(RootFolder, '20140722')  # 44
-    #~ StartingFolder = os.path.join(RootFolder, '20140724')  # 91
-    #~ StartingFolder = os.path.join(RootFolder, '20140730')  # 30
-    #~ StartingFolder = os.path.join(RootFolder, '20140731')  # 262
-    #~ StartingFolder = os.path.join(RootFolder, '20140818')  # 20
-    #~ StartingFolder = os.path.join(RootFolder, '20140819')  # 64
-    #~ StartingFolder = os.path.join(RootFolder, '20140820')  # 64
-    #~ StartingFolder = os.path.join(RootFolder, '20140822')  # 149
-    #~ StartingFolder = os.path.join(RootFolder, '20140823')  # 6
-    #~ StartingFolder = os.path.join(RootFolder, '20140825')  # 99
-    #~ StartingFolder = os.path.join(RootFolder, '20140827')  # 49
-    #~ StartingFolder = os.path.join(RootFolder, '20140829')  # 4
-    #~ StartingFolder = os.path.join(RootFolder, '20140831')  # 309
-    #~ StartingFolder = os.path.join(RootFolder, '20140901')  # 149
-    #~ StartingFolder = os.path.join(RootFolder, '20140903')  # 30
-    #~ StartingFolder = os.path.join(RootFolder, '20140907')  # 277
-    #~ StartingFolder = os.path.join(RootFolder, '20140914')  # 47
-    #~ StartingFolder = os.path.join(RootFolder, '20140916')  # 51
-    #~ StartingFolder = os.path.join(RootFolder, '20140920')  # 94
-    #~ StartingFolder = os.path.join(RootFolder, '20140921')  # 227
-    StartingFolder = RootFolder
+    case = 3
+    if case == 1:
+        # Look for images of only one scintillator
+        StartingFolder = os.path.join(RootFolder, 'AppScinTech-HE')
+        #~ StartingFolder = os.path.join(RootFolder, 'Hamamatsu')
+        #~ StartingFolder = os.path.join(RootFolder, 'Pingseng')
+        #~ StartingFolder = os.path.join(RootFolder, 'Toshiba')
+    elif case == 2:
+        # Look through all folders
+        StartingFolder = RootFolder
+    elif case == 3:
+        # Ask for what to do
+        Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
+        Sensors = ('AR0130', 'AR0132', 'MT9M001')
+        Lenses = ('Computar-11A', 'Framos-DSL219D-650-F2.0',
+            'Framos-DSL224D-650-F2.0', 'Framos-DSL311A-NIR-F2.8',
+            'Framos-DSL949A-NIR-F2.0', 'Lensation-CHR4020',
+            'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
+            'TIS-TBL-6C-3MP', '')
+        ChosenScintillator = functions.AskUser(
+            'Which scintillator do you want to look at?', Scintillators)
+        ChosenSensor = functions.AskUser(
+            'Which sensor do you want to look at?', Sensors)
+        ChosenLens = functions.AskUser(
+            'Which lens do you want to look at? ("empty" = "all")',
+            Lenses)
+        StartingFolder = os.path.join(RootFolder, ChosenScintillator,
+            ChosenSensor, ChosenLens)
 else:
     # If running on Ivans machine, look on the connected harddisk
     StartingFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/AR0130/Computar-11A/')
@@ -105,7 +108,7 @@ def contrast_stretch(image, verbose=False):
     return normalizeImage(clippedimage)
 
 # Look for all folders matching the naming convention
-Experiment, ExperimentID = get_experiment_list(StartingFolder)
+Experiment, ExperimentID = functions.get_experiment_list(StartingFolder)
 print 'I found', len(Experiment), 'experiment IDs in', StartingFolder
 
 # Get list of files in each folder, these are all the radiographies we acquired
@@ -133,7 +136,7 @@ if ManualSelection:
     ## http://stackoverflow.com/a/22642307/323100
     Choices = ['{} with {} images'.format(x, y)
                for x, y in zip(ExperimentID, NumberOfRadiographies)]
-    Choice = AskUser('Which one do you want to look at?', Choices)
+    Choice = functions.AskUser('Which one do you want to look at?', Choices)
     AnalyisList.append(Choices.index(Choice))
     print
     plt.ion()
@@ -175,13 +178,14 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print
     else:
         # Otherwise do all the work now!
-        logfile = myLogger(os.path.dirname(Experiment[SelectedExperiment]),
+        logfile = functions.myLogger(os.path.dirname(
+            Experiment[SelectedExperiment]),
             ExperimentID[SelectedExperiment] + '.analysis.log')
         logfile.info('Log file for Experiment ID %s, Analsyis performed on %s',
             ExperimentID[SelectedExperiment],
             time.strftime('%d.%m.%Y at %H:%M:%S'))
         logfile.info('\nMade with "%s" at Revision %s\n',
-            os.path.basename(__file__), get_git_hash())
+            os.path.basename(__file__), functions.get_git_hash())
         logfile.info(80 * '-')
         logfile.info('All image files are to be found in %s', StartingFolder)
         logfile.info('This experiment ID can be found in the subfolder %s',
@@ -226,7 +230,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         logfile.info('Modality: %s', Modality)
         logfile.info('Source kV: %s', Voltage)
         logfile.info('Source mAs: %s', mAs)
-        logfile.info('Source expsure time: %s ms', SourceExposuretime)
+        logfile.info('Source exposure time: %s ms', SourceExposuretime)
         logfile.info('CMOS exposure time: %s ms', CMOSExposuretime)
         logfile.info(80 * '-')
 
@@ -310,7 +314,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             NumberOfRadiographies[SelectedExperiment],
             ExperimentID[SelectedExperiment])
         plt.figure(num=1,
-            figsize=[NumberOfRadiographies[SelectedExperiment], 5])
+            figsize=(NumberOfRadiographies[SelectedExperiment], 5))
         for c, Image in enumerate(Images):
             if Image.max() > Threshold or Image.max() == max(ImageMean):
                 if SaveOutputImages:
@@ -356,7 +360,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             plt.savefig(SaveFigName)
             logfile.info('Overview plot saved as %s',
                          os.path.basename(SaveFigName))
-        plt.figure(num=2, figsize=[16, 9])
+        plt.figure(num=2, figsize=(16, 9))
         # Show average darks
         plt.subplot(231)
         plt.imshow(MeanDarkImage, cmap='bone', interpolation='none')
