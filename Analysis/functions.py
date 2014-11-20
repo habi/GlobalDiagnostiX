@@ -69,7 +69,7 @@ def get_experiment_list(StartingFolder):
     import os
     from progressbar import ProgressBar, Percentage, Bar, ETA
     widgets = ['Reading: ', Percentage(), ' ', Bar(), ' ', ETA()]
-    pbar = ProgressBar(widgets=widgets, maxval=3333).start()
+    pbar = ProgressBar(widgets=widgets, maxval=5000).start()
     Experiment = []
     ExperimentID = []
     for root, dirs, files in os.walk(StartingFolder):
