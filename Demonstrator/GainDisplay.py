@@ -49,8 +49,7 @@ for counter in range(len(Radiographies)):
     ImageData = numpy.fromfile(Radiographies[counter],
                                dtype=numpy.int16).reshape(CameraHeight,
                                                           CameraWidth)
-    DarkData = numpy.fromfile(Darks[counter],
-                                      dtype=numpy.int16).reshape(
+    DarkData = numpy.fromfile(Darks[counter], dtype=numpy.int16).reshape(
         CameraHeight, CameraWidth)
     CorrectedData = ImageData - DarkData
     ZoomedData = CorrectedData[445:775, 510:615]
