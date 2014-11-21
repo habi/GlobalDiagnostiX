@@ -37,9 +37,17 @@ def get_git_hash():
     http://stackoverflow.com/a/18283905/323100
     """
     from subprocess import Popen, PIPE
-    gitprocess = Popen(['git', '--git-dir',
-        '/afs/psi.ch/project/EssentialMed/Dev/.git', 'rev-parse', '--short',
-        '--verify', 'HEAD'], stdout=PIPE)
+    import platform
+    if platform.node() == 'anomalocaris':
+        gitprocess = Popen(['git', '--git-dir',
+                            '/Volumes/slslc/EssentialMed/Dev/.git',
+                            'rev-parse', '--short', '--verify', 'HEAD'],
+                           stdout=PIPE)
+    else:
+        gitprocess = Popen(['git', '--git-dir',
+                            '/afs/psi.ch/project/EssentialMed/Dev/.git',
+                            'rev-parse', '--short', '--verify', 'HEAD'],
+                           stdout=PIPE)
     (output, _) = gitprocess.communicate()
     return output.strip()
 
@@ -68,7 +76,7 @@ def get_experiment_list(StartingFolder):
     """
     import os
     import platform
-    if platform.node() != 'slslc06':
+    if platform.node() != 'slslc06' and platform.node() != 'x02da-cons-2':
 	from progressbar import ProgressBar, Percentage, Bar, ETA
 	widgets = ['Reading: ', Percentage(), ' ', Bar(), ' ', ETA()]
 	pbar = ProgressBar(widgets=widgets, maxval=5000).start()
@@ -86,9 +94,9 @@ def get_experiment_list(StartingFolder):
             and not 'AR0' in os.path.basename(root):
             Experiment.append(root)
             ExperimentID.append(os.path.basename(root))
-	    if platform.node() != 'slslc06':
+	    if platform.node() != 'slslc06' and platform.node() != 'x02da-cons-2':
 		pbar.update(len(ExperimentID))
-    if platform.node() != 'slslc06':
+    if platform.node() != 'slslc06' and platform.node() != 'x02da-cons-2':
 	pbar.finish()
     return Experiment, ExperimentID
 
