@@ -26,7 +26,7 @@ FolderList = sorted(glob.glob(os.path.join(RootPath, '*')))
 
 for counter, Folder in enumerate(FolderList):
     print 80 * '-'
-    print str(counter) + '/' + str(len(FolderList)), '|', os.path.basename(
+    print str(counter + 1) + '/' + str(len(FolderList)), '|', os.path.basename(
         Folder)
     RadiographyName = glob.glob(os.path.join(RootPath, Folder, '*1-44.gray'))[0]
     DarkName = glob.glob(os.path.join(RootPath, Folder, '*0-44.gray'))[0]
@@ -36,9 +36,13 @@ for counter, Folder in enumerate(FolderList):
     Radiography = numpy.fromfile(RadiographyName, dtype=numpy.int16).reshape(
         CameraHeight, CameraWidth)
     print 'Reading', DarkName
-    Dark = numpy.fromfile(DarkName, dtype=numpy.int16).reshape(
-        CameraHeight, CameraWidth)
+    Dark = numpy.fromfile(DarkName, dtype=numpy.int16).reshape(CameraHeight,
+                                                               CameraWidth)
     CorrectedData = Radiography - Dark
+    CorrectedAdat = Dark - Radiography
+
+    Mean = numpy.mean(Radiography)
+    STD = numpy.std(Radiography)
 
     # Grab parameters from filename
     kV = os.path.basename(Folder).split('kV_')[0].split('_')[-1]
@@ -49,19 +53,25 @@ for counter, Folder in enumerate(FolderList):
         1].split('-g')[0]
     Gain = os.path.basename(RadiographyName).split('-g')[1].split('-i')[0]
 
-    plt.figure()
-    FigureTitle = str(counter) + '/' + str(len(FolderList)), '| Xray shot ', \
-        'with', kV, 'kV and', mAs, 'mAs (' + SourceExposureTime + \
-        'ms source exposure time).\nCaptured with', CMOSExposureTime, \
-        'ms CMOS exposure time and Gain', Gain
+    plt.figure(figsize=(16, 9))
+    FigureTitle = str(counter + 1) + '/' + str(len(FolderList)), '|', \
+                  os.path.basename(Folder), '\nXray shot with', kV, 'kV and',\
+                  mAs, 'mAs (' + SourceExposureTime + \
+                  'ms source exposure time).\nCaptured with', \
+                  CMOSExposureTime, 'ms CMOS exposure time and Gain', Gain
     plt.suptitle(' '.join(FigureTitle))
-    plt.subplot(131)
-    plt.imshow(Radiography, cmap='bone', interpolation='nearest')
+    plt.subplot(221)
+    plt.imshow(Radiography, cmap='bone')
     plt.title('Radiography')
-    plt.subplot(132)
-    plt.imshow(Dark, cmap='bone', interpolation='nearest')
+    plt.subplot(222)
+    plt.imshow(Dark, cmap='bone', interpolation='bilinear')
     plt.title('Dark Image')
-    plt.subplot(133)
-    plt.imshow(CorrectedData, cmap='bone', interpolation='nearest')
-    plt.title('corrected Image')
+    plt.subplot(223)
+    plt.imshow(CorrectedData, cmap='bone', interpolation='bilinear',
+               vmax=Mean + 3 * STD)
+    plt.title('Left - right')
+    plt.subplot(224)
+    plt.imshow(CorrectedAdat, cmap='bone', interpolation='bilinear',
+               vmax=Mean + 3 * STD)
+    plt.title('Right - left')
     plt.show()
