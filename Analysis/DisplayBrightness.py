@@ -9,13 +9,15 @@ And to display these values.
 from __future__ import division
 import glob
 import os
-import re
 import matplotlib.pyplot as plt
-import time
+import platform
 
 import functions
 
-RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
+if platform.node() == 'anomalocaris':
+    RootFolder = ('/Volumes/slslc/EssentialMed/MasterArbeitBFH/XrayImages')
+else:
+    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
 
 # Ask for what to do
 Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
@@ -25,12 +27,8 @@ Lenses = ('Computar-11A', 'Framos-DSL219D-650-F2.0',
     'Framos-DSL949A-NIR-F2.0', 'Lensation-CHR4020',
     'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
     'TIS-TBL-6C-3MP')
-#~ ChosenScintillator = functions.AskUser(
-    #~ 'Which scintillator do you want to look at?', Scintillators)
-#~ ChosenSensor = functions.AskUser(
-    #~ 'Which sensor do you want to look at?', Sensors)
 ChosenLens = functions.AskUser(
-    'Which lens do you want to look at? ("empty" = "all")',
+    'Which lens do you want to look at?',
     Lenses)
 
 plt.figure(figsize=[12, 9])
@@ -41,6 +39,7 @@ for i, scintillator in enumerate(Scintillators):
         plt.subplot(len(Scintillators), len(Sensors), counter)
         Mean = []
         Max = []
+        STD = []
         print 80 * '-'
         print scintillator, '|', sensor, '|', ChosenLens, '|',
         LogFiles = glob.glob(os.path.join(RootFolder, scintillator, sensor,
@@ -56,15 +55,20 @@ for i, scintillator in enumerate(Scintillators):
                     Mean.append(float(line.split(':')[1].strip()))
                 if '* Max:' in line:
                     Max.append(float(line.split(':')[1].strip()))
-        NormalizedMean = [i / max(Mean) for i in Mean]
-        NormalizedMax = [i / max(Max) for i in Max]
+                if '* STD:' in line:
+                    STD.append(float(line.split(':')[1].strip()))
         normalized = False
         if normalized:
+            NormalizedMean = [i / max(Mean) for i in Mean]
+            NormalizedMax = [i / max(Max) for i in Max]
+            NormalizedSTD = [i / max(STD) for i in STD]
             #~ plt.plot(NormalizedMax, '-o', label='normalized Max')
             plt.plot(NormalizedMean, '-o', label='normalized Mean')
+            plt.plot(NormalizedSTD, '-o', label='normalized STD')
         else:
             #~ plt.plot(Max, '-o', label='Max')
             plt.plot(Mean, '-o', label='Mean')
+            plt.plot(STD, '-o', label='STD')
         plt.legend(loc='best')
         if normalized:
             plt.ylim([0, 1])
