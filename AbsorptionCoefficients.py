@@ -20,7 +20,7 @@ for item in glob.glob(BaseDir):
     with open(item) as f:
         lines = (line for line in f if len(line.split()) < 4)
         Data = np.loadtxt(lines)
-        plt.loglog(Data[:,0],Data[:,1],
+        plt.loglog(Data[:, 0], Data[:, 1],
                    label=os.path.splitext(os.path.basename(item))[0])
 
 plt.rc('text', usetex=True)

@@ -15,24 +15,25 @@ import platform
 import functions
 
 if platform.node() == 'anomalocaris':
-    RootFolder = ('/Volumes/slslc/EssentialMed/MasterArbeitBFH/XrayImages')
+    RootFolder = '/Volumes/slslc/EssentialMed/MasterArbeitBFH/XrayImages'
 else:
-    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
+    RootFolder = '/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages'
 
 # Ask for what to do
 Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
 Sensors = ('AR0130', 'AR0132', 'MT9M001')
 Lenses = ('Computar-11A', 'Framos-DSL219D-650-F2.0',
-    'Framos-DSL224D-650-F2.0', 'Framos-DSL311A-NIR-F2.8',
-    'Framos-DSL949A-NIR-F2.0', 'Lensation-CHR4020',
-    'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
-    'TIS-TBL-6C-3MP')
+          'Framos-DSL224D-650-F2.0', 'Framos-DSL311A-NIR-F2.8',
+          'Framos-DSL949A-NIR-F2.0', 'Lensation-CHR4020',
+          'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
+          'TIS-TBL-6C-3MP')
 ChosenLens = functions.AskUser(
     'Which lens do you want to look at?',
     Lenses)
 
 plt.figure(figsize=[12, 9])
 counter = 0
+ShowNormalizedValues = False
 for i, scintillator in enumerate(Scintillators):
     for k, sensor in enumerate(Sensors):
         counter += 1
@@ -43,7 +44,7 @@ for i, scintillator in enumerate(Scintillators):
         print 80 * '-'
         print scintillator, '|', sensor, '|', ChosenLens, '|',
         LogFiles = glob.glob(os.path.join(RootFolder, scintillator, sensor,
-            ChosenLens, 'Hand', '*.analysis.log'))
+                                          ChosenLens, 'Hand', '*.analysis.log'))
         try:
             print len(LogFiles), 'log files'
         except:
@@ -57,20 +58,19 @@ for i, scintillator in enumerate(Scintillators):
                     Max.append(float(line.split(':')[1].strip()))
                 if '* STD:' in line:
                     STD.append(float(line.split(':')[1].strip()))
-        normalized = False
-        if normalized:
+        if ShowNormalizedValues:
             NormalizedMean = [i / max(Mean) for i in Mean]
             NormalizedMax = [i / max(Max) for i in Max]
             NormalizedSTD = [i / max(STD) for i in STD]
-            #~ plt.plot(NormalizedMax, '-o', label='normalized Max')
+            # plt.plot(NormalizedMax, '-o', label='normalized Max')
             plt.plot(NormalizedMean, '-o', label='normalized Mean')
             plt.plot(NormalizedSTD, '-o', label='normalized STD')
         else:
-            #~ plt.plot(Max, '-o', label='Max')
+            # plt.plot(Max, '-o', label='Max')
             plt.plot(Mean, '-o', label='Mean')
             plt.plot(STD, '-o', label='STD')
         plt.legend(loc='best')
-        if normalized:
+        if ShowNormalizedValues:
             plt.ylim([0, 1])
         else:
             plt.ylim(ymin=0)
@@ -78,7 +78,7 @@ for i, scintillator in enumerate(Scintillators):
         plt.title('\n'.join([scintillator, sensor, ChosenLens]))
 
 OutputName = os.path.join(RootFolder, 'Brightness-Overview_' + ChosenLens)
-if normalized:
+if ShowNormalizedValues:
     OutputName += '_normalized'
 
 # Display
