@@ -67,9 +67,11 @@ def get_experiment_list(StartingFolder):
     Get all folders (Experiment) and ExperimentIDs inside StartingFolder
     """
     import os
-    from progressbar import ProgressBar, Percentage, Bar, ETA
-    widgets = ['Reading: ', Percentage(), ' ', Bar(), ' ', ETA()]
-    pbar = ProgressBar(widgets=widgets, maxval=5000).start()
+    import platform
+    if platform.node() != 'slslc06':
+	from progressbar import ProgressBar, Percentage, Bar, ETA
+	widgets = ['Reading: ', Percentage(), ' ', Bar(), ' ', ETA()]
+	pbar = ProgressBar(widgets=widgets, maxval=5000).start()
     Experiment = []
     ExperimentID = []
     for root, dirs, files in os.walk(StartingFolder):
@@ -84,8 +86,10 @@ def get_experiment_list(StartingFolder):
             and not 'AR0' in os.path.basename(root):
             Experiment.append(root)
             ExperimentID.append(os.path.basename(root))
-            pbar.update(len(ExperimentID))
-    pbar.finish()
+	    if platform.node() != 'slslc06':
+		pbar.update(len(ExperimentID))
+    if platform.node() != 'slslc06':
+	pbar.finish()
     return Experiment, ExperimentID
 
 
