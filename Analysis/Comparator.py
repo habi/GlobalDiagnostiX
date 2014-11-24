@@ -32,7 +32,7 @@ def readit(InputFolder):
             if int(os.path.basename(root)):
                 Folder.append(root)
                 ExperimentID.append(int(os.path.basename(root)))
-            # otherwise just continue
+        # otherwise just continue
         except:
             continue
     return Folder, ExperimentID
