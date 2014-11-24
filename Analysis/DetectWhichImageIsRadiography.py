@@ -41,25 +41,25 @@ else:
                       'XrayImages')
         # If running on Ivans machine, look on the connected harddisk
         StartingFolder = ('/Volumes/WINDOWS/Aptina/')
-case = 3
+case = 2
 if case == 1:
-    # Look for images of only one scintillator
-    StartingFolder = os.path.join(RootFolder, 'AppScinTech-HE')
-    # ~ StartingFolder = os.path.join(RootFolder, 'Hamamatsu')
-    #~ StartingFolder = os.path.join(RootFolder, 'Pingseng')
-    #~ StartingFolder = os.path.join(RootFolder, 'Toshiba')
-elif case == 2:
     # Look through all folders
     StartingFolder = RootFolder
+elif case == 2:
+    # Look for images of only one scintillator
+    Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
+    ChosenScintillator = functions.AskUser(
+        'Which scintillator do you want to look at?', Scintillators)
+    StartingFolder = os.path.join(RootFolder, ChosenScintillator)
 elif case == 3:
     # Ask for what to do
     Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
     Sensors = ('AR0130', 'AR0132', 'MT9M001')
     Lenses = ('Computar-11A', 'Framos-DSL219D-650-F2.0',
-              'Framos-DSL224D-650-F2.0', 'Framos-DSL311A-NIR-F2.8',
-              'Framos-DSL949A-NIR-F2.0', 'Lensation-CHR4020',
-              'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
-              'TIS-TBL-6C-3MP', '')
+        'Framos-DSL224D-650-F2.0', 'Framos-DSL311A-NIR-F2.8',
+        'Framos-DSL949A-NIR-F2.0', 'Lensation-CHR4020',
+        'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
+        'TIS-TBL-6C-3MP', '')
     ChosenScintillator = functions.AskUser(
         'Which scintillator do you want to look at?', Scintillators)
     ChosenSensor = functions.AskUser(
@@ -68,7 +68,7 @@ elif case == 3:
         'Which lens do you want to look at? ("empty" = "all")',
         Lenses)
     StartingFolder = os.path.join(RootFolder, ChosenScintillator,
-                                  ChosenSensor, ChosenLens)
+        ChosenSensor, ChosenLens)
 
 # Testing
 # StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
@@ -173,7 +173,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print '\tWe thus do not analyze it again.'
         print '\tTake a look at', os.path.join(
             os.path.dirname(Experiment[SelectedExperiment])
-            [len(StartingFolder) + 1:],
+            [len(StartingFolder):],
             ExperimentID[SelectedExperiment] + '.analysis.log'), \
             'for more info'
         print
@@ -428,7 +428,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             CorrName = os.path.join(os.path.dirname(Experiment[
                 SelectedExperiment]), ExperimentID[SelectedExperiment] +
                                     '.image.corrected')
-            scipy.misc.imsave(CorrName + '.png', normalizeImage(CorrectedImage))
+            scipy.misc.imsave(CorrName + '.png',
+                normalizeImage(CorrectedImage))
             scipy.misc.imsave(CorrName + '.stretched.png', contrast_stretch(
                 CorrectedImage))
             logfile.info('Sum of %s images subtracted with the mean of %s ' +

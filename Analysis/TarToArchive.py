@@ -27,23 +27,23 @@ RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
 case = 2
 if case == 1:
-    # Look for images of only one scintillator
-    StartingFolder = os.path.join(RootFolder, 'AppScinTech-HE')
-    #~ StartingFolder = os.path.join(RootFolder, 'Hamamatsu')
-    #~ StartingFolder = os.path.join(RootFolder, 'Pingseng')
-    #~ StartingFolder = os.path.join(RootFolder, 'Toshiba')
-elif case == 2:
     # Look through all folders
     StartingFolder = RootFolder
+elif case == 2:
+    # Look for images of only one scintillator
+    Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
+    ChosenScintillator = functions.AskUser(
+        'Which scintillator do you want to look at?', Scintillators)
+    StartingFolder = os.path.join(RootFolder, ChosenScintillator)
 elif case == 3:
     # Ask for what to do
     Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
     Sensors = ('AR0130', 'AR0132', 'MT9M001')
     Lenses = ('Computar-11A', 'Framos-DSL219D-650-F2.0',
-              'Framos-DSL224D-650-F2.0', 'Framos-DSL311A-NIR-F2.8',
-              'Framos-DSL949A-NIR-F2.0', 'Lensation-CHR4020',
-              'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
-              'TIS-TBL-6C-3MP', '')
+        'Framos-DSL224D-650-F2.0', 'Framos-DSL311A-NIR-F2.8',
+        'Framos-DSL949A-NIR-F2.0', 'Lensation-CHR4020',
+        'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
+        'TIS-TBL-6C-3MP', '')
     ChosenScintillator = functions.AskUser(
         'Which scintillator do you want to look at?', Scintillators)
     ChosenSensor = functions.AskUser(
@@ -98,7 +98,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print '\tWe thus do not archive it again.'
         print '\tTake a look at', os.path.join(
             os.path.dirname(Experiment[SelectedExperiment])
-                [len(StartingFolder) + 1:],
+                [len(StartingFolder):],
             ExperimentID[SelectedExperiment] + '.archive.log'), 'for more info'
         print
     else:
