@@ -11,7 +11,6 @@ several times.
 """
 
 import os
-import sys
 import subprocess
 import errno
 
@@ -46,7 +45,8 @@ FolderHD, IDHD = readit(RootFolderHD)
 RootFolderAFS = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
 FolderAFS, IDAFS = readit(RootFolderAFS)
 
-for experiment in IDHD:
+for counter, experiment in enumerate(IDHD):
+    print 5 * '-', '|', str(counter + 1) + '/' + str(len(IDHD)), '|', 65 * '-'
     if experiment not in IDAFS:
         InputPath = FolderHD[IDHD.index(experiment)]
         OutputPath = os.path.dirname(os.path.join(RootFolderAFS,
@@ -80,6 +80,7 @@ for experiment in IDHD:
         print FolderHD[IDHD.index(experiment)]
         print 'is already on AFS at'
         print FolderAFS[IDAFS.index(experiment)]
-    print
     print 'Done with experiment', experiment
-    print 80 * '-'
+
+print 80 * '-'
+print 'Done with all', len(IDHD), 'experiment IDs on', RootFolderHD
