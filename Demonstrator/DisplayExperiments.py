@@ -24,91 +24,94 @@ else:
 # since that was the one that was focus and aligned properly for this test.
 FolderList = sorted(glob.glob(os.path.join(RootPath, '*')))
 
+# Grab names
+RadiographyName = [glob.glob(os.path.join(RootPath, i, '*1-44.gray'))[0] for
+    i in FolderList]
+DarkName = [glob.glob(os.path.join(RootPath, i, '*0-44.gray'))[0] for
+    i in FolderList]
+
+# Read files
+print 'Reading all radiographies'
+Radiography = [numpy.fromfile(i, dtype=numpy.int16).reshape(CameraHeight,
+    CameraWidth) for i in RadiographyName]
+print 'Reading all darks'
+Dark = [numpy.fromfile(i, dtype=numpy.int16).reshape(CameraHeight, CameraWidth)
+    for i in DarkName]
+print 'Calculating corrected images'
+CorrectedData = [Radiography[i] - Dark[i] for i in range(len(FolderList))]
+CorrectedAdat = [Dark[i] - Radiography[i] for i in range(len(FolderList))]
+
+# Grab parameters from filename
+kV = [os.path.basename(i).split('kV_')[0].split('_')[-1] for i in FolderList]
+mAs = [os.path.basename(i).split('mAs_')[0].split('kV_')[-1] for
+    i in FolderList]
+SourceExposureTime = [os.path.basename(i).split('ms_')[0].split('mAs_')[-1]
+    for i in FolderList]
+CMOSExposureTime = [os.path.basename(i).split('-e')[1].split('-g')[0]
+    for i in RadiographyName]
+Gain = [os.path.basename(i).split('-g')[1].split('-i')[0]
+    for i in RadiographyName]
+
+# Grab information from files
+ValuesImage = [[numpy.min(i), numpy.mean(i), numpy.max(i), numpy.std(i)]
+    for i in Radiography]
+ValuesDark = [[numpy.min(i), numpy.mean(i), numpy.max(i), numpy.std(i)]
+    for i in Dark]
+ValuesCorrectedData = [[numpy.min(i), numpy.mean(i), numpy.max(i),
+    numpy.std(i)] for i in CorrectedData]
+ValuesCorrectedAdat = [[numpy.min(i), numpy.mean(i), numpy.max(i),
+    numpy.std(i)] for i in CorrectedAdat]
+
 for counter, Folder in enumerate(FolderList):
     print 80 * '-'
-    print str(counter + 1) + '/' + str(len(FolderList)), '|', os.path.basename(
-        Folder)
-    RadiographyName = glob.glob(os.path.join(RootPath,
-                                             Folder, '*1-44.gray'))[0]
-    DarkName = glob.glob(os.path.join(RootPath, Folder, '*0-44.gray'))[0]
-
-    # Read images
-    print 'Reading', RadiographyName
-    Radiography = numpy.fromfile(RadiographyName, dtype=numpy.int16).reshape(
-        CameraHeight, CameraWidth)
-    print 'Reading', DarkName
-    Dark = numpy.fromfile(DarkName, dtype=numpy.int16).reshape(CameraHeight,
-                                                               CameraWidth)
-    CorrectedData = Radiography - Dark
-    CorrectedAdat = Dark - Radiography
-
-    # Grab information from files
-    MaxImage = numpy.max(Radiography)
-    MinImage = numpy.min(Radiography)
-    MeanImage = numpy.mean(Radiography)
-    STDImage = numpy.std(Radiography)
-
-    MaxDark = numpy.max(Dark)
-    MinDark = numpy.min(Dark)
-    MeanDark = numpy.mean(Dark)
-    STDDark = numpy.std(Dark)
-
-    MaxCorrectedData = numpy.max(CorrectedData)
-    MinCorrectedData = numpy.min(CorrectedData)
-    MeanCorrectedData = numpy.mean(CorrectedData)
-    STDCorrectedData = numpy.std(CorrectedData)
-
-    MaxCorrectedAdat = numpy.max(CorrectedAdat)
-    MinCorrectedAdat = numpy.min(CorrectedAdat)
-    MeanCorrectedAdat = numpy.mean(CorrectedAdat)
-    STDCorrectedAdat = numpy.std(CorrectedAdat)
-
-    # Grab parameters from filename
-    kV = os.path.basename(Folder).split('kV_')[0].split('_')[-1]
-    mAs = os.path.basename(Folder).split('mAs_')[0].split('kV_')[-1]
-    SourceExposureTime = os.path.basename(Folder).split('ms_')[0].split(
-        'mAs_')[-1]
-    CMOSExposureTime = os.path.basename(RadiographyName).split('-e')[
-        1].split('-g')[0]
-    Gain = os.path.basename(RadiographyName).split('-g')[1].split('-i')[0]
+    print str(counter + 1) + '/' + str(len(FolderList)), '|', \
+        os.path.basename(Folder)
 
     # Inform the user
-    print '\nFor the experiment with', kV, 'kV,', mAs, \
+    print '\nFor the experiment with', kV[counter], 'kV,', mAs[counter], \
         'mAs we have the following image properties'
     print '\tMin\tMean\tMax\tSTD'
-    print 'Image\t',    round(MinImage, 1), '\t', \
-        round(MeanImage, 1), '\t', round(MaxImage, 1), '\t', \
-        round(STDImage, 1)
-    print 'Dark\t',     round(MinDark, 1), '\t', \
-        round(MeanDark, 1), '\t', round(MaxDark, 1), '\t', round(STDDark, 1)
-    print 'Img-Drk\t',  round(MinCorrectedData, 1), '\t', \
-        round(MeanCorrectedData, 1), '\t', round(MaxCorrectedData, 1), '\t', \
-        round(STDCorrectedData, 1)
-    print 'Drk-Img\t',  round(MinCorrectedAdat, 1), '\t', \
-        round(MeanCorrectedAdat, 1), '\t', round(MaxCorrectedAdat, 1), '\t', \
-        round(STDCorrectedAdat, 1)
+    print 'Image\t',    round(ValuesImage[counter][0], 1), '\t', \
+        round(ValuesImage[counter][1], 1), '\t', \
+        round(ValuesImage[counter][2], 1), '\t', \
+        round(ValuesImage[counter][3], 1)
+    print 'Dark\t',    round(ValuesDark[counter][0], 1), '\t', \
+        round(ValuesDark[counter][1], 1), '\t', \
+        round(ValuesDark[counter][2], 1), '\t', \
+        round(ValuesDark[counter][3], 1)
+    print 'Img-Drk\t',    round(ValuesCorrectedData[counter][0], 1), '\t', \
+        round(ValuesCorrectedData[counter][1], 1), '\t', \
+        round(ValuesCorrectedData[counter][2], 1), '\t', \
+        round(ValuesCorrectedData[counter][3], 1)
+    print 'Drk-Imgk\t',    round(ValuesCorrectedAdat[counter][0], 1), '\t', \
+        round(ValuesCorrectedAdat[counter][1], 1), '\t', \
+        round(ValuesCorrectedAdat[counter][2], 1), '\t', \
+        round(ValuesCorrectedAdat[counter][3], 1)
 
     plt.figure(figsize=(16, 9))
     FigureTitle = str(counter + 1) + '/' + str(len(FolderList)), '|', \
-                  os.path.basename(Folder), '\nXray shot with', kV, 'kV and',\
-                  mAs, 'mAs (' + SourceExposureTime + \
-                  'ms source exposure time).\nCaptured with', \
-                  CMOSExposureTime, 'ms CMOS exposure time and Gain', Gain
+        os.path.basename(Folder), '\nXray shot with', kV[counter], 'kV and',\
+        mAs[counter], 'mAs (' + SourceExposureTime[counter] + \
+        'ms source exposure time).\nCaptured with', \
+        CMOSExposureTime[counter], 'ms CMOS exposure time and Gain', \
+        Gain[counter]
     plt.suptitle(' '.join(FigureTitle))
     plt.subplot(221)
-    plt.imshow(Radiography, cmap='bone', interpolation='nearest')
+    plt.imshow(Radiography[counter], cmap='bone', interpolation='nearest')
     plt.title('Image')
     plt.subplot(222)
-    plt.imshow(Dark, cmap='bone', interpolation='nearest')
+    plt.imshow(Dark[counter], cmap='bone', interpolation='nearest')
     plt.title('Dark')
     plt.subplot(223)
-    plt.imshow(CorrectedData, cmap='bone', interpolation='nearest',
-               vmin=numpy.amin(CorrectedData),
-               vmax=MeanCorrectedData + 3 * STDCorrectedData)
+    plt.imshow(CorrectedData[counter], cmap='bone', interpolation='nearest',
+        vmin=ValuesCorrectedData[counter][0],
+        vmax=(ValuesCorrectedData[counter][1] + 3 *
+            ValuesCorrectedData[counter][3]))
     plt.title('Img-Drk')
     plt.subplot(224)
-    plt.imshow(CorrectedAdat, cmap='bone', interpolation='nearest',
-               vmin=numpy.amin(CorrectedAdat),
-               vmax=MeanCorrectedAdat + 3 * STDCorrectedAdat)
+    plt.imshow(CorrectedAdat[counter], cmap='bone', interpolation='nearest',
+        vmin=ValuesCorrectedAdat[counter][0],
+        vmax=(ValuesCorrectedAdat[counter][1] + 3 *
+            ValuesCorrectedAdat[counter][3]))
     plt.title('Drk-Img')
     plt.show()
