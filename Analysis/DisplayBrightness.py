@@ -11,6 +11,7 @@ import glob
 import os
 import matplotlib.pyplot as plt
 import platform
+import numpy
 
 import functions
 
@@ -31,9 +32,14 @@ ChosenLens = functions.AskUser(
     'Which lens do you want to look at?',
     Lenses)
 
+mycolors = ['#9F5845' ,'#90BA6D', '#966FAD']
+
 plt.figure(figsize=[12, 9])
 counter = 0
+
 ShowNormalizedValues = False
+ShowMax = False
+
 for i, scintillator in enumerate(Scintillators):
     for k, sensor in enumerate(Sensors):
         counter += 1
@@ -62,14 +68,35 @@ for i, scintillator in enumerate(Scintillators):
             NormalizedMean = [i / max(Mean) for i in Mean]
             NormalizedMax = [i / max(Max) for i in Max]
             NormalizedSTD = [i / max(STD) for i in STD]
-            # plt.plot(NormalizedMax, '-o', label='normalized Max')
-            plt.plot(NormalizedMean, '-o', label='normalized Mean')
-            plt.plot(NormalizedSTD, '-o', label='normalized STD')
+            if ShowMax:
+                plt.plot(NormalizedMax, linestyle='none', marker='o',
+                    color=mycolors[0], label='normalized Max')
+                plt.axhline(numpy.mean(NormalizedMax), linestyle='--',
+                    color=mycolors[0], label='mean of normalized Max')
+            plt.plot(NormalizedMean, linestyle='none', marker='o',
+                color=mycolors[1], label='normalized Mean')
+            plt.axhline(numpy.mean(NormalizedMean), linestyle='--',
+                color=mycolors[1], label='mean of normalized Mean')
+            plt.plot(NormalizedSTD, linestyle='none', marker='o',
+                color=mycolors[2], label='normalized STD')
+            plt.axhline(numpy.mean(NormalizedSTD), linestyle='--',
+                color=mycolors[2], label='mean of normalized STD')
         else:
-            # plt.plot(Max, '-o', label='Max')
-            plt.plot(Mean, '-o', label='Mean')
-            plt.plot(STD, '-o', label='STD')
-        plt.legend(loc='best')
+            if ShowMax:
+                plt.plot(Max, linestyle='none', marker='o', color=mycolors[0],
+                    label='Mean')
+                plt.axhline(numpy.mean(Max), linestyle='--', color=mycolors[0],
+                    label='mean Max')
+            plt.plot(Mean, linestyle='none', marker='o', color=mycolors[1],
+                label='Mean')
+            plt.axhline(numpy.mean(Mean), linestyle='--', color=mycolors[1],
+                label='mean Mean')
+            plt.plot(STD, 'o', linestyle='none', marker='o', color=mycolors[2],
+                label='STD')
+            plt.axhline(numpy.mean(STD), linestyle='-', color=mycolors[2],
+                label='mean STD')
+        #~ plt.legend(loc='best')
+        #~ plt.suptitle('Green = Mean, Blue = STD')
         if ShowNormalizedValues:
             plt.ylim([0, 1])
         else:
