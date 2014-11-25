@@ -12,7 +12,6 @@ DetectWhichImageIsRadiography.py
 import os
 import time
 import subprocess
-import sys
 
 import functions
 
@@ -23,9 +22,8 @@ import functions
 ManualSelection = False
 
 # Where shall we start?
-RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-    'XrayImages')
-case = 2
+RootFolder = '/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages'
+case = 1
 if case == 1:
     # Look through all folders
     StartingFolder = RootFolder
@@ -40,10 +38,10 @@ elif case == 3:
     Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
     Sensors = ('AR0130', 'AR0132', 'MT9M001')
     Lenses = ('Computar-11A', 'Framos-DSL219D-650-F2.0',
-        'Framos-DSL224D-650-F2.0', 'Framos-DSL311A-NIR-F2.8',
-        'Framos-DSL949A-NIR-F2.0', 'Lensation-CHR4020',
-        'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
-        'TIS-TBL-6C-3MP', '')
+              'Framos-DSL224D-650-F2.0', 'Framos-DSL311A-NIR-F2.8',
+              'Framos-DSL949A-NIR-F2.0', 'Lensation-CHR4020',
+              'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
+              'TIS-TBL-6C-3MP', '')
     ChosenScintillator = functions.AskUser(
         'Which scintillator do you want to look at?', Scintillators)
     ChosenSensor = functions.AskUser(
@@ -52,7 +50,7 @@ elif case == 3:
         'Which lens do you want to look at? ("empty" = "all")',
         Lenses)
     StartingFolder = os.path.join(RootFolder, ChosenScintillator,
-        ChosenSensor, ChosenLens)
+                                  ChosenSensor, ChosenLens)
 
 # Look for all folders matching the naming convention
 Experiment, ExperimentID = functions.get_experiment_list(StartingFolder)
@@ -61,9 +59,10 @@ print 'I found', len(Experiment), 'experiment IDs in', StartingFolder
 AnalyisList = []
 if ManualSelection:
     # Ask the user which experimentID to show
-    ## Concatenate the list for display purposes:
-    ## http://stackoverflow.com/a/22642307/323100
-    Choice = AskUser('Which experiment do you want to archive?', ExperimentID)
+    # Concatenate the list for display purposes:
+    # http://stackoverflow.com/a/22642307/323100
+    Choice = functions.AskUser('Which experiment do you want to archive?',
+                               ExperimentID)
     AnalyisList.append(ExperimentID.index(Choice))
     print
 else:
@@ -97,26 +96,26 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             ExperimentID[SelectedExperiment]
         print '\tWe thus do not archive it again.'
         print '\tTake a look at', os.path.join(
-            os.path.dirname(Experiment[SelectedExperiment])
-                [len(StartingFolder):],
-            ExperimentID[SelectedExperiment] + '.archive.log'), 'for more info'
+            os.path.dirname(Experiment[SelectedExperiment])[len(
+                StartingFolder):], ExperimentID[SelectedExperiment] +
+            '.archive.log'), 'for more info'
         print
     else:
         # Archive it!
         logfile = functions.myLogger(
             os.path.dirname(Experiment[SelectedExperiment]),
             ExperimentID[SelectedExperiment] + '.archive.log')
-        logfile.info('Archival log file for Experiment ID %s, archived on %s',
-            ExperimentID[SelectedExperiment],
-            time.strftime('%d.%m.%Y at %H:%M:%S'))
-        logfile.info('\nMade with "%s" at Revision %s',
-            os.path.basename(__file__), functions.get_git_hash())
+        logfile.info('Archival log file for Experiment ID %s, archived on '
+                     '%s', ExperimentID[SelectedExperiment],
+                     time.strftime('%d.%m.%Y at %H:%M:%S'))
+        logfile.info('\nMade with "%s" at Revision %s', os.path.basename(
+            __file__), functions.get_git_hash())
         logfile.info(80 * '-')
         # Tar the selected folder
-        TarCommand = ['tar', '-czf',
-            Experiment[SelectedExperiment] + '.tar.gz',
-            '-C', os.path.dirname(Experiment[SelectedExperiment]),
-            os.path.basename(Experiment[SelectedExperiment])]
+        TarCommand = ['tar', '-czf', Experiment[SelectedExperiment] +
+                      '.tar.gz', '-C',
+                      os.path.dirname(Experiment[SelectedExperiment]),
+                      os.path.basename(Experiment[SelectedExperiment])]
         print 'Packing', ExperimentID[SelectedExperiment]
         logfile.info('Packing the original files with')
         logfile.info('---')
@@ -143,8 +142,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print 'Transferring', \
             ExperimentID[SelectedExperiment] + '.tar.gz to archive'
         print LFTPcommand
-        logfile.info('Transferring %s to the PSI archive with',
-            ExperimentID[SelectedExperiment] + '.tar.gz')
+        logfile.info('Transferring %s to the PSI archive with', ExperimentID[
+            SelectedExperiment] + '.tar.gz')
         logfile.info('---')
         logfile.info(LFTPcommand)
         logfile.info('---')

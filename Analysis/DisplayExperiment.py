@@ -8,30 +8,29 @@ import matplotlib.pyplot as plt
 import numpy as np
 from functions import estimate_image_noise
 
-ID = [
-    8466438,
-    8466246,
-    8596690,
-    8595968,
-    5808743,
-    5814382,
-    5814190,
-    9078293,
-    9074884,
-    9071872,
-    8466170,
-    9080226,
-    7733379
-]
+# ID = [
+#     8466438,
+#     8466246,
+#     8596690,
+#     8595968,
+#     5808743,
+#     5814382,
+#     5814190,
+#     9078293,
+#     9074884,
+#     9071872,
+#     8466170,
+#     9080226,
+#     7733379
+# ]
 
-ID = [8769429]
+ID = [10280776]
 
 getfromHD = False
 if getfromHD:
-    RootFolder = ('/media/WINDOWS')
+    RootFolder = '/media/WINDOWS'
 else:
-    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-        'XrayImages')
+    RootFolder = '/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages'
 
 # Get all folders (Experiment) and ExperimentIDs inside StartingFolder
     print 'Looking for the folder with the given Experiment IDs '
@@ -48,7 +47,7 @@ for root, dirs, files in os.walk(RootFolder):
                 os.path.dirname(root)
             Folder.append(root)
             ExperimentID.append(int(os.path.basename(root)))
-            #~ print len(Folder), len(ExperimentID), len(ID)
+            # print len(Folder), len(ExperimentID), len(ID)
         # otherwise just pass
     except:
         continue
@@ -80,9 +79,9 @@ for c, i in enumerate(Images):
     print 'Reading and preparing image', c, 'of', len(Folder)
     plt.subplot(1, len(Folder), c + 1)
     plt.imshow(i, cmap='bone')
-    title = '\n'.join(['ID ' + str(ExperimentID[c]),
-        'Mean ' + str(round(Mean[c], 1)), 'STD ' + str(round(STD[c], 1)),
-        'Noise ' + str(round(Noise[c]))])
+    title = '\n'.join(['ID ' + str(ExperimentID[c]), 'Mean ' + str(round(
+        Mean[c], 1)), 'STD ' + str(round(STD[c], 1)), 'Noise ' +
+        str(round(Noise[c]))])
     plt.title(title)
     plt.axis('off')
 plt.tight_layout()
