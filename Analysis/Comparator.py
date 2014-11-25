@@ -46,7 +46,7 @@ RootFolderAFS = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
 FolderAFS, IDAFS = readit(RootFolderAFS)
 
 for counter, experiment in enumerate(IDHD):
-    print 5 * '-', '|', str(counter + 1) + '/' + str(len(IDHD)), '|', 65 * '-'
+    print 5 * '-', '|', str(counter + 1) + '/' + str(len(IDHD)), '|', 60 * '-'
     if experiment not in IDAFS:
         InputPath = FolderHD[IDHD.index(experiment)]
         OutputPath = os.path.dirname(os.path.join(RootFolderAFS,
