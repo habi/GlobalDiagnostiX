@@ -13,8 +13,6 @@ import matplotlib.pyplot as plt
 import platform
 import numpy
 
-import functions
-
 if platform.node() == 'anomalocaris':
     RootFolder = '/Volumes/slslc/EssentialMed/MasterArbeitBFH/XrayImages'
 else:
@@ -28,87 +26,82 @@ Lenses = ('Computar-11A', 'Framos-DSL219D-650-F2.0',
           'Framos-DSL949A-NIR-F2.0', 'Lensation-CHR4020',
           'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
           'TIS-TBL-6C-3MP')
-ChosenLens = functions.AskUser(
-    'Which lens do you want to look at?',
-    Lenses)
 
-mycolors = ['#9F5845' ,'#90BA6D', '#966FAD']
-
-plt.figure(figsize=[12, 9])
-counter = 0
-
-ShowNormalizedValues = False
+# Setup
 ShowMax = False
+if ShowMax:
+    mycolors = ["#A35540", "#95BD56", "#9F5EAB", "#7E9A99"]
+else:
+    mycolors = ["", "#90BA6D", "#966FAD", "#9F5845"]
 
-for i, scintillator in enumerate(Scintillators):
-    for k, sensor in enumerate(Sensors):
-        counter += 1
-        plt.subplot(len(Scintillators), len(Sensors), counter)
-        Mean = []
-        Max = []
-        STD = []
-        print 80 * '-'
-        print scintillator, '|', sensor, '|', ChosenLens, '|',
-        LogFiles = glob.glob(os.path.join(RootFolder, scintillator, sensor,
-                                          ChosenLens, 'Hand', '*.analysis.log'))
-        try:
-            print len(LogFiles), 'log files'
-        except:
-            print 'No log files found for this combination'
-            exit()
-        for log in LogFiles:
-            for line in open(log, "r"):
-                if '* Mean:' in line:
-                    Mean.append(float(line.split(':')[1].strip()))
-                if '* Max:' in line:
-                    Max.append(float(line.split(':')[1].strip()))
-                if '* STD:' in line:
-                    STD.append(float(line.split(':')[1].strip()))
-        if ShowNormalizedValues:
-            NormalizedMean = [i / max(Mean) for i in Mean]
-            NormalizedMax = [i / max(Max) for i in Max]
-            NormalizedSTD = [i / max(STD) for i in STD]
+for lens in Lenses:
+    plt.figure(figsize=[20, 12])
+    MaximalNumberOfImages = 0
+    MaximalMean = 0
+    counter = 0
+    for scintillator in Scintillators:
+        for sensor in Sensors:
+            counter += 1
+            plt.subplot(len(Scintillators), len(Sensors), counter)
+            print str(counter) + '/' + str(len(Scintillators) * len(
+                Sensors)), '|',  scintillator, '|', sensor,  '|', \
+                lens, '|',
+            LoadStretched = False
+            if LoadStretched:
+                ImageNames = glob.glob(os.path.join(RootFolder, scintillator,
+                                                    sensor, lens, 'Hand',
+                                                    '*.image.corrected.' +
+                                                    'stretched.png'))
+            else:
+                ImageNames = glob.glob(os.path.join(RootFolder, scintillator,
+                                                    sensor, lens, 'Hand',
+                                                    '*.image.corrected.png'))
+            if len(ImageNames):
+                print len(ImageNames), 'images found'
+            else:
+                print 'No images found for this combination'
+
+            # Extract values
+            Images = [plt.imread(image) for image in ImageNames]
+            Min = [numpy.min(image) for image in Images]
+            Mean = [numpy.mean(image) for image in Images]
+            Max = [numpy.max(image) for image in Images]
+            STD = [numpy.std(image) for image in Images]
+
+            # Collect some overview values for presentation later on
+            MaximalNumberOfImages = max(MaximalNumberOfImages, len(ImageNames))
+            MaximalMean = max(MaximalMean, max(Mean))
+
             if ShowMax:
-                plt.plot(NormalizedMax, linestyle='none', marker='o',
-                    color=mycolors[0], label='normalized Max')
-                plt.axhline(numpy.mean(NormalizedMax), linestyle='--',
-                    color=mycolors[0], label='mean of normalized Max')
-            plt.plot(NormalizedMean, linestyle='none', marker='o',
-                color=mycolors[1], label='normalized Mean')
-            plt.axhline(numpy.mean(NormalizedMean), linestyle='--',
-                color=mycolors[1], label='mean of normalized Mean')
-            plt.plot(NormalizedSTD, linestyle='none', marker='o',
-                color=mycolors[2], label='normalized STD')
-            plt.axhline(numpy.mean(NormalizedSTD), linestyle='--',
-                color=mycolors[2], label='mean of normalized STD')
-        else:
-            if ShowMax:
-                plt.plot(Max, linestyle='none', marker='o', color=mycolors[0],
-                    label='Mean')
-                plt.axhline(numpy.mean(Max), linestyle='--', color=mycolors[0],
-                    label='mean Max')
-            plt.plot(Mean, linestyle='none', marker='o', color=mycolors[1],
-                label='Mean')
-            plt.axhline(numpy.mean(Mean), linestyle='--', color=mycolors[1],
-                label='mean Mean')
-            plt.plot(STD, 'o', linestyle='none', marker='o', color=mycolors[2],
-                label='STD')
-            plt.axhline(numpy.mean(STD), linestyle='-', color=mycolors[2],
-                label='mean STD')
-        #~ plt.legend(loc='best')
-        #~ plt.suptitle('Green = Mean, Blue = STD')
-        if ShowNormalizedValues:
-            plt.ylim([0, 1])
-        else:
-            plt.ylim(ymin=0)
-        plt.xlim([0, 35])
-        plt.title('\n'.join([scintillator, sensor, ChosenLens]))
+                plt.plot(Max, linestyle='none', marker='o', color=mycolors[
+                    0], label='Mean')
+                plt.axhline(numpy.mean(Max), linestyle='--', color=mycolors[0])
+            # Min
+            plt.plot(Min, linestyle='none', marker='o', color=mycolors[1],
+                     label='Min')
+            plt.axhline(numpy.mean(Min), linestyle='--', color=mycolors[1])
+            # Mean
+            plt.plot(Mean, linestyle='none', marker='o', color=mycolors[2],
+                     label='Mean')
+            plt.axhline(numpy.mean(Mean), linestyle='--', color=mycolors[2])
+            # STD
+            plt.plot(STD, linestyle='none', marker='o', color=mycolors[3],
+                     label=' STD')
+            plt.axhline(numpy.mean(STD), linestyle='--', color=mycolors[3])
 
-OutputName = os.path.join(RootFolder, 'Brightness-Overview_' + ChosenLens)
-if ShowNormalizedValues:
-    OutputName += '_normalized'
+            # Setup plots for nice display
+            plt.legend(loc='upper center', ncol=4, fontsize=10).get_frame(
+                ).set_alpha(0.5)
+            # Scale all the plots the same way, so we can compare them
+            plt.ylim((0, MaximalMean * 1.1))
+            plt.xlim([0, MaximalNumberOfImages])
+            plt.title(' | '.join([scintillator, sensor, lens]))
 
-# Display
-plt.tight_layout()
-plt.savefig(OutputName + '.png')
-plt.show()
+    # Display
+    plt.tight_layout()
+    plt.savefig(os.path.join(RootFolder, 'Brightness-Overview_' + lens +
+                             '.png'))
+    plt.show()
+    print 'Done with', lens
+    print 80 * '-'
+
