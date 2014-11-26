@@ -7,16 +7,22 @@ import glob
 import os
 import numpy
 import matplotlib.pylab as plt
+import platform
 
 # CameraSize
 CameraWidth = 1280
 CameraHeight = 1024
 
 # Get images
-RootPath = '/afs/psi.ch/project/EssentialMed/Images/DetectorElectronicsTests'
+if platform.node() == 'anomalocaris':
+    RootPath = '/Volumes/slslc/EssentialMed/Images/DetectorElectronicsTests'
+else:
+    RootPath = '/afs/psi.ch/project/EssentialMed/Images' \
+               '/DetectorElectronicsTests'
 
 # Get Folders
 Folder = '*Gain-Se*'
+
 Radiographies = sorted(glob.glob(os.path.join(RootPath, Folder, '*1-44.gray')))
 Darks = sorted(glob.glob(os.path.join(RootPath, Folder, '*0-44.gray')))
 
@@ -34,6 +40,7 @@ ZoomedSTD = numpy.zeros(len(Radiographies))
 
 # Display difference
 plt.figure(figsize=(16, 9))
+
 for counter in range(len(Radiographies)):
     # Inform user
     print counter + 1, 'of', len(Radiographies), 'Reading Images'
@@ -41,7 +48,7 @@ for counter in range(len(Radiographies)):
     # Grab data
     ImageData = numpy.fromfile(Radiographies[counter],
                                dtype=numpy.int16).reshape(CameraHeight,
-                                                           CameraWidth)
+                                                          CameraWidth)
     DarkData = numpy.fromfile(Darks[counter], dtype=numpy.int16).reshape(
         CameraHeight, CameraWidth)
     CorrectedData = ImageData - DarkData
@@ -82,7 +89,7 @@ for counter in range(len(Radiographies)):
     plt.subplots_adjust(wspace=0.025)
 
     plt.subplot(4, len(Radiographies), counter + 1 + 2 * len(Radiographies))
-    plt.imshow(ZoomedData, cmap='bone', interpolation = 'bicubic',
+    plt.imshow(ZoomedData, cmap='bone', interpolation='bicubic',
                vmax=CorrectedMean[counter] + 3 * CorrectedSTD[counter])
     plt.axis('off')
     plt.title('Zoom')
@@ -92,7 +99,7 @@ for counter in range(len(Radiographies)):
     ShowHistograms = False
     if ShowHistograms:
         plt.hist(ImageData.flatten(), log=True, bins=32, fc='y', ec='y',
-            alpha=0.25)
+                 alpha=0.25)
         plt.hist(CorrectedData.flatten(), bins=32, fc='k', ec='k', alpha=0.5)
         # turn off tick labels of histogram
         plt.gca().get_xaxis().set_ticks([])
@@ -109,9 +116,9 @@ plt.plot(CorrectedMax, '-o', label='Corrected Max')
 plt.plot(CorrectedMean, '-o', label='Corrected Mean')
 plt.plot(CorrectedSTD, '-o', label='Corrected STD')
 
-#~ plt.plot(ZoomedMax, '-*', label='Zoomed Max')
-#~ plt.plot(ZoomedMean, '-*', label='Zoomed Mean')
-#~ plt.plot(ZoomedSTD, '-*', label='Zoomed STD')
+plt.plot(ZoomedMax, '-*', label='Zoomed Max')
+plt.plot(ZoomedMean, '-*', label='Zoomed Mean')
+plt.plot(ZoomedSTD, '-*', label='Zoomed STD')
 
 plt.xlim([-0.5, len(Radiographies) - 0.5])
 plt.xlabel('Image')

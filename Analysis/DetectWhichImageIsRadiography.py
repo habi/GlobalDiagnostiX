@@ -13,12 +13,12 @@ image(s) of all the exposures.
 from __future__ import division
 import glob
 import os
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy
 import sys
 import time
 import scipy.misc  # for saving png or tif at the end
+import platform
 
 import functions
 
@@ -31,59 +31,60 @@ ManualSelection = False
 SaveOutputImages = True
 
 # Where shall we start?
-if 'linux' in sys.platform:
-    # Where shall we start?
-    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-        'XrayImages')
-    case = 3
-    if case == 1:
-        # Look for images of only one scintillator
-        StartingFolder = os.path.join(RootFolder, 'AppScinTech-HE')
-        #~ StartingFolder = os.path.join(RootFolder, 'Hamamatsu')
-        #~ StartingFolder = os.path.join(RootFolder, 'Pingseng')
-        #~ StartingFolder = os.path.join(RootFolder, 'Toshiba')
-    elif case == 2:
-        # Look through all folders
-        StartingFolder = RootFolder
-    elif case == 3:
-        # Ask for what to do
-        Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
-        Sensors = ('AR0130', 'AR0132', 'MT9M001')
-        Lenses = ('Computar-11A', 'Framos-DSL219D-650-F2.0',
-            'Framos-DSL224D-650-F2.0', 'Framos-DSL311A-NIR-F2.8',
-            'Framos-DSL949A-NIR-F2.0', 'Lensation-CHR4020',
-            'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
-            'TIS-TBL-6C-3MP', '')
-        ChosenScintillator = functions.AskUser(
-            'Which scintillator do you want to look at?', Scintillators)
-        ChosenSensor = functions.AskUser(
-            'Which sensor do you want to look at?', Sensors)
-        ChosenLens = functions.AskUser(
-            'Which lens do you want to look at? ("empty" = "all")',
-            Lenses)
-        StartingFolder = os.path.join(RootFolder, ChosenScintillator,
-            ChosenSensor, ChosenLens)
+if platform.node() == 'anomalocaris':
+    RootFolder = '/Volumes/slslc/EssentialMed/MasterArbeitBFH/XrayImages'
 else:
-    # If running on Ivans machine, look on the connected harddisk
-    StartingFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/AR0130/Computar-11A/')
-    StartingFolder = ('/Volumes/exFAT')
+    if 'linux' in sys.platform:
+        # If running on work machine, use AFS
+        RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
+                      'XrayImages')
+        # If running on Ivans machine, look on the connected harddisk
+        StartingFolder = '/Volumes/WINDOWS/Aptina/'
+case = 1
+if case == 1:
+    # Look through all folders
+    StartingFolder = RootFolder
+elif case == 2:
+    # Look for images of only one scintillator
+    Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
+    ChosenScintillator = functions.AskUser(
+        'Which scintillator do you want to look at?', Scintillators)
+    StartingFolder = os.path.join(RootFolder, ChosenScintillator)
+elif case == 3:
+    # Ask for what to do
+    Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
+    Sensors = ('AR0130', 'AR0132', 'MT9M001')
+    Lenses = ('Computar-11A', 'Framos-DSL219D-650-F2.0',
+              'Framos-DSL224D-650-F2.0', 'Framos-DSL311A-NIR-F2.8',
+              'Framos-DSL949A-NIR-F2.0', 'Lensation-CHR4020',
+              'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
+              'TIS-TBL-6C-3MP', '')
+    ChosenScintillator = functions.AskUser(
+        'Which scintillator do you want to look at?', Scintillators)
+    ChosenSensor = functions.AskUser(
+        'Which sensor do you want to look at?', Sensors)
+    ChosenLens = functions.AskUser(
+        'Which lens do you want to look at? ("empty" = "all")',
+        Lenses)
+    StartingFolder = os.path.join(RootFolder, ChosenScintillator,
+                                  ChosenSensor, ChosenLens)
 
 # Testing
 # StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
-    # 'Lensation-CHR6020')
+# 'Lensation-CHR6020')
 # Testing
 
 
-def normalizeImage(image, depth=256, verbose=False):
+def normalizeimage(image, depth=256, verbose=False):
     """Normalize image to chosen bit depth"""
     if verbose:
-        print 'Normalizing image from [' + str(numpy.min(image)) + ':' + \
-            str(numpy.max(image)) + '] to',
-    normalizedimage = ((image - numpy.min(image)) *
-        ((depth) / (numpy.max(image) - numpy.min(image))))
+        print 'Normalizing image from [' + str(numpy.min(image)) + ':' + str(
+            numpy.max(image)) + '] to',
+    normalizedimage = ((image - numpy.min(image)) * (depth / (numpy.max(
+        image) - numpy.min(image))))
     if verbose:
-        print '[' + str(numpy.min(normalizedimage)) + ':' + \
-            str(numpy.max(normalizedimage)) + ']'
+        print '[' + str(numpy.min(normalizedimage)) + ':' + str(numpy.max(
+            normalizedimage)) + ']'
     return normalizedimage
 
 
@@ -98,14 +99,13 @@ def contrast_stretch(image, verbose=False):
     """
     if verbose:
         print 'Clipping image from [' + str(numpy.min(image)) + ':' + \
-            str(numpy.max(image)) + '] to',
-    clippedimage = numpy.clip(image,
-                              numpy.mean(image) - (3 * numpy.std(image)),
-                              numpy.mean(image) + (3 * numpy.std(image)))
+              str(numpy.max(image)) + '] to',
+    clippedimage = numpy.clip(image, numpy.mean(image) - (3 * numpy.std(
+        image)), numpy.mean(image) + (3 * numpy.std(image)))
     if verbose:
-        print '[' + str(numpy.min(clippedimage)) + ':' + \
-            str(numpy.max(clippedimage)) + ']'
-    return normalizeImage(clippedimage)
+        print '[' + str(numpy.min(clippedimage)) + ':' + str(numpy.max(
+            clippedimage)) + ']'
+    return normalizeimage(clippedimage)
 
 # Look for all folders matching the naming convention
 Experiment, ExperimentID = functions.get_experiment_list(StartingFolder)
@@ -113,10 +113,9 @@ print 'I found', len(Experiment), 'experiment IDs in', StartingFolder
 
 # Get list of files in each folder, these are all the radiographies we acquired
 # The length of this list is then obviously the number of radiographies
-Radiographies = [sorted(glob.glob(os.path.join(Folder, '*.raw')))
-                 for Folder in Experiment]
-NumberOfRadiographies = [len(Radiographies[i])
-                         for i in range(len(Experiment))]
+Radiographies = [sorted(glob.glob(os.path.join(Folder, '*.raw'))) for Folder
+                 in Experiment]
+NumberOfRadiographies = [len(Radiographies[i]) for i in range(len(Experiment))]
 
 # Warn if a directory is empty, i.e. contains 0 NumberOfRadiographies
 # This most probably happened if DevWare crashed
@@ -124,16 +123,15 @@ EmptyOnes = [item == 0 for item in NumberOfRadiographies]
 for counter, i in enumerate(Experiment):
     if EmptyOnes[counter]:
         print
-        print 'Empty directory', i, 'found!'
+        print 'Empty directory', i, 'found and deleted'
         os.rmdir(i)
-        exit(' '.join(['I deleted this folder, just start again. I will',
-            'proceed or delete the next empty folder...']))
+        time.sleep(1)
 
 AnalyisList = []
 if ManualSelection:
     # Ask the user which experimentID to show
-    ## Concatenate the list for display purposes:
-    ## http://stackoverflow.com/a/22642307/323100
+    # Concatenate the list for display purposes:
+    # http://stackoverflow.com/a/22642307/323100
     Choices = ['{} with {} images'.format(x, y)
                for x, y in zip(ExperimentID, NumberOfRadiographies)]
     Choice = functions.AskUser('Which one do you want to look at?', Choices)
@@ -147,8 +145,9 @@ else:
 for Counter, SelectedExperiment in enumerate(AnalyisList):
     # Inform the user and start logging
     print 80 * '-'
-    print str(Counter + 1) + '/' + str(len(AnalyisList)) + \
-        ': Looking at experiment', ExperimentID[SelectedExperiment]
+    print str(Counter + 1) + '/' + str(len(AnalyisList)) + ': Looking at ' \
+                                                           'experiment', \
+        ExperimentID[SelectedExperiment]
     # See if DarkDeleter.py was already run on this experiment
     DarkDeleterLog = os.path.join(
         os.path.dirname(Experiment[SelectedExperiment]),
@@ -172,43 +171,39 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print '\tWe thus do not analyze it again.'
         print '\tTake a look at', os.path.join(
             os.path.dirname(Experiment[SelectedExperiment])
-                [len(StartingFolder) + 1:],
+            [len(StartingFolder):],
             ExperimentID[SelectedExperiment] + '.analysis.log'), \
-                'for more info'
+            'for more info'
         print
     else:
         # Otherwise do all the work now!
-        logfile = functions.myLogger(os.path.dirname(
-            Experiment[SelectedExperiment]),
-            ExperimentID[SelectedExperiment] + '.analysis.log')
-        logfile.info('Log file for Experiment ID %s, Analsyis performed on %s',
-            ExperimentID[SelectedExperiment],
-            time.strftime('%d.%m.%Y at %H:%M:%S'))
-        logfile.info('\nMade with "%s" at Revision %s\n',
-            os.path.basename(__file__), functions.get_git_hash())
+        logfile = functions.myLogger(os.path.dirname(Experiment[SelectedExperiment]),
+                                     ExperimentID[SelectedExperiment] +
+                                     '.analysis.log')
+        logfile.info('Log file for Experiment ID %s, Analsyis performed on '
+                     '%s', ExperimentID[SelectedExperiment],
+                     time.strftime('%d.%m.%Y at %H:%M:%S'))
+        logfile.info('\nMade with "%s" at Revision %s\n', os.path.basename(
+            __file__), functions.get_git_hash())
         logfile.info(80 * '-')
         logfile.info('All image files are to be found in %s', StartingFolder)
         logfile.info('This experiment ID can be found in the subfolder %s',
-            Experiment[SelectedExperiment][len(StartingFolder):])
+                     Experiment[SelectedExperiment][len(StartingFolder):])
         logfile.info(80 * '-')
 
         # Grab the information from the filenames
         Scintillator = Radiographies[SelectedExperiment][0].split('_')[1]
         Sensor = Radiographies[SelectedExperiment][0].split('_')[2]
-        Size = [int(Radiographies[SelectedExperiment][0].split('_')[3].
-            split('x')[1]),
-                int(Radiographies[SelectedExperiment][0].split('_')[3].
-            split('x')[0])]
+        Size = [int(Radiographies[SelectedExperiment][0].split('_')[3].split('x')[1]),
+                int(Radiographies[SelectedExperiment][0].split('_')[3].split('x')[0])]
         Lens = Radiographies[SelectedExperiment][0].split('_')[4]
         SCD = int(Radiographies[SelectedExperiment][0].split('_')[5][:-5])
         Modality = Radiographies[SelectedExperiment][0].split('_')[6]
-        Voltage = \
-            float(Radiographies[SelectedExperiment][0].split('_')[7][:-2])
+        Voltage = float(Radiographies[SelectedExperiment][0].split('_')[7][:-2])
         mAs = float(Radiographies[SelectedExperiment][0].split('_')[8][:-3])
-        SourceExposuretime = \
-            float(Radiographies[SelectedExperiment][0].split('_')[9][:-6])
-        CMOSExposuretime = \
-            float(Radiographies[SelectedExperiment][0].split('_')[10][:-6])
+        SourceExposuretime = float(Radiographies[SelectedExperiment][0].split('_')[9][:-6])
+        CMOSExposuretime = float(Radiographies[SelectedExperiment][0].split(
+            '_')[10][:-6])
 
         # Inform the user some more and log some more
         print '    * with', NumberOfRadiographies[SelectedExperiment], \
@@ -237,7 +232,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         # Read images and calculate max, mean, STD and dark/img-threshold
         print 'Reading images,',
         Images = [numpy.fromfile(Image, dtype=numpy.uint16).reshape(Size)
-                     for Image in Radiographies[SelectedExperiment]]
+                  for Image in Radiographies[SelectedExperiment]]
         # Zero out a small outer region of each image, since we have some
         # DevWare information in this region. These values change the max and
         # mean.
@@ -268,12 +263,13 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             '\t* %s dark images (Max below or equal to Threshold of %s)',
             len(DarkImages), round(Threshold, 2))
         logfile.info('\t* %s images (Max above Threshold of %s)',
-            len(RealImages), round(Threshold, 2))
+                     len(RealImages), round(Threshold, 2))
         for c, Image in enumerate(Images):
             if ImageMean[c] == max(ImageMean):
                 logfile.info('With image %s being the brightest one', c + 1)
                 logfile.info('\t* Filename: %s',
-                    os.path.basename(Radiographies[SelectedExperiment][c]))
+                             os.path.basename(
+                                 Radiographies[SelectedExperiment][c]))
                 logfile.info('\t* Max: %s', round(ImageMax[c], 3))
                 logfile.info('\t* Mean: %s', round(ImageMean[c], 3))
                 logfile.info('\t* STD: %s', round(ImageSTD[c], 3))
@@ -289,20 +285,20 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             print '\tImage', ImageMean.index(max(ImageMean)), \
                 'is the brightest image of experiment', \
                 ExperimentID[SelectedExperiment]
-            print '\tIts max of',  round(max(ImageMean), 2), \
+            print '\tIts max of', round(max(ImageMean), 2), \
                 'is below the selection threshold of', round(Threshold, 2)
             print '\tIt is probably safe to delete the whole directory...'
             print '\tI am using this *single* image as "result"'
             print
             SummedImage = Images[ImageMean.index(max(ImageMean))]
             logfile.info('Using image %s with a max of %s as final image',
-                ImageMean.index(max(ImageMean)) + 1,
-                round(ImageMean[ImageMean.index(max(ImageMean))], 2))
+                         ImageMean.index(max(ImageMean)) + 1,
+                         round(ImageMean[ImageMean.index(max(ImageMean))], 2))
 
         else:
             SummedImage = numpy.sum(RealImages, axis=0)
             logfile.info('Using %s images for summed final image',
-                len(RealImages))
+                         len(RealImages))
         logfile.info(80 * '-')
 
         # Subtract mean dark image from the summed projections, use as
@@ -311,27 +307,27 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
 
         # Show images to the user if desired
         logfile.info('Details of the %s images for experiment ID %s',
-            NumberOfRadiographies[SelectedExperiment],
-            ExperimentID[SelectedExperiment])
+                     NumberOfRadiographies[SelectedExperiment],
+                     ExperimentID[SelectedExperiment])
         plt.figure(num=1,
-            figsize=(NumberOfRadiographies[SelectedExperiment], 5))
+                   figsize=(NumberOfRadiographies[SelectedExperiment], 5))
         for c, Image in enumerate(Images):
             if Image.max() > Threshold or Image.max() == max(ImageMean):
                 if SaveOutputImages:
                     plt.subplot(3, len(Images), c + 1)
                 logfile.info('%s/%s: Mean: %s,\tMax: %s,\tSTD: %s\t--> Image',
-                    str(c + 1).rjust(2), len(Radiographies[Counter]),
-                    ("%.2f" % round(ImageMean[c], 2)).rjust(6),
-                    str(ImageMax[c]).rjust(4),
-                    ("%.2f" % round(ImageSTD[c], 2)).rjust(6))
+                             str(c + 1).rjust(2), len(Radiographies[Counter]),
+                             ("%.2f" % round(ImageMean[c], 2)).rjust(6),
+                             str(ImageMax[c]).rjust(4),
+                             ("%.2f" % round(ImageSTD[c], 2)).rjust(6))
             else:
                 plt.subplot(3, len(Images), len(Images) + c + 1)
                 logfile.info('%s/%s: Mean: %s,\tMax: %s,\tSTD: %s\t--> Dark',
-                    str(c + 1).rjust(2), len(Radiographies[Counter]),
-                    ("%.2f" % round(ImageMean[c], 2)).rjust(6),
-                    str(ImageMax[c]).rjust(4),
-                    ("%.2f" % round(ImageSTD[c], 2)).rjust(6))
-            plt.imshow(Image, cmap='bone', interpolation='none')
+                             str(c + 1).rjust(2), len(Radiographies[Counter]),
+                             ("%.2f" % round(ImageMean[c], 2)).rjust(6),
+                             str(ImageMax[c]).rjust(4),
+                             ("%.2f" % round(ImageSTD[c], 2)).rjust(6))
+            plt.imshow(Image, cmap='bone', interpolation='nearest')
             plt.axis('off')
             plt.title(' '.join(['img', str(c), '\nmx',
                                 str(round(ImageMax[c], 1)), '\nmn',
@@ -343,94 +339,96 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         plt.plot(ImageMean, marker='o', label='mean', color='g')
         plt.plot(ImageSTD, marker='o', label='STD', color='b')
         plt.title(' '.join(['Image characteristics for an exposure time of',
-            ("%.2f" % CMOSExposuretime).zfill(6), 'ms']))
+                            ("%.2f" % CMOSExposuretime).zfill(6), 'ms']))
         plt.axhline(Threshold, label='selection threshold', color='r',
-            linestyle='--')
+                    linestyle='--')
         plt.xlim([-0.5, NumberOfRadiographies[SelectedExperiment] - 0.5])
         plt.legend(loc='best')
         if 'linux' in sys.platform:
-            plt.tight_layout()
+            import platform
+            if platform.node() != 'slslc06' and platform.node() != \
+                    'x02da-cons-2':
+                plt.tight_layout()
         plt.subplots_adjust(hspace=.05)
         plt.subplots_adjust(wspace=.05)
         plt.draw()
         if SaveOutputImages:
-            SaveFigName = os.path.join(os.path.dirname(
-                Experiment[SelectedExperiment]),
-                ExperimentID[SelectedExperiment] + '.overview.all.png')
+            SaveFigName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
+                                       ExperimentID[SelectedExperiment] +
+                                       '.overview.all.png')
             plt.savefig(SaveFigName)
             logfile.info('Overview plot saved as %s',
                          os.path.basename(SaveFigName))
         plt.figure(num=2, figsize=(16, 9))
         # Show average darks
         plt.subplot(231)
-        plt.imshow(MeanDarkImage, cmap='bone', interpolation='none')
+        plt.imshow(MeanDarkImage, cmap='bone', interpolation='nearest')
         plt.title(' '.join(['Average of', str(len(DarkImages)),
                             'dark images']))
         plt.subplot(234)
         plt.imshow(contrast_stretch(MeanDarkImage), cmap='bone',
-            interpolation='none')
+                   interpolation='nearest')
         plt.title('Contrast stretched average')
         # Show summed projections
         plt.subplot(232)
-        plt.imshow(SummedImage, cmap='bone', interpolation='none')
+        plt.imshow(SummedImage, cmap='bone', interpolation='nearest')
         plt.title(' '.join([str(len(RealImages)), 'summed projections']))
         plt.subplot(235)
         plt.imshow(contrast_stretch(SummedImage), cmap='bone',
-            interpolation='none')
+                   interpolation='nearest')
         plt.title('Contrast stretched projections sum')
         plt.subplot(233)
-        plt.imshow(CorrectedImage, cmap='bone', interpolation='none')
+        plt.imshow(CorrectedImage, cmap='bone', interpolation='nearest')
         plt.title(' '.join([str(len(RealImages)), 'projections -',
-            str(len(DarkImages)), 'darks']))
+                            str(len(DarkImages)), 'darks']))
         plt.subplot(236)
         plt.imshow(contrast_stretch(CorrectedImage), cmap='bone',
-        interpolation='none')
+                   interpolation='nearest')
         plt.title('Contrast stretched corrected image')
         plt.draw()
         if SaveOutputImages:
-            SaveFigName = os.path.join(os.path.dirname(
-                Experiment[SelectedExperiment]),
-                ExperimentID[SelectedExperiment] +
-                '.overview.darkflatscorrected.png')
+            SaveFigName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
+                                       ExperimentID[SelectedExperiment] +
+                                       '.overview.darkflatscorrected.png')
             plt.savefig(SaveFigName)
             logfile.info('Dark/Flats/Corrected plot saved as %s',
-                os.path.basename(SaveFigName))
+                         os.path.basename(SaveFigName))
             logfile.info(80 * '-')
 
         # Save final output images (dark, images, corrected)
         if SaveOutputImages:
             print 'Saving mean dark frame'
-            DarkName = os.path.join(os.path.dirname(
-                Experiment[SelectedExperiment]),
-                ExperimentID[SelectedExperiment] + '.image.dark')
-            scipy.misc.imsave(DarkName + '.png', normalizeImage(MeanDarkImage))
+            DarkName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
+                                    ExperimentID[SelectedExperiment] +
+                                    '.image.dark')
+            scipy.misc.imsave(DarkName + '.png', normalizeimage(MeanDarkImage))
             scipy.misc.imsave(DarkName + '.stretched.png',
-                contrast_stretch(MeanDarkImage))
+                              contrast_stretch(MeanDarkImage))
             logfile.info('Average of %s dark frames saved as %s.png',
-                len(DarkImages), DarkName)
+                         len(DarkImages), DarkName)
             print 'Saving summed images'
-            SummedName = os.path.join(os.path.dirname(
-                Experiment[SelectedExperiment]),
-                ExperimentID[SelectedExperiment] + '.image.sum')
-            scipy.misc.imsave(SummedName + '.png', normalizeImage(SummedImage))
+            SummedName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
+                                      ExperimentID[SelectedExperiment] +
+                                      '.image.sum')
+            scipy.misc.imsave(SummedName + '.png', normalizeimage(SummedImage))
             scipy.misc.imsave(SummedName + '.stretched.png',
-                contrast_stretch(SummedImage))
+                              contrast_stretch(SummedImage))
             logfile.info('Sum of %s image frames saved as %s.png',
-                len(RealImages), SummedName)
+                         len(RealImages), SummedName)
             print 'Saving corrected image'
-            CorrName = os.path.join(os.path.dirname(
-                Experiment[SelectedExperiment]),
-                ExperimentID[SelectedExperiment] + '.image.corrected')
-            scipy.misc.imsave(CorrName + '.png',
-                normalizeImage(CorrectedImage))
-            scipy.misc.imsave(CorrName + '.stretched.png',
-                contrast_stretch(CorrectedImage))
+            CorrName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
+                                    ExperimentID[SelectedExperiment] +
+                                    '.image.corrected')
+            scipy.misc.imsave(CorrName + '.png', normalizeimage(CorrectedImage))
+            scipy.misc.imsave(CorrName + '.stretched.png', contrast_stretch(
+                CorrectedImage))
             logfile.info('Sum of %s images subtracted with the mean of %s ' +
-                'dark frames saved as %s.png', len(RealImages),
-                len(DarkImages), CorrName)
-            logfile.info(' '.join(['\nAlso saved each image as',
-                ' *.stretched.png, which is the contrast-stretched version',
-                '(clipped to 3 STD around the mean of the image.']))
+                         'dark frames saved as %s.png', len(RealImages),
+                         len(DarkImages), CorrName)
+            logfile.info(' '.join(['\nAlso saved each image as '
+                                   '*.stretched.png, which is the '
+                                   'contrast-srretched version (clipped to 3 '
+                                   'STD around the mean of the image.']))
         if ManualSelection:
             plt.ioff()
             plt.show()

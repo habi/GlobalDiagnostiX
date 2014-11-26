@@ -16,25 +16,29 @@ import os
 import time
 import numpy
 import sys
+import resource
 
 import functions
 
 # Setup
 ReallyRemove = True
+# Increase limit of open files, according to http://is.gd/f50dCm
+# Otherwise we cannot run the file for *all* folders at the same time
+resource.setrlimit(resource.RLIMIT_NOFILE, (4096, 4096))
 
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
 case = 2
 if case == 1:
-    # Look for images of only one scintillator
-    StartingFolder = os.path.join(RootFolder, 'AppScinTech-HE')
-    #~ StartingFolder = os.path.join(RootFolder, 'Hamamatsu')
-    #~ StartingFolder = os.path.join(RootFolder, 'Pingseng')
-    #~ StartingFolder = os.path.join(RootFolder, 'Toshiba')
-elif case == 2:
     # Look through all folders
     StartingFolder = RootFolder
+elif case == 2:
+    # Look for images of only one scintillator
+    Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
+    ChosenScintillator = functions.AskUser(
+        'Which scintillator do you want to look at?', Scintillators)
+    StartingFolder = os.path.join(RootFolder, ChosenScintillator)
 elif case == 3:
     # Ask for what to do
     Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
@@ -83,7 +87,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print
         print 'Please archive the data for this Experiment with',\
             'TarToArchive.py, then run this script again'
-        time.sleep(10)
+        time.sleep(1)
     print 80 * '-'
     #~ print str(Counter + 1) + '/' + str(len(AnalyisList)) + \
         #~ ': Deleting darks experiment', ExperimentID[SelectedExperiment]
@@ -104,7 +108,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             Experiment[SelectedExperiment]
         break
     Keepers = []
-    for line in open(AnalysisLogFile, 'r'):
+    LogFileToRead = open(AnalysisLogFile, 'r')
+    for line in LogFileToRead:
         if len(line.split('-->')) == 2:
             FileNumber = int(line.split('/')[0])
             if line.split('--> ')[1].strip() == 'Image':
@@ -112,6 +117,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
                 Keepers.append(FileNumber - 1)
                 Keepers.append(FileNumber)
                 Keepers.append(FileNumber + 1)
+    LogFileToRead.close()
     print 'For Experiment', ExperimentID[SelectedExperiment], 'in folder', \
         Experiment[SelectedExperiment][len(StartingFolder) + 1:]
     # Always keep second image
@@ -134,7 +140,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         logfile.info(80 * '-')
         logfile.info('In the folder %s we keep image',
             Experiment[SelectedExperiment])
-        for line in open(AnalysisLogFile, 'r'):
+        LogFileToRead = open(AnalysisLogFile, 'r')
+        for line in LogFileToRead:
             if len(line.split('-->')) == 2:
                 FileNumber = int(line.split('/')[0]) - 1
                 if FileNumber in Keepers:
@@ -144,10 +151,12 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
                         os.path.basename(
                             Radiographies[SelectedExperiment][FileNumber - 1]),
                         line.strip())
+        LogFileToRead.close()
         logfile.info(80 * '-')
         logfile.info('In the folder %s we delete image',
             Experiment[SelectedExperiment])
-        for line in open(AnalysisLogFile, 'r'):
+        LogFileToRead = open(AnalysisLogFile, 'r')
+        for line in LogFileToRead:
             if len(line.split('-->')) == 2:
                 FileNumber = int(line.split('/')[0])
                 if FileNumber not in Keepers:
@@ -161,6 +170,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
                     if ReallyRemove:
                         os.remove(
                             Radiographies[SelectedExperiment][FileNumber - 1])
+        LogFileToRead.close()
     else:
         print 'We have as many Keepers as radiographies in the folder.', \
             'Either it does not make sense to delete any files or we', \
@@ -168,7 +178,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
 
     if not ReallyRemove:
         print '\nWe did not really remove anything, set "ReallyRemove" at', \
-            'the beginnig of the script to "True"'
+            'the beginnig of the script to "True" or archive the files with', \
+            '"TarToArchive.py" first...'
         logfile.info(80 * '-')
         logfile.info('We did not really remove anything')
         logfile.info(' '.join(['Set "ReallyRemove" on line 22 of the script',

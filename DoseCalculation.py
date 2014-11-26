@@ -77,15 +77,15 @@ if options.kV is None:
 
 # Inform the user that we only have certain values to work with
 Voltage = [46, 53, 60, 70, 80, 90, 100, 120]
-if not options.kV in Voltage:
+if options.kV not in Voltage:
     print 'You can only enter one of these voltages:', \
         str(Voltage).strip('[]'), 'kV'
     print
     print 'Try again with the nearest allowed value:'
     # http://stackoverflow.com/a/9706105/323100
     print sys.argv[0], '-v', Voltage[min(range(len(Voltage)),
-                                     key=lambda i:abs(Voltage[i] -
-                                                      options.kV))]
+                                         key=lambda i: abs(Voltage[i] -
+                                                           options.kV))]
     exit(1)
 
 ChosenVoltage = Voltage.index(options.kV)
@@ -95,7 +95,7 @@ SpectraPath = 'Spectra'
 # in one step, but like this it's easier to debug. 'SpectrumData' is the data
 # without comments, thus we read the mean energy on line 7 in a second step
 SpectrumLocation = [os.path.join(SpectraPath, 'Xray-Spectrum_' +
-                                              str("%03d" % kV) + 'kV.txt')
+                                 str("%03d" % kV) + 'kV.txt')
                     for kV in Voltage]
 SpectrumData = [(np.loadtxt(FileName)) for FileName in SpectrumLocation]
 MeanEnergy = [float(open(FileName).readlines()[5].split()[3]) for FileName in
@@ -133,8 +133,8 @@ K = 0.1  # mGy m^2 mAs^-1
 BSF = 1.35
 
 # calculating while converting Focusdistance from m to cm
-SED = K * (options.kV / 100) ** 2 * options.mAs *\
-    (100 / options.Distance) ** 2 * BSF
+SED = K * (options.kV / 100) ** 2 * options.mAs * \
+      (100 / options.Distance) ** 2 * BSF
 print 'The surface entrance dose for an x-ray pulse with'
 print '   * U =', options.kV, 'kV'
 print '   * Q =', options.mAs, 'mAs'
@@ -157,30 +157,27 @@ print 'A SED of', '%.3e' % (SED / 1000), 'Gy (mJ/kg) corresponds to', \
 # 3.1.5
 eta = 1.1e-9 * 74 * options.kV * 1000
 
-N0 = (options.kV * 1000 * \
-    ((options.mAs / 1000) / (options.Exposuretime / 1000)) / (PhotonEnergy)) *\
-    eta *\
-    ((options.Length / 100) ** 2 / (4 * np.pi * (options.Distance / 100) ** 2))
+N0 = (options.kV * 1000 * ((options.mAs / 1000) / (options.Exposuretime / 1000)) / (PhotonEnergy)) * eta * ((options.Length / 100) ** 2 / (4 * np.pi * (options.Distance / 100) ** 2))
 
-print 'The source emits %.3e' % N0, \
-    'photons with a mean energy of', '%.3e' % PhotonEnergy, 'each'
+print 'The source emits %.3e' % N0, 'photons with a mean energy of', \
+    '%.3e' % PhotonEnergy, 'each'
 
-print 'We assume these photons are all the photons that reached the', \
-    'patient, and thus can calculate the photon flux from this.'
+print 'We assume these photons are all the photons that reached the patient, ' \
+      'and thus can calculate the photon flux from this.'
 
 Flux = N0 / (options.Exposuretime / 1000)
-print 'With an exposure time of', options.Exposuretime, 'ms the', \
-    'aforementioned number of photons corresponds to a photon flux of', \
-    '%.3e' % Flux, 'photons per second (from the source to the patient', \
-    'surface).'
+print 'With an exposure time of', options.Exposuretime, \
+    'ms the aforementioned number of photons corresponds to a photon flux ' \
+    'of', '%.3e' % Flux, 'photons per second (from the source to the patient ' \
+                         'surface).'
 
 exit()
 
 # Attenuation in Patient
 AttenuationCoefficient = 0.5  # For calculation we just simply assume 50%.
 # We NEED to read the data from the NIST tables, but they're in shutdown now...
-print 'Attenuation coefficient set to', AttenuationCoefficient, 'cm^-1 (@' +\
-    str(Voltage[ChosenVoltage]), 'kV)'
+print 'Attenuation coefficient set to', AttenuationCoefficient, \
+    'cm^-1 (@' +  str(Voltage[ChosenVoltage]), 'kV)'
 # Number of absorbed photons
 # N = N0(e^-uT)
 N = N0 * (np.exp((-AttenuationCoefficient * (options.Thickness / 100))))
@@ -243,10 +240,10 @@ WeightingFactor = 0.12  # http://en.wikipedia.org/wiki/Dosimetry#Effective_dose
 ExposureTime = 1000e-3  # s
 
 # Calculate the number of photons from the tube to the sample
-#~ N0 = (VI/E)*eta*(A/4*Pi*r^2)
+# ~ N0 = (VI/E)*eta*(A/4*Pi*r^2)
 N0 = (Voltage * Current) / (Voltage * eV) * \
-    eta * Z * Voltage * \
-    Area / (4 * np.pi * r ** 2)
+     eta * Z * Voltage * \
+     Area / (4 * np.pi * r ** 2)
 print '    - the tube emitts %.4e' % N0, 'photons per second'
 
 # Absorbed radiation dose per second
