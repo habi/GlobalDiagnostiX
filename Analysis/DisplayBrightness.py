@@ -27,34 +27,30 @@ Lenses = ('Computar-11A', 'Framos-DSL219D-650-F2.0',
           'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
           'TIS-TBL-6C-3MP')
 
-# Setup
-ShowMax = False
-if ShowMax:
-    mycolors = ["#A35540", "#95BD56", "#9F5EAB", "#7E9A99"]
-else:
-    mycolors = ["", "#90BA6D", "#966FAD", "#9F5845"]
-
+LensCounter = 0
 for lens in Lenses:
+    LensCounter += 1
+    print 'Lens', LensCounter, 'of', len(Lenses), '|', lens
     plt.figure(figsize=[20, 12])
-    MaximalNumberOfImages = 0
-    MaximalMean = 0
-    counter = 0
-    for scintillator in Scintillators:
-        for sensor in Sensors:
-            counter += 1
-            plt.subplot(len(Scintillators), len(Sensors), counter)
-            print str(counter) + '/' + str(len(Scintillators) * len(
-                Sensors)), '|',  scintillator, '|', sensor,  '|', \
+    FolderCounter = 0
+    for CurrentScintillator in Scintillators:
+        for CurrentSensor in Sensors:
+            FolderCounter += 1
+            plt.subplot(len(Scintillators), len(Sensors), FolderCounter)
+            print 'Folder', FolderCounter, 'of', len(Scintillators) * len(
+                Sensors), '|', CurrentScintillator, '|', CurrentSensor, '|', \
                 lens, '|',
             LoadStretched = False
             if LoadStretched:
-                ImageNames = glob.glob(os.path.join(RootFolder, scintillator,
-                                                    sensor, lens, 'Hand',
+                ImageNames = glob.glob(os.path.join(RootFolder,
+                                                    CurrentScintillator,
+                                                    CurrentSensor, lens, 'Hand',
                                                     '*.image.corrected.' +
                                                     'stretched.png'))
             else:
-                ImageNames = glob.glob(os.path.join(RootFolder, scintillator,
-                                                    sensor, lens, 'Hand',
+                ImageNames = glob.glob(os.path.join(RootFolder,
+                                                    CurrentScintillator,
+                                                    CurrentSensor, lens, 'Hand',
                                                     '*.image.corrected.png'))
             if len(ImageNames):
                 print len(ImageNames), 'images found'
@@ -68,40 +64,26 @@ for lens in Lenses:
             Max = [numpy.max(image) for image in Images]
             STD = [numpy.std(image) for image in Images]
 
-            # Collect some overview values for presentation later on
-            MaximalNumberOfImages = max(MaximalNumberOfImages, len(ImageNames))
-            MaximalMean = max(MaximalMean, max(Mean))
+            # plot Mean
+            plt.plot(Mean, linestyle='none', marker='.', color='k')
+            # plot the mean of the mean
+            plt.axhline(numpy.mean(Mean), linestyle='--', color='k')
+            # prepare for plotting the mean +- STD as a band around the mean
+            MeanPlusSTD = [Mean[i] + STD[i] for i in range(len(Mean))]
+            MeanMinusSTD = [Mean[i] - STD[i] for i in range(len(Mean))]
+            # fill the band between Mean+STD and Mean-STD
+            plt.fill_between(range(len(Mean)), MeanPlusSTD, MeanMinusSTD,
+                             alpha=0.309, color='k')
 
-            if ShowMax:
-                plt.plot(Max, linestyle='none', marker='o', color=mycolors[
-                    0], label='Mean')
-                plt.axhline(numpy.mean(Max), linestyle='--', color=mycolors[0])
-            # Min
-            plt.plot(Min, linestyle='none', marker='o', color=mycolors[1],
-                     label='Min')
-            plt.axhline(numpy.mean(Min), linestyle='--', color=mycolors[1])
-            # Mean
-            plt.plot(Mean, linestyle='none', marker='o', color=mycolors[2],
-                     label='Mean')
-            plt.axhline(numpy.mean(Mean), linestyle='--', color=mycolors[2])
-            # STD
-            plt.plot(STD, linestyle='none', marker='o', color=mycolors[3],
-                     label=' STD')
-            plt.axhline(numpy.mean(STD), linestyle='--', color=mycolors[3])
-
-            # Setup plots for nice display
-            plt.legend(loc='upper center', ncol=4, fontsize=10).get_frame(
-                ).set_alpha(0.5)
             # Scale all the plots the same way, so we can compare them
-            plt.ylim((0, MaximalMean * 1.1))
-            plt.xlim([0, MaximalNumberOfImages])
-            plt.title(' | '.join([scintillator, sensor, lens]))
+            plt.ylim((0, 0.8))
+            plt.title(' | '.join([CurrentScintillator, CurrentSensor, lens]))
 
     # Display
     plt.tight_layout()
     plt.savefig(os.path.join(RootFolder, 'Brightness-Overview_' + lens +
                              '.png'))
     plt.show()
+    print
     print 'Done with', lens
     print 80 * '-'
-
