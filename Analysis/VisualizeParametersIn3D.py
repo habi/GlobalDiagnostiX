@@ -20,8 +20,7 @@ import sys
 # Where shall we start?
 if 'linux' in sys.platform:
     # If running at the office, grep folders from AFS
-    RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-        'XrayImages')
+    RootFolder = '/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages'
     # Look for images of only one scintillator
     StartingFolder = os.path.join(RootFolder, 'AppScinTechHE')
     StartingFolder = os.path.join(RootFolder, 'Hamamatsu')
@@ -31,8 +30,8 @@ if 'linux' in sys.platform:
     StartingFolder = RootFolder
 else:
     # If running on Ivans machine, look on the connected harddisk
-    StartingFolder = ('/Volumes/WINDOWS/Aptina/Hamamatsu/AR0130/Computar-11A/')
-    StartingFolder = ('/Volumes/exFAT')
+    StartingFolder = '/Volumes/WINDOWS/Aptina/Hamamatsu/AR0130/Computar-11A/'
+    StartingFolder = '/Volumes/exFAT'
 
 # Generate a list of log files, based on http://stackoverflow.com/a/14798263
 LogFiles = [os.path.join(dirpath, f)
@@ -55,10 +54,6 @@ Modality = [linecache.getline(i, 14).split(':')[1].strip()
     for i in LogFiles]
 Exposuretime = [float(linecache.getline(i, 18)
     .split(':')[1].split('ms')[0].strip()) for i in LogFiles]
-
-#~ for i in LogFiles:
-    #~ print i, linecache.getline(i, 25).split(':')[1].strip()
-#~ exit()
 Max = [float(linecache.getline(i, 25).split(':')[1].strip())
     for i in LogFiles]
 
@@ -114,10 +109,10 @@ if histograms:
 
 
 def subset_seletor(Selector, label=False):
-    '''
+    """
     Select only a subset of items to present in the second plot, according to
     http://stackoverflow.com/a/3555387/323100
-    '''
+    """
     MaskedX = [item for item, flag in zip(SDD, Scintillator) if Selector in
         flag]
     MaskedY = [item for item, flag in zip(Mean, Scintillator) if Selector in
@@ -129,9 +124,8 @@ def subset_seletor(Selector, label=False):
     MaskedI = [str(item) for item, flag in zip(ExperimentID, Scintillator) if
         Selector in flag]
     currentaxis = fig.gca()
-    plot = currentaxis.scatter(
-        MaskedX, MaskedY, MaskedZ,
-        'o', c=MaskedC, cmap='hot', s=250)
+    plot = currentaxis.scatter(MaskedX, MaskedY, MaskedZ, 'o', c=MaskedC,
+                               cmap='hot', s=250)
     if label:
         for x, y, z, label in zip(MaskedX, MaskedY, MaskedZ, MaskedI):
             currentaxis.text(x, y, z, label)
@@ -144,8 +138,7 @@ def subset_seletor(Selector, label=False):
     currentaxis.set_ylim([0, 500])
     currentaxis.set_zlim([0, 200])
 
-    plt.title(' '.join([str(len(MaskedX)),
-        'images for', Selector]))
+    plt.title(' '.join([str(len(MaskedX)), 'images for', Selector]))
     return Selector
 
 ## Prepare the plot

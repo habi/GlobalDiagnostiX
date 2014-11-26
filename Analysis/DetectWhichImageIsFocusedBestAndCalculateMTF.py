@@ -1,4 +1,4 @@
-'''
+"""
 Script to calculate the Modulation transfer function of some input images
 
 It's based on the idea that once can use a random pattern to calculate the MTF,
@@ -16,7 +16,7 @@ for the best focused one via the mean (exposure) and standard deviation of each
 image in a given (user-selected) folder. This image is then used for
 calculating the MTF, giving us some "hard facts" on the quality of the images.
 MTF.
-'''
+"""
 
 from __future__ import division
 import os
@@ -68,8 +68,8 @@ else:
 print 'Looking for image folders in', os.path.join(Root, SensorList[Sensor],
                                                     LensList[Lens])
 FolderList = [i for i in sorted(glob.glob(os.path.join(Root,
-                                                        SensorList[Sensor],
-                                                        LensList[Lens], '*')))]
+                                                       SensorList[Sensor],
+                                                       LensList[Lens], '*')))]
 if len(FolderList) > 1:
     # Only let the user select if we found more than one image folder
     print 'Please select the folder of the images you want to look at'
@@ -238,7 +238,7 @@ plt.xlim([0, ImageWidth])
 plt.title(' '.join(['Line profile at', str(ImageHeight / 2)]))
 
 
-def FFT2D(Image, Exponent=2):
+def FFT2D(Image, Exponent=2.0):
     return numpy.abs(numpy.fft.fft2(Image)) ** Exponent
 
 

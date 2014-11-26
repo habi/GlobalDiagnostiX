@@ -38,6 +38,7 @@ def get_git_hash():
     """
     from subprocess import Popen, PIPE
     import platform
+
     if platform.node() == 'anomalocaris':
         gitprocess = Popen(['git', '--git-dir',
                             '/Volumes/slslc/EssentialMed/Dev/.git',
@@ -61,9 +62,10 @@ def myLogger(Folder, LogFileName):
     """
     import logging
     import os
+
     logger = logging.getLogger(LogFileName)
     # either set INFO or DEBUG
-    #~ logger.setLevel(logging.DEBUG)
+    # ~ logger.setLevel(logging.DEBUG)
     logger.setLevel(logging.INFO)
     handler = logging.FileHandler(os.path.join(Folder, LogFileName), 'w')
     logger.addHandler(handler)
@@ -76,34 +78,37 @@ def get_experiment_list(StartingFolder):
     """
     import os
     import platform
+
     if platform.node() != 'slslc06' and platform.node() != 'x02da-cons-2':
-	from progressbar import ProgressBar, Percentage, Bar, ETA
-	widgets = ['Reading: ', Percentage(), ' ', Bar(), ' ', ETA()]
-	pbar = ProgressBar(widgets=widgets, maxval=5000).start()
+        from progressbar import ProgressBar, Percentage, Bar, ETA
+
+    widgets = ['Reading: ', Percentage(), ' ', Bar(), ' ', ETA()]
+    pbar = ProgressBar(widgets=widgets, maxval=5000).start()
     Experiment = []
     ExperimentID = []
     for root, dirs, files in os.walk(StartingFolder):
-        #~ print 'Looking for experiment IDs in folder', os.path.basename(root)
+        # ~ print 'Looking for experiment IDs in folder', os.path.basename(root)
         if (len(os.path.basename(root)) == 7
             or len(os.path.basename(root)) == 8) \
-            and not os.path.basename(root).startswith('2014') \
-            and not 'RECYCLE' in os.path.basename(root) \
-            and not 'Pingseng' in os.path.basename(root) \
-            and not 'Toshiba' in os.path.basename(root) \
-            and not 'MT9' in os.path.basename(root) \
-            and not 'AR0' in os.path.basename(root):
+                and not os.path.basename(root).startswith('2014') \
+                and not 'RECYCLE' in os.path.basename(root) \
+                and not 'Pingseng' in os.path.basename(root) \
+                and not 'Toshiba' in os.path.basename(root) \
+                and not 'MT9' in os.path.basename(root) \
+                and not 'AR0' in os.path.basename(root):
             Experiment.append(root)
             ExperimentID.append(os.path.basename(root))
-	    if platform.node() != 'slslc06' and platform.node() != 'x02da-cons-2':
-		pbar.update(len(ExperimentID))
+        if platform.node() != 'slslc06' and platform.node() != 'x02da-cons-2':
+            pbar.update(len(ExperimentID))
     if platform.node() != 'slslc06' and platform.node() != 'x02da-cons-2':
-	pbar.finish()
+        pbar.finish()
     return Experiment, ExperimentID
 
 
 def distance(Folder, chatty=False):
     import os
     import glob
+
     RawFileName = glob.glob(os.path.join(Folder, '*.raw'))[0]
     ScintillatorCMOSDistance = int(RawFileName.split('_')[5][:-5])
     if chatty:
@@ -114,16 +119,17 @@ def distance(Folder, chatty=False):
 
 
 def estimate_image_noise(image):
-    '''
+    """
     # Noise estimation according to http://stackoverflow.com/a/25436112/323100
     # based on Immerkaer1996
-    '''
+    """
     height, width = image.shape
     M = [[1, -2, 1],
-        [-2, 4, -2],
-        [1, -2, 1]]
+         [-2, 4, -2],
+         [1, -2, 1]]
     from scipy.signal import convolve2d
     import numpy as np
+
     sigma = np.sum(np.sum(np.absolute(convolve2d(image, M))))
     sigma = sigma * np.sqrt(0.5 * np.pi) / (6 * (width - 2) * (height - 2))
     return sigma

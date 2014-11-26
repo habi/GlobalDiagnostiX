@@ -63,8 +63,7 @@ TotalSummedBrightness = numpy.empty(len(Experiment))
 TotalMax = numpy.empty(len(Experiment))
 TotalMean = numpy.empty(len(Experiment))
 TotalSTD = numpy.empty(len(Experiment))
-CorrectedImages = numpy.empty([Size[0][0], Size[0][1],
-    len(Experiment)])
+CorrectedImages = numpy.empty([Size[0][0], Size[0][1], len(Experiment)])
 
 # Results for each exposure time
 plt.ion()

@@ -20,7 +20,7 @@ import random
 import functions
 
 # Where shall we start?
-RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages')
+RootFolder = '/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages'
 # Look for images of only one scintillator
 StartingFolder = os.path.join(RootFolder, 'AppScinTech-HE')
 StartingFolder = os.path.join(RootFolder, 'Hamamatsu')
@@ -74,19 +74,16 @@ print 'I found', len(LogFiles), 'log files in', StartingFolder
 random.shuffle(LogFiles)
 
 # Grab all the necessary parameters from the log files
-ExperimentID = \
-    [linecache.getline(i, 1).split('ID')[1].split(',')[0].strip() for i in
-    LogFiles]
+ExperimentID = [linecache.getline(i, 1).split('ID')[1].split(',')[0].strip()
+                for i in LogFiles]
 Sensor = [linecache.getline(i, 10).split(':')[1].strip() for i in LogFiles]
-Scintillator = [linecache.getline(i, 9).split(':')[1].strip()
-    for i in LogFiles]
+Scintillator = [linecache.getline(i, 9).split(':')[1].strip() for i in LogFiles]
 Lens = [str(linecache.getline(i, 11).split(':')[1].strip()) for i in LogFiles]
 SDD = [float(linecache.getline(i, 13).split(':')[1].split('mm')[0].strip())
-    for i in LogFiles]
-Modality = [linecache.getline(i, 14).split(':')[1].strip()
-    for i in LogFiles]
-Exposuretime = [float(linecache.getline(i, 18)
-    .split(':')[1].split('ms')[0].strip()) for i in LogFiles]
+       for i in LogFiles]
+Modality = [linecache.getline(i, 14).split(':')[1].strip() for i in LogFiles]
+Exposuretime = [float(linecache.getline(i, 18).split(':')[1].split('ms')[
+                          0].strip()) for i in LogFiles]
 
 # DEBUG
 debug = False
