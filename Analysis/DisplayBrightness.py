@@ -10,7 +10,6 @@ from __future__ import division
 import glob
 import os
 import platform
-import time
 
 import matplotlib.pyplot as plt
 import numpy
@@ -34,14 +33,15 @@ Lenses = ('Computar-11A', 'Framos-DSL219D-650-F2.0',
 
 LensCounter = 0
 plt.ion()
-OverViewFigure = plt.figure(1, figsize=[20, 12])
 plt.show()
 for CurrentLens in Lenses:
     LensCounter += 1
     print 'Lens', LensCounter, 'of', len(Lenses), '|', CurrentLens
+    print
     CombinationCounter = 0
     for CurrentScintillator in Scintillators:
         for CurrentSensor in Sensors:
+            OverViewFigure = plt.figure(LensCounter, figsize=[20, 12])
             CombinationCounter += 1
             Axis1 = plt.subplot(len(Scintillators), len(Sensors),
                                 CombinationCounter)
@@ -97,38 +97,39 @@ for CurrentLens in Lenses:
 
             # Show all the images of this component combination , so that we
             # can quickly see which ones are good and which ones are not
-            LensFigure = plt.figure(CombinationCounter + 1, figsize=[16, 9])
+            LensFigure = plt.figure(CombinationCounter + LensCounter,
+                                    figsize=[16, 9])
             plt.suptitle(' | '.join([CurrentScintillator, CurrentSensor,
                                      CurrentLens]))
             for c, i in enumerate(Images):
-                Axis2 = plt.subplot(5, len(Images) / 4, c+1)
+                Axis2 = plt.subplot(5, len(Images) / 4, c + 1)
                 Axis2.imshow(i, cmap='bone')
                 Axis2.axis('off')
                 plt.title(':'.join([str(c),
                                     os.path.basename(ImageNames[c]).split(
                                         '.')[0]]))
             try:
-                os.makedirs(os.path.join(RootFolder, 'BrightnessOutput'))
+                os.makedirs(os.path.join(RootFolder, 'BrightnessOutput',
+                                         CurrentLens))
             except OSError:
                 pass
             LensFigure.savefig(os.path.join(RootFolder, 'BrightnessOutput',
-                                            'Images_' + CurrentScintillator +
-                                            '_' + CurrentSensor + '_' +
-                                            CurrentLens + '.png'))
-            OverViewFigure = plt.figure(1, figsize=[20, 12])
+                                            CurrentLens, 'Images_' +
+                                            CurrentScintillator + '_' +
+                                            CurrentSensor + '_' + CurrentLens
+                                            + '.png'))
             plt.title(' | '.join([CurrentScintillator, CurrentSensor,
                                   CurrentLens]))
             plt.draw()
-            time.sleep(0.1)
 
     # Display
-    OverViewFigure = plt.figure(1, figsize=[20, 12])
+    OverViewFigure = plt.figure(LensCounter, figsize=[20, 12])
     OverViewFigure.savefig(os.path.join(RootFolder,  'BrightnessOutput',
-                                        'Overview_' + CurrentLens + '.png'))
+                                        CurrentLens, 'Overview_' +
+                                        CurrentLens + '.png'))
     print
     print 'Done with', CurrentLens
     print 80 * '-'
     plt.draw()
-    time.sleep(1)
 
 print 'Done with everything'
