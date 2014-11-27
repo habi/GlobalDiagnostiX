@@ -15,6 +15,7 @@ import subprocess
 
 import functions
 
+
 # Setup
 # If Manual selection is true, the user is asked to select one of the
 # experiment IDs manually, otherwise the script just goes through all the IDs
@@ -23,7 +24,8 @@ ManualSelection = False
 
 # Where shall we start?
 RootFolder = '/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages'
-case = 1
+case = 2
+StartingFolder = []
 if case == 1:
     # Look through all folders
     StartingFolder = RootFolder
