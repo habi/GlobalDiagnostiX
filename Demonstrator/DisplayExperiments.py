@@ -107,7 +107,7 @@ for counter, Folder in enumerate(FolderList):
     plt.imshow(Radiography[counter], cmap='bone', interpolation='bicubic',
                vmin=ValuesImage[counter][0],
                vmax=ValuesImage[counter][1] + 3 * ValuesImage[counter][3])
-    plt.title('Image')
+    plt.title(os.path.basename(RadiographyName[counter]))
     plt.axis('off')
 
     plt.subplot(242)
@@ -121,7 +121,7 @@ for counter, Folder in enumerate(FolderList):
     plt.imshow(Dark[counter], cmap='bone', interpolation='bicubic',
                vmin=ValuesDark[counter][0],
                vmax=ValuesDark[counter][1] + 3 * ValuesDark[counter][3])
-    plt.title('Dark')
+    plt.title(os.path.basename(DarkName[counter]))
     plt.axis('off')
 
     plt.subplot(244)
