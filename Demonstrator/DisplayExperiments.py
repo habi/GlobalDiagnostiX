@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Script to read and display the experiments done with the iAi electronics
 prototype in the x-ray lab
@@ -8,6 +10,38 @@ import glob
 import numpy
 import matplotlib.pylab as plt
 import platform
+import random
+
+import lineprofiler
+
+
+def my_display_image(image):
+    """
+    Display an image with the 'bone' color map, bicubic interpolation and with
+    the gray values from the minimum of the image to the mean plus three times
+    the standard deviation of the image
+    """
+    plt.imshow(image, cmap='bone', interpolation='bicubic',
+               vmin=numpy.min(image),
+               vmax=numpy.mean(image) + 3 * numpy.std(image))
+    plt.axis('off')
+
+
+def my_display_histogram(image, howmanybins=64, histogramcolor='k',
+                         rangecolor='r'):
+    """
+    Display the histogram of an input image, including the ranges we have set
+    in the MyDisplayImage function above as dashed lines
+    """
+    plt.hist(image.flatten(), bins=howmanybins, histtype='stepfilled',
+             fc=histogramcolor, alpha=0.309)
+    plt.axvline(x=numpy.min(image), color=rangecolor, linestyle='--')
+    plt.axvline(x=numpy.mean(image), color='k', linestyle='--')
+    plt.axvline(x=numpy.mean(image) + 3 * numpy.std(image), color=rangecolor,
+                linestyle='--')
+    # turn off y-ticks: http://stackoverflow.com/a/2176591/323100
+    plt.gca().axes.get_yaxis().set_ticks([])
+    plt.title('Histogram. Black = mean, Red = Display range')
 
 # Setup
 CameraWidth = 1280
@@ -22,6 +56,9 @@ else:
 
 # Get all subfolders: http://stackoverflow.com/a/973488/323100
 FolderList = os.walk(RootPath).next()[1]
+
+# Shuffle the Folderlist to make clicking less boring...
+random.shuffle(FolderList)
 
 # Get images from the module with IP 44, since that was the one that was focus
 # and aligned properly for this test
@@ -39,13 +76,10 @@ print 'Reading all darks'
 Dark = [numpy.fromfile(i, dtype=numpy.int16).reshape(CameraHeight,
                                                      CameraWidth) for i in
         DarkName]
-print 'Calculating corrected images'
+print 'Calculating all corrected images'
 CorrectedData = [Radiography[i] - Dark[i] for i in range(len(FolderList))]
-CorrectedAdat = [Dark[i] - Radiography[i] for i in range(len(FolderList))]
-
-# # Shift gray values of corrected data to min=0
+# Shift gray values of corrected data to min=0
 # CorrectedData = [ i - numpy.min(i) for i in CorrectedData]
-# CorrectedAdat = [ i - numpy.min(i) for i in CorrectedAdat]
 
 # Grab parameters from filename
 kV = [os.path.basename(i).split('kV_')[0].split('_')[-1] for i in FolderList]
@@ -65,8 +99,6 @@ ValuesDark = [[numpy.min(i), numpy.mean(i), numpy.max(i), numpy.std(i)] for i
               in Dark]
 ValuesCorrectedData = [[numpy.min(i), numpy.mean(i), numpy.max(i), numpy.std(
     i)] for i in CorrectedData]
-ValuesCorrectedAdat = [[numpy.min(i), numpy.mean(i), numpy.max(i), numpy.std(
-    i)] for i in CorrectedAdat]
 
 for counter, Folder in enumerate(FolderList):
     print 80 * '-'
@@ -89,78 +121,78 @@ for counter, Folder in enumerate(FolderList):
         round(ValuesCorrectedData[counter][1], 1), '\t', \
         round(ValuesCorrectedData[counter][2], 1), '\t', \
         round(ValuesCorrectedData[counter][3], 1)
-    print 'Drk-Img\t', round(ValuesCorrectedAdat[counter][0], 1), '\t', \
-        round(ValuesCorrectedAdat[counter][1], 1), '\t', \
-        round(ValuesCorrectedAdat[counter][2], 1), '\t', \
-        round(ValuesCorrectedAdat[counter][3], 1)
 
-    plt.figure(figsize=(20, 10))
-    FigureTitle = str(counter + 1) + '/' + str(len(FolderList)), '|', \
-        os.path.basename(Folder), ' Xray shot with', kV[counter], 'kV and',\
-        mAs[counter], 'mAs (' + SourceExposureTime[counter] + \
-        'ms source exposure time). Captured with', \
-        CMOSExposureTime[counter], 'ms CMOS exposure time and Gain', \
-        Gain[counter]
+    # Select line profile on corrected image
+    selectedpoints, profile = lineprofiler.lineprofile(CorrectedData[counter])
+
+    # Display all the important things
+    plt.figure(counter + 1, figsize=(16, 9))
+    FigureTitle = str(counter + 1) + '/' + str(len(FolderList)), \
+        '| Xray shot with', kV[counter], 'kV and', mAs[counter], \
+        'mAs (' + SourceExposureTime[counter] + \
+        'ms source exposure time). Captured with', CMOSExposureTime[counter], \
+        'ms CMOS exposure time and Gain', Gain[counter]
     plt.suptitle(' '.join(FigureTitle))
 
-    plt.subplot(241)
-    plt.imshow(Radiography[counter], cmap='bone', interpolation='bicubic',
-               vmin=ValuesImage[counter][0],
-               vmax=ValuesImage[counter][1] + 3 * ValuesImage[counter][3])
+    plt.subplot(441)
+    my_display_image(Radiography[counter])
     plt.title('Image')
-    plt.axis('off')
 
-    plt.subplot(242)
-    plt.hist(Radiography[counter].flatten(), bins=128, fc='k', ec='k')
-    plt.axvline(x=ValuesImage[counter][0], color='r', linestyle='--')
-    plt.axvline(x=ValuesImage[counter][1] + 3 * ValuesImage[counter][3],
-                color='r', linestyle='--')
-    plt.title('Image Histogram (red=display range)')
+    plt.subplot(442)
+    my_display_histogram(Radiography[counter])
+
+    plt.subplot(445)
+    my_display_image(Dark[counter])
+    plt.title('Dark')
+
+    plt.subplot(446)
+    my_display_histogram(Dark[counter])
+    plt.title('')
 
     plt.subplot(243)
-    plt.imshow(Dark[counter], cmap='bone', interpolation='bicubic',
-               vmin=ValuesDark[counter][0],
-               vmax=ValuesDark[counter][1] + 3 * ValuesDark[counter][3])
-    plt.title('Dark')
-    plt.axis('off')
+    my_display_image(CorrectedData[counter])
+    plt.title('Image - Dark')
 
     plt.subplot(244)
-    plt.hist(Dark[counter].flatten(), bins=128, fc='k', ec='k')
-    plt.axvline(x=ValuesDark[counter][0], color='r', linestyle='--')
-    plt.axvline(x=ValuesDark[counter][1] + 3 * ValuesDark[counter][3],
-                color='r', linestyle='--')
-    plt.title('Dark Histogram (red=display range)')
+    my_display_histogram(CorrectedData[counter])
 
-    plt.subplot(245)
-    plt.imshow(CorrectedData[counter], cmap='bone', interpolation='bicubic',
-               vmin=ValuesCorrectedData[counter][0],
-               vmax=(ValuesCorrectedData[counter][1] + 3 *
-                     ValuesCorrectedData[counter][3]))
-    plt.title('Img-Drk')
-    plt.axis('off')
+    # Draw selection on corrected image
+    plt.figure(counter + 1, figsize=(16, 9))
+    plt.subplot(243)
+    my_display_image(CorrectedData[counter])
+    plt.plot((selectedpoints[1, 0], selectedpoints[0, 0]),
+             (selectedpoints[1, 1], selectedpoints[0, 1]), color='red',
+             marker='o')
+    plt.plot(selectedpoints[1, 0], selectedpoints[1, 1], color='yellow',
+             marker='o')
+    plt.plot(selectedpoints[0, 0], selectedpoints[0, 1], color='black',
+             marker='o')
+    plt.title('Image - Dark')
 
-    plt.subplot(246)
-    plt.hist(CorrectedData[counter].flatten(), bins=128, fc='k', ec='k')
-    plt.axvline(x=ValuesCorrectedData[counter][0], color='r', linestyle='--')
-    plt.axvline(x=ValuesCorrectedData[counter][1] + 3 * ValuesCorrectedData[
-        counter][3], color='r', linestyle='--')
-    plt.title('Corrected Histogram (red=display range)')
+    # Draw line profile
+    plt.subplot(212)
+    plt.plot(profile, color='red', label='Line profile')
+    plt.plot(0, profile[0], color='yellow', marker='o', markersize=25,
+             alpha=0.309)
+    plt.plot(len(profile)-1, profile[-1], color='black', marker='o',
+             markersize=25, alpha=0.309)
+    plt.axhline(numpy.mean(CorrectedData[counter]), color='k',
+                label=u'Image mean ± STD')
+    plt.fill_between(range(len(profile)),
+                     numpy.mean(CorrectedData[counter]) + numpy.std(
+                         CorrectedData[counter]),
+                     numpy.mean(CorrectedData[counter]) - numpy.std(
+                         CorrectedData[counter]),
+                     alpha=0.309, color='k')
+    plt.figure(counter + 1, figsize=(16, 9))
 
-    plt.subplot(247)
-    plt.imshow(CorrectedAdat[counter], cmap='bone', interpolation='bicubic',
-               vmin=ValuesCorrectedAdat[counter][0],
-               vmax=(ValuesCorrectedAdat[counter][1] + 3 *
-                     ValuesCorrectedAdat[counter][3]))
-    plt.title('Drk-Img')
-    plt.axis('off')
-
-    plt.subplot(248)
-    plt.hist(CorrectedAdat[counter].flatten(), bins=128, fc='k', ec='k')
-    plt.axvline(x=ValuesCorrectedAdat[counter][0], color='r', linestyle='--')
-    plt.axvline(x=ValuesCorrectedAdat[counter][1] + 3 * ValuesCorrectedAdat[
-        counter][3], color='r', linestyle='--')
-    plt.title('Corrected Histogram (red=display range)')
+    plt.legend(loc='best')
+    plt.xlim([0, len(profile) - 1])
+    plt.ylim([numpy.mean(CorrectedData[counter]) - 3 * numpy.std(
+        CorrectedData[counter]),
+        numpy.mean(CorrectedData[counter]) + 3 * numpy.std(CorrectedData[
+            counter])])
+    plt.title('Line profile along selection')
 
     plt.savefig(os.path.join(RootPath, Folder + '.png'))
-
     plt.show()
