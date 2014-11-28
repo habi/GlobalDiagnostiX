@@ -76,6 +76,10 @@ random.shuffle(LogFiles)
 # Grab all the necessary parameters from the log files
 ExperimentID = [linecache.getline(i, 1).split('ID')[1].split(',')[0].strip()
                 for i in LogFiles]
+# for c, i in enumerate(LogFiles):
+#     print LogFiles[c]
+#     print '\t', linecache.getline(i, 1).split('ID')[1].split(',')[0].strip(), \
+#         linecache.getline(i, 10).split(':')[1].strip()
 Sensor = [linecache.getline(i, 10).split(':')[1].strip() for i in LogFiles]
 Scintillator = [linecache.getline(i, 9).split(':')[1].strip() for i in LogFiles]
 Lens = [str(linecache.getline(i, 11).split(':')[1].strip()) for i in LogFiles]
