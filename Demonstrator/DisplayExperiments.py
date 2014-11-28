@@ -9,6 +9,31 @@ import numpy
 import matplotlib.pylab as plt
 import platform
 
+def MyDisplayImage(Image):
+    """
+    Display an image with the 'bone' color map, bicubic interpolation and with
+    the gray values from the minimum of the image to the mean plus three times
+    the standard deviation of the image
+    """
+    plt.imshow(Image, cmap='bone', interpolation='bicubic',
+               vmin=numpy.min(Image),
+               vmax=numpy.mean(Image) + 3 * numpy.std(Image))
+    plt.axis('off')
+
+def MyDisplayHistogram(Image, HowManyBins=64, HistogramColor='b',
+                        RangeColor='r'):
+    """
+    Display the histogram of an input image, including the ranges we have set
+    in the MyDisplayImage function above as dashed lines
+    """
+    plt.hist(Image.flatten(), bins=HowManyBins, histtype='stepfilled',
+             fc=HistogramColor)
+    plt.axvline(x=numpy.min(Image), color=RangeColor, linestyle='--')
+    plt.axvline(x=numpy.mean(Image), color='k', linestyle='--')
+    plt.axvline(x=numpy.mean(Image) + 3 * numpy.std(Image), color=RangeColor,
+                linestyle='--')
+    plt.title('Histogram with display range')
+
 # Setup
 CameraWidth = 1280
 CameraHeight = 1024
@@ -41,11 +66,8 @@ Dark = [numpy.fromfile(i, dtype=numpy.int16).reshape(CameraHeight,
         DarkName]
 print 'Calculating corrected images'
 CorrectedData = [Radiography[i] - Dark[i] for i in range(len(FolderList))]
-CorrectedAdat = [Dark[i] - Radiography[i] for i in range(len(FolderList))]
-
-# # Shift gray values of corrected data to min=0
-# CorrectedData = [ i - numpy.min(i) for i in CorrectedData]
-# CorrectedAdat = [ i - numpy.min(i) for i in CorrectedAdat]
+# Shift gray values of corrected data to min=0
+#~ CorrectedData = [ i - numpy.min(i) for i in CorrectedData]
 
 # Grab parameters from filename
 kV = [os.path.basename(i).split('kV_')[0].split('_')[-1] for i in FolderList]
@@ -65,8 +87,6 @@ ValuesDark = [[numpy.min(i), numpy.mean(i), numpy.max(i), numpy.std(i)] for i
               in Dark]
 ValuesCorrectedData = [[numpy.min(i), numpy.mean(i), numpy.max(i), numpy.std(
     i)] for i in CorrectedData]
-ValuesCorrectedAdat = [[numpy.min(i), numpy.mean(i), numpy.max(i), numpy.std(
-    i)] for i in CorrectedAdat]
 
 for counter, Folder in enumerate(FolderList):
     print 80 * '-'
@@ -89,12 +109,8 @@ for counter, Folder in enumerate(FolderList):
         round(ValuesCorrectedData[counter][1], 1), '\t', \
         round(ValuesCorrectedData[counter][2], 1), '\t', \
         round(ValuesCorrectedData[counter][3], 1)
-    print 'Drk-Img\t', round(ValuesCorrectedAdat[counter][0], 1), '\t', \
-        round(ValuesCorrectedAdat[counter][1], 1), '\t', \
-        round(ValuesCorrectedAdat[counter][2], 1), '\t', \
-        round(ValuesCorrectedAdat[counter][3], 1)
 
-    plt.figure(figsize=(20, 10))
+    plt.figure(figsize=(20, 4))
     FigureTitle = str(counter + 1) + '/' + str(len(FolderList)), '|', \
         os.path.basename(Folder), ' Xray shot with', kV[counter], 'kV and',\
         mAs[counter], 'mAs (' + SourceExposureTime[counter] + \
@@ -103,64 +119,28 @@ for counter, Folder in enumerate(FolderList):
         Gain[counter]
     plt.suptitle(' '.join(FigureTitle))
 
-    plt.subplot(241)
-    plt.imshow(Radiography[counter], cmap='bone', interpolation='bicubic',
-               vmin=ValuesImage[counter][0],
-               vmax=ValuesImage[counter][1] + 3 * ValuesImage[counter][3])
-    plt.title(os.path.basename(RadiographyName[counter]))
-    plt.axis('off')
+    plt.subplot(161)
+    MyDisplayImage(Radiography[counter])
+    plt.title('Image')
 
-    plt.subplot(242)
-    plt.hist(Radiography[counter].flatten(), bins=128, fc='k', ec='k')
-    plt.axvline(x=ValuesImage[counter][0], color='r', linestyle='--')
-    plt.axvline(x=ValuesImage[counter][1] + 3 * ValuesImage[counter][3],
-                color='r', linestyle='--')
-    plt.title('Image Histogram (red=display range)')
+    plt.subplot(162)
+    MyDisplayHistogram(Radiography[counter])
 
-    plt.subplot(243)
-    plt.imshow(Dark[counter], cmap='bone', interpolation='bicubic',
-               vmin=ValuesDark[counter][0],
-               vmax=ValuesDark[counter][1] + 3 * ValuesDark[counter][3])
-    plt.title(os.path.basename(DarkName[counter]))
-    plt.axis('off')
+    plt.subplot(163)
+    MyDisplayImage(Dark[counter])
+    plt.title('Dark')
 
-    plt.subplot(244)
-    plt.hist(Dark[counter].flatten(), bins=128, fc='k', ec='k')
-    plt.axvline(x=ValuesDark[counter][0], color='r', linestyle='--')
-    plt.axvline(x=ValuesDark[counter][1] + 3 * ValuesDark[counter][3],
-                color='r', linestyle='--')
-    plt.title('Dark Histogram (red=display range)')
+    plt.subplot(164)
+    MyDisplayHistogram(Dark[counter])
 
-    plt.subplot(245)
-    plt.imshow(CorrectedData[counter], cmap='bone', interpolation='bicubic',
-               vmin=ValuesCorrectedData[counter][0],
-               vmax=(ValuesCorrectedData[counter][1] + 3 *
-                     ValuesCorrectedData[counter][3]))
-    plt.title('Img-Drk')
-    plt.axis('off')
+    plt.subplot(165)
+    MyDisplayImage(CorrectedData[counter])
+    plt.title('Image - Dark')
 
-    plt.subplot(246)
-    plt.hist(CorrectedData[counter].flatten(), bins=128, fc='k', ec='k')
-    plt.axvline(x=ValuesCorrectedData[counter][0], color='r', linestyle='--')
-    plt.axvline(x=ValuesCorrectedData[counter][1] + 3 * ValuesCorrectedData[
-        counter][3], color='r', linestyle='--')
-    plt.title('Corrected Histogram (red=display range)')
+    plt.subplot(166)
+    MyDisplayHistogram(CorrectedData[counter])
 
-    plt.subplot(247)
-    plt.imshow(CorrectedAdat[counter], cmap='bone', interpolation='bicubic',
-               vmin=ValuesCorrectedAdat[counter][0],
-               vmax=(ValuesCorrectedAdat[counter][1] + 3 *
-                     ValuesCorrectedAdat[counter][3]))
-    plt.title('Drk-Img')
-    plt.axis('off')
-
-    plt.subplot(248)
-    plt.hist(CorrectedAdat[counter].flatten(), bins=128, fc='k', ec='k')
-    plt.axvline(x=ValuesCorrectedAdat[counter][0], color='r', linestyle='--')
-    plt.axvline(x=ValuesCorrectedAdat[counter][1] + 3 * ValuesCorrectedAdat[
-        counter][3], color='r', linestyle='--')
-    plt.title('Corrected Histogram (red=display range)')
-
+    plt.tight_layout()
     plt.savefig(os.path.join(RootPath, Folder + '.png'))
 
     plt.show()
