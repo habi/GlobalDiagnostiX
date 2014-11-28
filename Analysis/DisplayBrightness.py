@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import numpy
 
 
-if platform.node() == 'anomalocaris':
+if 'anomalocaris' in platform.node():
     # RootFolder = '/Volumes/slslc/EssentialMed/MasterArbeitBFH/XrayImages'
     RootFolder = '/Users/habi/Desktop/XrayImages/Volumes/slslc/EssentialMed' \
                  '/MasterArbeitBFH/XrayImages'
@@ -42,6 +42,8 @@ for CurrentLens in Lenses:
     for CurrentScintillator in Scintillators:
         for CurrentSensor in Sensors:
             OverViewFigure = plt.figure(LensCounter, figsize=[20, 12])
+            plt.title(' | '.join([CurrentScintillator, CurrentSensor,
+                                  CurrentLens]))
             CombinationCounter += 1
             Axis1 = plt.subplot(len(Scintillators), len(Sensors),
                                 CombinationCounter)
@@ -92,6 +94,7 @@ for CurrentLens in Lenses:
 
             # Scale all the plots the same way, so we can compare them
             plt.ylim((0, 0.75))
+            plt.xlim((0, 35))
             plt.title(' | '.join([CurrentScintillator, CurrentSensor,
                                   CurrentLens]))
 
@@ -118,9 +121,7 @@ for CurrentLens in Lenses:
                                             CurrentScintillator + '_' +
                                             CurrentSensor + '_' + CurrentLens
                                             + '.png'))
-            plt.title(' | '.join([CurrentScintillator, CurrentSensor,
-                                  CurrentLens]))
-            plt.draw()
+    plt.draw()
 
     # Display
     OverViewFigure = plt.figure(LensCounter, figsize=[20, 12])
@@ -131,5 +132,6 @@ for CurrentLens in Lenses:
     print 'Done with', CurrentLens
     print 80 * '-'
     plt.draw()
+    plt.close('all')
 
 print 'Done with everything'
