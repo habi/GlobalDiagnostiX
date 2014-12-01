@@ -157,19 +157,22 @@ print 'A SED of', '%.3e' % (SED / 1000), 'Gy (mJ/kg) corresponds to', \
 # 3.1.5
 eta = 1.1e-9 * 74 * options.kV * 1000
 
-N0 = (options.kV * 1000 * ((options.mAs / 1000) / (options.Exposuretime / 1000)) / (PhotonEnergy)) * eta * ((options.Length / 100) ** 2 / (4 * np.pi * (options.Distance / 100) ** 2))
+N0 = (options.kV * 1000 * \
+    ((options.mAs / 1000) / (options.Exposuretime / 1000)) / (PhotonEnergy)) *\
+    eta * \
+    ((options.Length / 100) ** 2 / (4 * np.pi * (options.Distance / 100) ** 2))
 
 print 'The source emits %.3e' % N0, 'photons with a mean energy of', \
     '%.3e' % PhotonEnergy, 'each'
 
-print 'We assume these photons are all the photons that reached the patient, ' \
-      'and thus can calculate the photon flux from this.'
+print 'We assume these photons are all the photons that reached the ' \
+      'patient, and thus can calculate the photon flux from this.'
 
 Flux = N0 / (options.Exposuretime / 1000)
 print 'With an exposure time of', options.Exposuretime, \
     'ms the aforementioned number of photons corresponds to a photon flux ' \
-    'of', '%.3e' % Flux, 'photons per second (from the source to the patient ' \
-                         'surface).'
+    'of', '%.3e' % Flux, 'photons per second (from the source to the ' \
+    'patient surface).'
 
 exit()
 
@@ -177,7 +180,7 @@ exit()
 AttenuationCoefficient = 0.5  # For calculation we just simply assume 50%.
 # We NEED to read the data from the NIST tables, but they're in shutdown now...
 print 'Attenuation coefficient set to', AttenuationCoefficient, \
-    'cm^-1 (@' +  str(Voltage[ChosenVoltage]), 'kV)'
+    'cm^-1 (@' + str(Voltage[ChosenVoltage]), 'kV)'
 # Number of absorbed photons
 # N = N0(e^-uT)
 N = N0 * (np.exp((-AttenuationCoefficient * (options.Thickness / 100))))

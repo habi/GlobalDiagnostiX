@@ -148,7 +148,7 @@ for Displacement in (0, - options.FOV / (1 + options.Overlap / 100),
 plt.title('Angular opening: ' + str(round(OpeningAngle, 2)) + '\nFOV size: ' +
           str(options.FOV) + ' mm (including overlap of ' +
           str(options.Overlap) + ' %)\nWorking Distance: ' +
-          str('%.2f' %options.Distance) + ' mm\nParavent length: ' +
+          str('%.2f' % options.Distance) + ' mm\nParavent length: ' +
           str('%.2f' % options.ParaventLength) + ' mm')
 plt.xlabel('Distance [mm]')
 plt.axis('equal')
