@@ -122,9 +122,6 @@ for counter, Folder in enumerate(FolderList):
         round(ValuesCorrectedData[counter][2], 1), '\t', \
         round(ValuesCorrectedData[counter][3], 1)
 
-    # Select line profile on corrected image
-    selectedpoints, profile = lineprofiler.lineprofile(CorrectedData[counter])
-
     # Display all the important things
     plt.figure(counter + 1, figsize=(16, 9))
     FigureTitle = str(counter + 1) + '/' + str(len(FolderList)), \
@@ -156,43 +153,55 @@ for counter, Folder in enumerate(FolderList):
     plt.subplot(244)
     my_display_histogram(CorrectedData[counter])
 
-    # Draw selection on corrected image
-    plt.figure(counter + 1, figsize=(16, 9))
-    plt.subplot(243)
-    my_display_image(CorrectedData[counter])
-    plt.plot((selectedpoints[1, 0], selectedpoints[0, 0]),
-             (selectedpoints[1, 1], selectedpoints[0, 1]), color='red',
-             marker='o')
-    plt.plot(selectedpoints[1, 0], selectedpoints[1, 1], color='yellow',
-             marker='o')
-    plt.plot(selectedpoints[0, 0], selectedpoints[0, 1], color='black',
-             marker='o')
-    plt.title('Image - Dark')
+    # Select two line profiles on corrected image.
+    # The two profiles are along the first two lines of the resolution phantom
+    Coordinates = [((566, 350), (543, 776)), ((726, 350), (703, 776))]
+    MyColors = ["#D1B9D4", "#D1D171", "#84DEBD"]
 
-    # Draw line profile
-    plt.subplot(212)
-    plt.plot(profile, color='red', label='Line profile')
-    plt.plot(0, profile[0], color='yellow', marker='o', markersize=25,
-             alpha=0.309)
-    plt.plot(len(profile)-1, profile[-1], color='black', marker='o',
-             markersize=25, alpha=0.309)
-    plt.axhline(numpy.mean(CorrectedData[counter]), color='k',
-                label=u'Image mean ± STD')
-    plt.fill_between(range(len(profile)),
-                     numpy.mean(CorrectedData[counter]) + numpy.std(
-                         CorrectedData[counter]),
-                     numpy.mean(CorrectedData[counter]) - numpy.std(
-                         CorrectedData[counter]),
-                     alpha=0.309, color='k')
-    plt.figure(counter + 1, figsize=(16, 9))
+    for ProfileCounter, CurrentCoordinates in enumerate(Coordinates):
+        SelectedPoints, LineProfile = lineprofiler.lineprofile(
+            CorrectedData[counter], CurrentCoordinates, showimage=False)
 
-    plt.legend(loc='best')
-    plt.xlim([0, len(profile) - 1])
-    plt.ylim([numpy.mean(CorrectedData[counter]) - 3 * numpy.std(
-        CorrectedData[counter]),
-        numpy.mean(CorrectedData[counter]) + 3 * numpy.std(CorrectedData[
-            counter])])
-    plt.title('Line profile along selection')
+        # Draw selection on corrected image
+        plt.figure(counter + 1, figsize=(16, 9))
+        plt.subplot(243)
+        my_display_image(CorrectedData[counter])
+        plt.plot((SelectedPoints[0][0], SelectedPoints[1][0]),
+                 (SelectedPoints[0][1], SelectedPoints[1][1]),
+                 color=MyColors[ProfileCounter], marker='o')
+        plt.plot(SelectedPoints[0][0], SelectedPoints[0][1], color='yellow',
+                 marker='o')
+        plt.plot(SelectedPoints[1][0], SelectedPoints[1][1], color='black',
+                 marker='o')
+        plt.title('Image - Dark')
+
+        # Draw both line profiles
+        plt.figure(counter + 1, figsize=(16, 9))
+        plt.subplot(4, 1, ProfileCounter + 3)
+        plt.plot(LineProfile, color=MyColors[ProfileCounter],
+                 label='Line profile')
+        plt.plot(0, LineProfile[0], color='yellow', marker='o',
+                 markersize=25, alpha=0.309)
+        plt.plot(len(LineProfile) - 1, LineProfile[-1], color='black',
+                 marker='o', markersize=25, alpha=0.309)
+        plt.axhline(numpy.mean(CorrectedData[counter]), color=MyColors[2],
+                    label=u'Image mean ± STD')
+        plt.fill_between(range(len(LineProfile)),
+                         numpy.mean(CorrectedData[counter]) + numpy.std(
+                             CorrectedData[counter]),
+                         numpy.mean(CorrectedData[counter]) - numpy.std(
+                             CorrectedData[counter]), alpha=0.309,
+                         color=MyColors[2])
+
+        plt.figure(counter + 1, figsize=(16, 9))
+        plt.legend(loc='upper left')
+        plt.xlim([0, len(LineProfile) - 1])
+        plt.ylim([numpy.mean(CorrectedData[counter]) - 2 *
+                  numpy.std(CorrectedData[counter]),
+                  numpy.mean(CorrectedData[counter]) + 2 *
+                  numpy.std(CorrectedData[counter])])
+        if not ProfileCounter:
+            plt.title('Line profiles along selections')
 
     plt.savefig(os.path.join(RootPath, Folder + '.png'))
     plt.show()
