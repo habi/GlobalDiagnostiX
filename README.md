@@ -1,5 +1,7 @@
 # Development Repository for OmmatiDiag
 
+[![Code Health](https://landscape.io/github/habi/GlobalDiagnostiX/master/landscape.svg)](https://landscape.io/github/habi/GlobalDiagnostiX/master)
+
 This repository tracks (mostly Python) code written while working on OmmatiDiag, the affordable, reliable and standard-compliant detector for the [GlobalDiagnostiX][GDX]-system.
 
 [GDX]: http://globaldiagnostix.org
