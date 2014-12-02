@@ -6,7 +6,6 @@ from pylab import *
 import os
 import glob
 from scipy import interpolate
-import time
 
 FigureSize = [8,9]
 Spectrapath = '/afs/psi.ch/user/h/haberthuer/EssentialMed/Images/12-GOTTHARD_and_TIS/GOTTHARD'
@@ -117,7 +116,7 @@ plt.figure(figsize=FigureSize)
 plt.plot(SiliconAttenuation[:, 0]*1000,
          (np.exp(- (SiliconAttenuation[:, 1] * SiliconDensity * SiliconThickness / 10000 ))),
          'ro', label='Si Transmission')
-plt.plot(xnew,interpolated(xnew),'r',label='Interpolated values')         
+plt.plot(xnew,interpolated(xnew),'r',label='Interpolated values')
 plt.xlabel('Photon Energy [keV]')
 plt.ylabel('Tranmission')
 plt.xlim([0,120])
@@ -250,7 +249,7 @@ for i in range(int(len(Spectra)/2)):
                                  str(mAs[k]) + 'mAs,',
                                  str(ExposureTime[k]) + 'ms']))
     plt.plot(Data[i][:, 0], (Data[i] - Data[k])[:, 1],
-             label='Difference', color='r')                                 
+             label='Difference', color='r')
     plt.legend(loc='best')
     plt.xlabel('BinCenter [adc]')
     plt.xlim(xmin=0)
@@ -265,7 +264,7 @@ print 'Plotting Logplot for every modality'
 for i in range(int(len(Spectra)/2)):
     plt.figure(figsize=FigureSize)
     k = i + int(len(Spectra)/2)
-    print '    * ' + DataName[i] + '/' + DataName[k]    
+    print '    * ' + DataName[i] + '/' + DataName[k]
     plt.semilogy(Data[i][:, 0], Data[i][:, 1], color='k',
                  label=' '.join([Modality[i] + ',',
                                  str(Energy[i]) + 'kV,',
@@ -277,7 +276,7 @@ for i in range(int(len(Spectra)/2)):
                                  str(mAs[k]) + 'mAs,',
                                  str(ExposureTime[k]) + 'ms']))
     plt.semilogy(Data[i][:, 0], (Data[i] - Data[k])[:, 1],
-                 label='Difference', color='r')                                 
+                 label='Difference', color='r')
     plt.legend(loc='best')
     plt.xlabel('BinCenter [adc]')
     plt.xlim(xmin=0)
