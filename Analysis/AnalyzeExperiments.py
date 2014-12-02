@@ -5,14 +5,11 @@ Script to load the results of DetectWhichImageIsRadiography.py and show it in
 such a way that we can make a conclusion.
 """
 
-import sys
 import os
 import matplotlib.pyplot as plt
 import numpy as np
 import random
 
-from functions import myLogger
-from functions import get_git_hash
 from functions import distance
 from functions import estimate_image_noise
 

@@ -14,7 +14,6 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from matplotlib.gridspec import GridSpec
 import time
-import logging
 import linecache
 import random
 import functions
