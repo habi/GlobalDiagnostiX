@@ -1,4 +1,4 @@
-def lineprofile(inputimage, coordinates=False, debug=False):
+def lineprofile(inputimage, coordinates=False, showimage=False, debug=False):
     """
     Function to draw a line profile from a selection in the image.
     Comes in handy to look at the resolution phantom in x-ray images shot with
@@ -8,8 +8,8 @@ def lineprofile(inputimage, coordinates=False, debug=False):
     ((x0,y0), (x1,y1)), we use those, otherwise we let the user select some.
     If "debug" is set to true, we show Lena.
 
-	The function returns the coordinates and the lineprofile of the input image
-	along these coordinates.
+    The function returns the coordinates and the lineprofile of the input image
+    along these coordinates.
     """
 
     # suppress pep8 warning about potentially unreferenced variables
@@ -25,12 +25,13 @@ def lineprofile(inputimage, coordinates=False, debug=False):
         inputimage = scipy.misc.lena()
 
     # Prepare image
-    plt.figure(random.randint(0,1000), figsize=(16, 16))
-    if debug:
-        plt.ion()
-    plt.imshow(inputimage, cmap='bone', vmin=numpy.min(inputimage),
-               vmax=numpy.mean(inputimage) + 3 * numpy.std(inputimage))
-    plt.title('Please select the end-points for the line-profile')
+    if showimage:
+        plt.figure(random.randint(0,1000), figsize=(16, 16))
+        if debug:
+            plt.ion()
+        plt.imshow(inputimage, cmap='bone', vmin=numpy.min(inputimage),
+                vmax=numpy.mean(inputimage) + 3 * numpy.std(inputimage))
+        plt.title('Please select the end-points for the line-profile')
 
     if coordinates:
         # The user gave coordinates to use. Use them.
@@ -60,26 +61,27 @@ def lineprofile(inputimage, coordinates=False, debug=False):
     profilenn = numpy.transpose(inputimage)[x.astype(numpy.int),
                                             y.astype(numpy.int)]
 
-    # Draw the image and line profile again
-    plt.subplot(211)
-    plt.imshow(inputimage, cmap='bone', vmin=numpy.min(inputimage),
-               vmax=numpy.mean(inputimage) + 3 * numpy.std(inputimage))
-    plt.plot((x0, x1), (y0, y1), 'r')
-    plt.plot(x0, y0, 'yo')
-    plt.plot(x1, y1, 'ko')
-    plt.axis('image')
-    plt.draw()
+    if showimage:
+        # Draw the image and line profile again
+        plt.subplot(211)
+        plt.imshow(inputimage, cmap='bone', vmin=numpy.min(inputimage),
+                vmax=numpy.mean(inputimage) + 3 * numpy.std(inputimage))
+        plt.plot((x0, x1), (y0, y1), 'r')
+        plt.plot(x0, y0, 'yo')
+        plt.plot(x1, y1, 'ko')
+        plt.axis('image')
+        plt.draw()
 
-    plt.subplot(212)
-    plt.plot(profileinterpolated, 'red',  label='interpolated')
-    plt.plot(profilenn, 'orange', label='nearest neighbour')
-    plt.plot(0, profilenn[0], 'yo', markersize=25, alpha=0.309)
-    plt.plot(len(profilenn) - 1, profilenn[-1], 'ko', markersize=25,
-             alpha=0.309)
-    plt.xlim([0, len(profilenn) - 1])
-    plt.legend(loc='best')
-    plt.draw()
-    plt.ioff()
-    if debug:
-        plt.show()
+        plt.subplot(212)
+        plt.plot(profileinterpolated, 'red',  label='interpolated')
+        plt.plot(profilenn, 'orange', label='nearest neighbour')
+        plt.plot(0, profilenn[0], 'yo', markersize=25, alpha=0.309)
+        plt.plot(len(profilenn) - 1, profilenn[-1], 'ko', markersize=25,
+                alpha=0.309)
+        plt.xlim([0, len(profilenn) - 1])
+        plt.legend(loc='best')
+        plt.draw()
+        plt.ioff()
+        if debug:
+            plt.show()
     return ((x0,y0),(x1,y1)), profileinterpolated
