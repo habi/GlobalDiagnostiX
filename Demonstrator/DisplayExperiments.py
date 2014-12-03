@@ -5,12 +5,15 @@ Script to read and display the experiments done with the iAi electronics
 prototype in the x-ray lab
 """
 
+from __future__ import division
+
 import os
 import glob
 import numpy
 import matplotlib.pylab as plt
 import platform
 import random
+import scipy.misc  # for saving to b/w png
 
 import lineprofiler
 
@@ -57,8 +60,10 @@ else:
 # Get all subfolders: http://stackoverflow.com/a/973488/323100
 FolderList = os.walk(RootPath).next()[1]
 
-# Shuffle the Folderlist to make clicking less boring...
-random.shuffle(FolderList)
+shuffle = False
+if shuffle:
+    # Shuffle the Folderlist to make clicking less boring...
+    random.shuffle(FolderList)
 
 # Get images from the module with IP 44, since that was the one that was focus
 # and aligned properly for this test
@@ -78,8 +83,6 @@ Dark = [numpy.fromfile(i, dtype=numpy.int16).reshape(CameraHeight,
         DarkName]
 print 'Calculating all corrected images'
 CorrectedData = [Radiography[i] - Dark[i] for i in range(len(FolderList))]
-# Shift gray values of corrected data to min=0
-# CorrectedData = [ i - numpy.min(i) for i in CorrectedData]
 
 # Grab parameters from filename
 kV = [os.path.basename(i).split('kV_')[0].split('_')[-1] for i in FolderList]
@@ -91,6 +94,10 @@ CMOSExposureTime = [os.path.basename(i).split('-e')[1].split('-g')[0] for i
                     in RadiographyName]
 Gain = [os.path.basename(i).split('-g')[1].split('-i')[0] for i in
         RadiographyName]
+
+print 'kV, mAs, SourceExposureTime, Gain'
+for item in zip(FolderList, kV, mAs, SourceExposureTime, Gain):
+    print ' | '.join(item)
 
 # Grab information from files
 ValuesImage = [[numpy.min(i), numpy.mean(i), numpy.max(i), numpy.std(i)] for
@@ -121,6 +128,13 @@ for counter, Folder in enumerate(FolderList):
         round(ValuesCorrectedData[counter][1], 1), '\t', \
         round(ValuesCorrectedData[counter][2], 1), '\t', \
         round(ValuesCorrectedData[counter][3], 1)
+
+    print 'Saving corrected image as', os.path.join(RootPath,
+                                                     FolderList[counter],
+                                                     'corrected.png')
+    # scipy.misc.imsave
+    scipy.misc.imsave(os.path.join(RootPath, FolderList[counter],
+                                   'corrected.png'), CorrectedData[counter])
 
     # Display all the important things
     plt.figure(counter + 1, figsize=(16, 9))
@@ -203,5 +217,6 @@ for counter, Folder in enumerate(FolderList):
         if not ProfileCounter:
             plt.title('Line profiles along selections')
 
-    plt.savefig(os.path.join(RootPath, Folder + '.png'))
+    print 'Saving figure as', os.path.join(RootPath, Folder + '.png')
+    plt.savefig(os.path.join(RootPath, Folder + '.png'), bbox_inches='tight')
     plt.show()
