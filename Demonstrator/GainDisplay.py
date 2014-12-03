@@ -9,6 +9,8 @@ import numpy
 import matplotlib.pylab as plt
 import platform
 
+import lineprofiler
+
 # CameraSize
 CameraWidth = 1280
 CameraHeight = 1024
@@ -19,6 +21,8 @@ if platform.node() == 'anomalocaris':
 else:
     RootPath = '/afs/psi.ch/project/EssentialMed/Images' \
                '/DetectorElectronicsTests'
+
+MyColors = ["#95C5B5", "#BF55C4", "#BC4E35", "#7FCE56", "#51364A", "#CDB151", "#7D81C2", "#576239", "#CA6787"]
 
 # Get Folders
 Folder = '*Gain-Se*'
@@ -38,8 +42,11 @@ ZoomedMean = numpy.zeros(len(Radiographies))
 ZoomedMax = numpy.zeros(len(Radiographies))
 ZoomedSTD = numpy.zeros(len(Radiographies))
 
+LineProfile = []
+Coordinates = [(30, 10), (31, 300)]
+
 # Display difference
-plt.figure(figsize=(16, 9))
+plt.figure(1, figsize=(18, 12))
 
 for counter in range(len(Radiographies)):
     # Inform user
@@ -53,6 +60,8 @@ for counter in range(len(Radiographies)):
         CameraHeight, CameraWidth)
     CorrectedData = ImageData - DarkData
     ZoomedData = CorrectedData[445:775, 510:615]
+
+    tmp, LineProfile= lineprofiler.lineprofile(ZoomedData, Coordinates)
 
     Mean[counter] = numpy.mean(ImageData)
     Max[counter] = numpy.max(ImageData)
@@ -93,6 +102,11 @@ for counter in range(len(Radiographies)):
                vmax=CorrectedMean[counter] + 3 * CorrectedSTD[counter])
     plt.axis('off')
     plt.title('Zoom')
+
+    plt.plot((Coordinates[0][0], Coordinates[1][0]), (Coordinates[1][0], Coordinates[1][1]), color=MyColors[counter])
+    plt.plot(Coordinates[0][0], Coordinates[1][0], color='yellow', marker='o')
+    plt.plot(Coordinates[1][0], Coordinates[1][1], color='black', marker='o')
+
     plt.subplots_adjust(hspace=0.025)
     plt.subplots_adjust(wspace=0.025)
 
@@ -105,26 +119,31 @@ for counter in range(len(Radiographies)):
         plt.gca().get_xaxis().set_ticks([])
         plt.gca().get_yaxis().set_ticks([])
 
+    plt.subplot(818)
+    plt.plot(LineProfile, label=Gain, color=MyColors[counter])
+    plt.xlim([0, len(LineProfile)])
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
 
 # Plot max, mean and standard deviation of images
-plt.subplot(414)
+plt.subplot(817)
 plt.plot(Max, '-', label='Max')
 plt.plot(Mean, '-', label='Mean')
 plt.plot(STD, '-', label='STD')
 
 plt.plot(CorrectedMax, '-o', label='Corrected Max')
-plt.plot(CorrectedMean, '-o', label='Corrected Mean')
-plt.plot(CorrectedSTD, '-o', label='Corrected STD')
+#~ plt.plot(CorrectedMean, '-o', label='Corrected Mean')
+#~ plt.plot(CorrectedSTD, '-o', label='Corrected STD')
 
-plt.plot(ZoomedMax, '-*', label='Zoomed Max')
-plt.plot(ZoomedMean, '-*', label='Zoomed Mean')
-plt.plot(ZoomedSTD, '-*', label='Zoomed STD')
+#~ plt.plot(ZoomedMax, '-*', label='Zoomed Max')
+#~ plt.plot(ZoomedMean, '-*', label='Zoomed Mean')
+#~ plt.plot(ZoomedSTD, '-*', label='Zoomed STD')
 
 plt.xlim([-0.5, len(Radiographies) - 0.5])
 plt.xlabel('Image')
 plt.ylabel('Brightness')
 
-plt.legend(loc='best')
+plt.legend(loc='center right', bbox_to_anchor=(0, 0.5))
 
-plt.savefig('Gainseries.png')
+plt.savefig('Gainseries.png', bbox_inches='tight')
 plt.show()
