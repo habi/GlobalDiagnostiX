@@ -43,14 +43,14 @@ ZoomedMax = numpy.zeros(len(Radiographies))
 ZoomedSTD = numpy.zeros(len(Radiographies))
 
 LineProfile = []
-Coordinates = [(30, 10), (31, 300)]
+Coordinates = [(30, 310), (35, 10)]
 
 # Display difference
 plt.figure(1, figsize=(18, 12))
 
 for counter in range(len(Radiographies)):
     # Inform user
-    print counter + 1, 'of', len(Radiographies), 'Reading Images'
+    print str(counter + 1) + '/' + str(len(Radiographies)) + ': Reading Images'
 
     # Grab data
     ImageData = numpy.fromfile(Radiographies[counter],
@@ -81,15 +81,15 @@ for counter in range(len(Radiographies)):
         '-i')[0]
 
     # Display data
-    plt.subplot(4, len(Radiographies), counter + 1)
+    plt.subplot(5, len(Radiographies), counter + 1)
     plt.imshow(ImageData, cmap='bone', vmin=0, vmax=2 ** 10,
                interpolation='bicubic')
     plt.axis('off')
     plt.title('Gain ' + Gain)
-    plt.subplots_adjust(hspace=0.01)
-    plt.subplots_adjust(wspace=0.01)
+    plt.subplots_adjust(hspace=0.025)
+    plt.subplots_adjust(wspace=0.025)
 
-    plt.subplot(4, len(Radiographies), counter + 1 + len(Radiographies))
+    plt.subplot(5, len(Radiographies), counter + 1 + len(Radiographies))
     plt.imshow(CorrectedData, cmap='bone', interpolation='bicubic',
                vmax=CorrectedMean[counter] + 3 * CorrectedSTD[counter])
     plt.axis('off')
@@ -97,18 +97,18 @@ for counter in range(len(Radiographies)):
     plt.subplots_adjust(hspace=0.025)
     plt.subplots_adjust(wspace=0.025)
 
-    plt.subplot(4, len(Radiographies), counter + 1 + 2 * len(Radiographies))
+    plt.subplot(5, len(Radiographies), counter + 1 + 3 * len(Radiographies))
     plt.imshow(ZoomedData, cmap='bone', interpolation='bicubic',
                vmax=CorrectedMean[counter] + 3 * CorrectedSTD[counter])
     plt.axis('off')
-    plt.title('Zoom')
+    #~ plt.title('Zoom')
 
-    plt.plot((Coordinates[0][0], Coordinates[1][0]), (Coordinates[1][0], Coordinates[1][1]), color=MyColors[counter])
-    plt.plot(Coordinates[0][0], Coordinates[1][0], color='yellow', marker='o')
+    plt.plot((Coordinates[0][0], Coordinates[1][0]), (Coordinates[0][1], Coordinates[1][1]), color=MyColors[counter])
+    plt.plot(Coordinates[0][0], Coordinates[0][1], color='yellow', marker='o')
     plt.plot(Coordinates[1][0], Coordinates[1][1], color='black', marker='o')
 
-    plt.subplots_adjust(hspace=0.025)
-    plt.subplots_adjust(wspace=0.025)
+    #~ plt.subplots_adjust(hspace=0.025)
+    #~ plt.subplots_adjust(wspace=0.025)
 
     ShowHistograms = False
     if ShowHistograms:
@@ -119,14 +119,16 @@ for counter in range(len(Radiographies)):
         plt.gca().get_xaxis().set_ticks([])
         plt.gca().get_yaxis().set_ticks([])
 
-    plt.subplot(818)
-    plt.plot(LineProfile, label=Gain, color=MyColors[counter])
+    plt.subplot(515)
+    plt.plot(LineProfile + 20 * counter, label=Gain, color=MyColors[counter])
     plt.xlim([0, len(LineProfile)])
+    plt.ylabel('[a. u.]')
+    plt.gca().yaxis.set_major_locator(plt.NullLocator())
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
 
 # Plot max, mean and standard deviation of images
-plt.subplot(817)
+plt.subplot(513)
 plt.plot(Max, '-', label='Max')
 plt.plot(Mean, '-', label='Mean')
 plt.plot(STD, '-', label='STD')
@@ -140,10 +142,10 @@ plt.plot(CorrectedMax, '-o', label='Corrected Max')
 #~ plt.plot(ZoomedSTD, '-*', label='Zoomed STD')
 
 plt.xlim([-0.5, len(Radiographies) - 0.5])
-plt.xlabel('Image')
+#~ plt.xlabel('Image')
 plt.ylabel('Brightness')
 
-plt.legend(loc='center right', bbox_to_anchor=(0, 0.5))
+plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
 plt.savefig('Gainseries.png', bbox_inches='tight')
 plt.show()
