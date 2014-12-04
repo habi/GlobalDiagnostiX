@@ -24,6 +24,9 @@ def lineprofile(inputimage, coordinates=False, showimage=False, debug=False):
     if debug:
         inputimage = scipy.misc.lena()
 
+    if coordinates is False:
+        showimage = True
+
     # Prepare image
     if showimage:
         plt.figure(random.randint(0,1000), figsize=(16, 16))
