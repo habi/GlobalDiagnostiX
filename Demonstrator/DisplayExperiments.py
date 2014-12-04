@@ -85,19 +85,26 @@ print 'Calculating all corrected images'
 CorrectedData = [Radiography[i] - Dark[i] for i in range(len(FolderList))]
 
 # Grab parameters from filename
-kV = [os.path.basename(i).split('kV_')[0].split('_')[-1] for i in FolderList]
-mAs = [os.path.basename(i).split('mAs_')[0].split('kV_')[-1] for i in
-       FolderList]
-SourceExposureTime = [os.path.basename(i).split('ms_')[0].split('mAs_')[-1]
-                      for i in FolderList]
-CMOSExposureTime = [os.path.basename(i).split('-e')[1].split('-g')[0] for i
-                    in RadiographyName]
-Gain = [os.path.basename(i).split('-g')[1].split('-i')[0] for i in
-        RadiographyName]
+kV = [int(os.path.basename(i).split('kV_')[0].split('_')[-1]) for i in FolderList]
+mAs = [int(os.path.basename(i).split('mAs_')[0].split('kV_')[-1]) for i in FolderList]
+SourceExposureTime = [int(os.path.basename(i).split('ms_')[0].split('mAs_')[-1]) for i in FolderList]
+CMOSExposureTime = [int(os.path.basename(i).split('-e')[1].split('-g')[0]) for i in RadiographyName]
+Gain = [int(os.path.basename(i).split('-g')[1].split('-i')[0]) for i in RadiographyName]
 
-print 'kV, mAs, SourceExposureTime, Gain'
-for item in zip(FolderList, kV, mAs, SourceExposureTime, Gain):
-    print ' | '.join(item)
+# Calculate surface entrance dose (according to DoseCalculation.py)
+K = 0.1  # mGy m^2 mAs^-1
+BSF = 1.35
+SED = [ K * (CurrentVoltage / 100) ** 2 * CurrentmAs * (100 / 120 ) ** 2 * BSF for CurrentVoltage, CurrentmAs in zip(kV, mAs)]
+
+# Write some data to a data.txt file we use for
+# ~/Documents/DemonstratorAnalysis/DemonstratorAnalysis.Rmd
+outputfile = open('/afs/psi.ch/project/EssentialMed/Documents/' +
+                   'DemonstratorAnalysis/data.txt', 'w')
+outputfile.write(
+    'Item, kV, mAs, SourceExposureTime, Gain, SurfaceEntranceDose\n')
+for item in zip(FolderList, kV, mAs, SourceExposureTime, Gain, SED):
+    outputfile.write(str(item)[1:-1] + '\n')
+outputfile.close()
 
 # Grab information from files
 ValuesImage = [[numpy.min(i), numpy.mean(i), numpy.max(i), numpy.std(i)] for
