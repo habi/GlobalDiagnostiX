@@ -85,24 +85,30 @@ print 'Calculating all corrected images'
 CorrectedData = [Radiography[i] - Dark[i] for i in range(len(FolderList))]
 
 # Grab parameters from filename
-kV = [int(os.path.basename(i).split('kV_')[0].split('_')[-1]) for i in FolderList]
-mAs = [int(os.path.basename(i).split('mAs_')[0].split('kV_')[-1]) for i in FolderList]
-SourceExposureTime = [int(os.path.basename(i).split('ms_')[0].split('mAs_')[-1]) for i in FolderList]
-CMOSExposureTime = [int(os.path.basename(i).split('-e')[1].split('-g')[0]) for i in RadiographyName]
-Gain = [int(os.path.basename(i).split('-g')[1].split('-i')[0]) for i in RadiographyName]
+kV = [int(os.path.basename(i).split('kV_')[0].split('_')[-1])
+      for i in FolderList]
+mAs = [int(os.path.basename(i).split('mAs_')[0].split('kV_')[-1])
+       for i in FolderList]
+XrayExposureTime = [int(os.path.basename(i).split('ms_')[0].split('mAs_')[-1])
+                    for i in FolderList]
+CMOSExposureTime = [int(os.path.basename(i).split('-e')[1].split('-g')[0])
+                    for i in RadiographyName]
+Gain = [int(os.path.basename(i).split('-g')[1].split('-i')[0])
+        for i in RadiographyName]
 
 # Calculate surface entrance dose (according to DoseCalculation.py)
 K = 0.1  # mGy m^2 mAs^-1
 BSF = 1.35
-SED = [ K * (CurrentVoltage / 100) ** 2 * CurrentmAs * (100 / 120 ) ** 2 * BSF for CurrentVoltage, CurrentmAs in zip(kV, mAs)]
+SED = [K * (CurrentVoltage / 100) ** 2 * CurrentmAs * (100 / 120) ** 2 * BSF
+       for CurrentVoltage, CurrentmAs in zip(kV, mAs)]
 
 # Write some data to a data.txt file we use for
 # ~/Documents/DemonstratorAnalysis/DemonstratorAnalysis.Rmd
-outputfile = open('/afs/psi.ch/project/EssentialMed/Documents/' +
-                   'DemonstratorAnalysis/data.txt', 'w')
+outputfile = open('/afs/psi.ch/project/EssentialMed/Documents'
+                  '/DemonstratorAnalysis/data.txt', 'w')
 outputfile.write(
     'Item, kV, mAs, SourceExposureTime, Gain, SurfaceEntranceDose\n')
-for item in zip(FolderList, kV, mAs, SourceExposureTime, Gain, SED):
+for item in zip(FolderList, kV, mAs, XrayExposureTime, Gain, SED):
     outputfile.write(str(item)[1:-1] + '\n')
 outputfile.close()
 
@@ -137,8 +143,8 @@ for counter, Folder in enumerate(FolderList):
         round(ValuesCorrectedData[counter][3], 1)
 
     print 'Saving corrected image as', os.path.join(RootPath,
-                                                     FolderList[counter],
-                                                     'corrected.png')
+                                                    FolderList[counter],
+                                                    'corrected.png')
     # scipy.misc.imsave
     scipy.misc.imsave(os.path.join(RootPath, FolderList[counter],
                                    'corrected.png'), CorrectedData[counter])
@@ -146,10 +152,11 @@ for counter, Folder in enumerate(FolderList):
     # Display all the important things
     plt.figure(counter + 1, figsize=(16, 9))
     FigureTitle = str(counter + 1) + '/' + str(len(FolderList)), \
-        '| Xray shot with', kV[counter], 'kV and', mAs[counter], \
-        'mAs (' + SourceExposureTime[counter] + \
-        'ms source exposure time). Captured with', CMOSExposureTime[counter], \
-        'ms CMOS exposure time and Gain', Gain[counter]
+        '| Xray shot with', str(kV[counter]), 'kV and', str(mAs[counter]), \
+        'mAs (' + str(XrayExposureTime[counter]) + \
+        'ms source exposure time). Captured with', \
+        str(CMOSExposureTime[counter]), 'ms CMOS exposure time and Gain', \
+        str(Gain[counter])
     plt.suptitle(' '.join(FigureTitle))
 
     plt.subplot(441)
