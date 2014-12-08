@@ -28,6 +28,16 @@ def my_display_image(image):
                vmax=numpy.mean(image) + 3 * numpy.std(image))
     plt.axis('off')
 
+def my_draw_lineprofile_location(coordinates):
+    """
+    Draws a line profile over the image, with a yellow starting and a black
+    ending point.
+    """
+    plt.plot((coordinates[0][0], coordinates[1][0]),
+             (coordinates[0][1], coordinates[1][1]), color=MyColors[counter])
+    plt.plot(coordinates[0][0], coordinates[0][1], color='yellow', marker='o')
+    plt.plot(coordinates[1][0], coordinates[1][1], color='black', marker='o')
+
 # Get images
 if platform.node() == 'anomalocaris':
     RootPath = '/Volumes/slslc/EssentialMed/Images/DetectorElectronicsTests'
@@ -59,12 +69,12 @@ print 'Crop zoomed region'
 ZoomedImages = [i[445:775, 510:615] for i in CorrectedImages]
 
 print 'Get line profiles in zoomed region'
-LineProfileCoordinates = [(30, 310), (35, 10)]
+CoordinatesLeadPhantom = [(30, 310), (35, 10)]
 # The lineprofiler gives back a tuple with coordinates and line profile based
 # on these cordinates. To plot the profile, we can access it with
 # LineProfile[i][1].
-LineProfile = [lineprofiler.lineprofile(i, LineProfileCoordinates) for i in
-               ZoomedImages]
+LineProfileLeadPhantom = [lineprofiler.lineprofile(i, CoordinatesLeadPhantom)
+                          for i in ZoomedImages]
 
 print 'Get min, mean, max and STD for each set of images (original, corrected' \
       ' and zoomed).'
@@ -125,7 +135,7 @@ plt.legend(loc='best')
 
 plt.subplot(Grid[4, :])
 plt.rc('lines', linewidth=2, marker='')
-for c, i in enumerate(LineProfile):
+for c, i in enumerate(LineProfileLeadPhantom):
     plt.plot(i[:][1] + 25 * c, color=MyColors[c], label=Gain[c])
 plt.title('Line Profiles')
 plt.ylabel('[a. u.]')
@@ -145,13 +155,47 @@ for counter in range(len(RadiographyNames)):
 
     plt.subplot(Grid[3, counter])
     my_display_image(ZoomedImages[counter])
-    plt.plot((LineProfileCoordinates[0][0], LineProfileCoordinates[1][0]),
-             (LineProfileCoordinates[0][1], LineProfileCoordinates[1][1]),
-             color=MyColors[counter])
-    plt.plot(LineProfileCoordinates[0][0], LineProfileCoordinates[0][1],
-             color='yellow', marker='o')
-    plt.plot(LineProfileCoordinates[1][0], LineProfileCoordinates[1][1],
-             color='black', marker='o')
+    my_draw_lineprofile_location(CoordinatesLeadPhantom )
 
 plt.savefig('Gainseries.png', bbox_inches='tight')
+
+# Plot some more line profiles
+print 'Get different line profile in background'
+CoordinatesDiagonal = [(70, 875), (450, 305)]
+CoordinatesHorizontal = [(80, 47), (1200, 47)]
+# The lineprofiler gives back a tuple with coordinates and line profile based
+# on these cordinates. To plot the profile, we can access it with
+# LineProfile[i][1].
+LineProfileDiagonal = [lineprofiler.lineprofile(i, CoordinatesDiagonal)
+                       for i in CorrectedImages]
+LineProfileHorizontal = [lineprofiler.lineprofile(i, CoordinatesHorizontal)
+                       for i in CorrectedImages]
+
+plt.figure(2, figsize=(16, 9))
+Grid = gridspec.GridSpec(3, len(RadiographyNames))
+for counter in range(len(Radiography)):
+    plt.subplot(Grid[0, counter])
+    my_display_image(CorrectedImages[counter])
+    my_draw_lineprofile_location(CoordinatesDiagonal)
+    my_draw_lineprofile_location(CoordinatesHorizontal)
+
+plt.subplot(Grid[1:, 0:4])
+for c, i in enumerate(LineProfileDiagonal):
+    plt.plot(i[:][1] + 25 * c, color=MyColors[c], label=Gain[c])
+plt.title('Diagonal line profile')
+plt.xlim([0, len(LineProfileDiagonal[0][1])])
+plt.ylabel('[a. u.]')
+plt.gca().yaxis.set_major_locator(plt.NullLocator())
+plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+plt.subplot(Grid[1:, 5:9])
+for c, i in enumerate(LineProfileHorizontal):
+    plt.plot(i[:][1] + 25 * c, color=MyColors[c], label=Gain[c])
+plt.xlim([0, len(LineProfileHorizontal[0][1])])
+plt.ylabel('[a. u.]')
+plt.gca().yaxis.set_major_locator(plt.NullLocator())
+plt.title('Horizontal line profile')
+
+plt.savefig('GainseriesProfiles.png', bbox_inches='tight')
+
 plt.show()
