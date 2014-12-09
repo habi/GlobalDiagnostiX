@@ -14,15 +14,15 @@ FileToLoad = os.path.join(Directory, Folder, File)
 FromFile = numpy.fromfile(FileToLoad, dtype=numpy.uint16).reshape(Size)
 #~ FromFile -= numpy.mean(FromFile)
 
-MemMap = numpy.memmap(FileToLoad, dtype=numpy.uint16, shape=(Size[0],Size[1]))
+MemMap = numpy.memmap(FileToLoad, dtype=numpy.uint16, shape=(Size[0], Size[1]))
 #~ MemMap -= numpy.mean(MemMap)
 
 plt.figure(File)
 plt.subplot(121)
-plt.imshow(FromFile,cmap='gray')
+plt.imshow(FromFile, cmap='gray')
 plt.title('numpy.fromfile > leaves file')
 plt.subplot(122)
-plt.imshow(MemMap,cmap='gray')
+plt.imshow(MemMap, cmap='gray')
 plt.title('numpy.memmap > destroys file')
 plt.show()
 

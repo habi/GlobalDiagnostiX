@@ -14,10 +14,10 @@ for f in {10..15..1};
 done
 """
 
-from pylab import *
 import numpy
 from scipy import constants
 from scipy import integrate
+import matplotlib.pylab as plt
 from matplotlib.patches import Wedge
 from optparse import OptionParser
 import sys
@@ -454,25 +454,22 @@ if options.Output:
     print viewcommand
     print 80 * '_'
 
-"""
-# kill all runnig fiji jobs
-killall fiji-linux;
-# remove all calculated images
-rm *.png;
-# calculate some stuff
-for f in {10..43..15}; # Field of View
-do echo FOV $f;
-for o in {10..150..15}; # Opening Angle
-do echo OpeningAngle $o;
-for s in {5..25..15}; # Sensor Size
-do echo SensorSize $s;
-./CalculateDetector.py -f $f -o $o -s $s -p;
-done;
-done;
-done
-# open fiji
-/home/scratch/Apps/Fiji.app/fiji-linux -eval 'run("Image Sequence...",
-"open=/afs/psi.ch/project/EssentialMed/Dev starting=1 increment=1 scale=100
-file=png or=[] sort");' & # start fiji
-#
-"""
+# # kill all runnig fiji jobs
+# killall fiji-linux;
+# # remove all calculated images
+# rm *.png;
+# # calculate some stuff
+# for f in {10..43..15}; # Field of View
+# do echo FOV $f;
+# for o in {10..150..15}; # Opening Angle
+# do echo OpeningAngle $o;
+# for s in {5..25..15}; # Sensor Size
+# do echo SensorSize $s;
+# ./CalculateDetector.py -f $f -o $o -s $s -p;
+# done;
+# done;
+# done
+# # open fiji
+# /home/scratch/Apps/Fiji.app/fiji-linux -eval 'run("Image Sequence...",
+# "open=/afs/psi.ch/project/EssentialMed/Dev starting=1 increment=1 scale=100
+# file=png or=[] sort");' & # start fiji

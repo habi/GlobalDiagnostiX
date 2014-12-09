@@ -10,7 +10,7 @@ line spread function. And some wikipedia lookup.
 import numpy as np
 import scipy
 import scipy.ndimage
-from pylab import *
+import matplotlib.pylab as plt
 import time
 
 
@@ -87,7 +87,8 @@ for name, data in sorted(plots.iteritems()):
     plt.subplot(4, len(plots), counter)
     plt.plot(data)
     plt.ylim(-0.1, 1.1)
-    #~ plt.xlim(len(dirac) / 2 - ShowRegion / 2, len(dirac) / 2 + ShowRegion / 2)
+    # plt.xlim(len(dirac) / 2 - ShowRegion / 2, len(dirac) / 2 + ShowRegion /
+    #          2)
     if name == 'dirac':
         plt.ylabel('Edge response')
     plt.title(name)

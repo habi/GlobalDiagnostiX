@@ -152,7 +152,9 @@ scipy.misc.imsave('MTF_edge.png', ImageEdge)
 # Load "real" image and reverse it instantly, so we don't have to use
 # origin=lower all over the place :)
 ImageReal = rgb2gray(plt.imread('aptina_test.jpg')[::-1])
-ImageReal = plt.imread('/scratch/tmp/DevWareX/AR0130/1393346142_AR0130_0.16_2.0f_030ms_0mm_to200mm/AR0130_0.16_2.0f_030ms_0mm_to200mm_036mm.png')
+ImageReal = plt.imread('/scratch/tmp/DevWareX/AR0130/'
+                       '1393346142_AR0130_0.16_2.0f_030ms_0mm_to200mm/'
+                       'AR0130_0.16_2.0f_030ms_0mm_to200mm_036mm.png')
 
 #~ ImageReal = padImage(ImageReal,5,-1)
 scipy.misc.imsave('MTF_real.png', ImageComb)
@@ -256,15 +258,15 @@ plotFFT(ImageReal)
 plt.show()
 sys.exit('done')
 
-"""
-"Notes" after discussing it with Peter M.:
-- Idea with random noise image is nice (from Daniels1995)
-- To be able to compare cameras, we need to take magnification and physical
-  pixel size into account, hence we *need* a scale-bar in the images, to be
-  able to calculate that.
-- We should take lots of images, i.e. 10 photos from 10 different random images
-  and then calculate the standard deviation of the noise in the fourier space
-  (1) and the mean of the 100 MTFs (2). This should make it possible to
-  calculate not only the optical properties (2), but also get out the noise
-  properties of the electrical system (1) (smaller STDEV = better).
-"""
+
+# "Notes" after discussing it with Peter M.:
+# - Idea with random noise image is nice (from Daniels1995)
+# - To be able to compare cameras, we need to take magnification and physical
+#   pixel size into account, hence we *need* a scale-bar in the images, to be
+#   able to calculate that.
+# - We should take lots of images, i.e. 10 photos from 10 different random
+#   images and then calculate the standard deviation of the noise in the
+#   fourier space (1) and the mean of the 100 MTFs (2). This should make it
+#   possible to calculate not only the optical properties (2), but also get
+#   out the noise properties of the electrical system (1) (smaller STDEV =
+#   better).

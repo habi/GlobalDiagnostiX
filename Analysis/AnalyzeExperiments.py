@@ -162,12 +162,9 @@ for c, item in enumerate(sortedIDs):
         str(round(sortedSTD[c], 1)).rjust(4), '| Noise', \
         str(round(sortedNoise[c], 1)).rjust(4), '| Distance', \
         str(sortedDistance[c]), '| Experiment', \
-        sortedIDs[c].rjust(8), '| Image', os.path.join(sortedFolder[c],
-                                                       sortedIDs[c] +
-                                                       '.image.corrected.stretched.png')[
-
-
-                                          len(StartingFolder):]
+        sortedIDs[c].rjust(8), '| Image', \
+        os.path.join(sortedFolder[c], sortedIDs[c] +
+                     '.image.corrected.stretched.png')[len(StartingFolder):]
 
 plt.figure(figsize=(23, 10))
 for c, i in enumerate(sortedImages):

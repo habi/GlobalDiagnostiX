@@ -1,4 +1,4 @@
-from pylab import *
+import matplotlib.pylab as plt
 import os
 import scipy
 from scipy.integrate import trapz
@@ -41,5 +41,5 @@ for WhichOneShallWeIntegrate in range(len(Spectra)):
     Integral = scipy.integrate.trapz(Data[WhichOneShallWeIntegrate][:, 1],
                                     Data[WhichOneShallWeIntegrate][:, 0])
     print 'The integral for', Energy[WhichOneShallWeIntegrate], 'kV is',\
-        str(round(Integral/1e6, 3)) + 'e6 photons'
+        str(round(Integral / 1e6, 3)) + 'e6 photons'
     #~ plt.show()

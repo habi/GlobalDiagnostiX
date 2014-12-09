@@ -29,7 +29,9 @@ def lineprofile(inputimage, coordinates=False, showimage=False, debug=False):
 
     # Prepare image
     if showimage:
-        plt.figure(random.randint(0,1000), figsize=(16, 16))
+        # make large figure numbers, so we don't get into troubles with
+        # plotting to other figure numbers
+        plt.figure(random.randint(500, 1000), figsize=(16, 16))
         if debug:
             plt.ion()
         plt.imshow(inputimage, cmap='bone', vmin=numpy.min(inputimage),
@@ -87,4 +89,4 @@ def lineprofile(inputimage, coordinates=False, showimage=False, debug=False):
         plt.ioff()
         if debug:
             plt.show()
-    return ((x0,y0),(x1,y1)), profileinterpolated
+    return ((x0, y0), (x1, y1)), profileinterpolated
