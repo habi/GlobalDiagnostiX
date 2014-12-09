@@ -12,9 +12,7 @@ browse through all those slices and find the best focus...
 """
 
 import libtiff
-from pylab import *
-import time
-import numpy as np
+import matplotlib.pylab as plt
 import linecache
 import os
 

@@ -9,7 +9,7 @@ for some materials.
 """
 import os
 import glob
-from pylab import *
+import matplotlib.pylab as plt
 
 BaseDir = os.path.join(os.getcwd(), 'nist', '*')
 print 'Found', len(glob.glob(BaseDir)), 'files with data from NIST'

@@ -2,7 +2,7 @@
 
 from BeautifulSoup import BeautifulSoup
 import urllib2
-from pylab import *
+import matplotlib.pylab as plt
 
 URL = 'http://physics.nist.gov/PhysRefData/XrayMassCoef/ComTab/muscle.html'
 
@@ -26,12 +26,11 @@ for row in table.findAll('tr'):
         Muen.append(col[2].find(text=True))
 print col[1]
 
-#~ plt.loglog(Energy,Mu,label='Mu')
-#~ plt.loglog(Energy,Muen,label='Muen')
-#~ plt.title(soup.title(text=True))
-#~ plt.legend()
-#~ plt.show()
-#~ 
+# plt.loglog(Energy,Mu,label='Mu')
+# plt.loglog(Energy,Muen,label='Muen')
+# plt.title(soup.title(text=True))
+# plt.legend()
+# plt.show()
 
 URL = 'http://physics.nist.gov/PhysRefData/XrayMassCoef/ComTab/bone.html'
 response = urllib2.urlopen(URL)
@@ -49,4 +48,4 @@ for row in table.findAll('tr'):
         Mu.append(col[1].find(text=True))
         Muen.append(col[2].find(text=True))
 asdf = col[1](text=True)
-print type(unicode.join(u'\n',map(unicode,asdf)))
+print type(unicode.join(u'\n', map(unicode, asdf)))

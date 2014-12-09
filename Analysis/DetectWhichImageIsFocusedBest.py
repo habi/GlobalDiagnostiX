@@ -10,9 +10,7 @@ deviation (from the same scene!) should be the one focused best.
 from __future__ import division
 import glob
 import os
-import subprocess
 import matplotlib.pyplot as plt
-import shutil
 import sys
 import numpy
 

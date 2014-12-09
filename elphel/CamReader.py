@@ -10,12 +10,10 @@ not know this. If the user doesn't provide an option, he/she gets help.
 '''
 
 from optparse import OptionParser
-import os
-import sys
 import urllib
 import urllib2
 import time
-from pylab import *
+import matplotlib.pylab as plt
 
 # Setup the Options
 parser = OptionParser()
@@ -32,8 +30,8 @@ parser.add_option('-o', dest='OutputName',
                   metavar='DirectoryName',
                   type='string')
 parser.add_option('-s', dest='Show',
-                  help='Show the images (Default=Off). Cannot be used together '
-                  'with "-i" or "-t"',
+                  help='Show the images (Default=Off). Cannot be used '
+                       'together with "-i" or "-t"',
                   action='store_true')
 parser.add_option('-e', dest='Exposure',
                   help='Desired exposure time (in ms).',
@@ -42,7 +40,7 @@ parser.add_option('-e', dest='Exposure',
 parser.add_option('-t', dest='Trigger',
                   help='Work in triggered mode -> camera gives signals',
                   default=0,
-                  action='store_true')                  
+                  action='store_true')
 parser.add_option('-v', dest='Verbose',
                   help='Be Chatty',
                   default=0,
@@ -115,6 +113,7 @@ def query_yes_no(question, default="yes"):
             sys.stdout.write("Please type 'yes' or 'no' (or 'y' or",
                              "'n').\n")
 
+
 def set_exposure_time(exposuretime):
     '''
     Sets the exposure time of the camera to 'exposuretime' ms
@@ -122,7 +121,7 @@ def set_exposure_time(exposuretime):
     # upload PHP script.
     print 'Uploading ~/Dev/Elphel/globaldiagnostix.php to', CamIP + '/var'
     FTPcommand = 'curl -s -T ~/Dev/Elphel/setexposure.php ftp' +\
-        CamIP[4:] + '/var/html/ --user root:pass'  # CamIP[4:] deletes 'http'...
+        CamIP[4:] + '/var/html/ --user root:pass'  # CamIP[4:] deletes 'http'
     if options.Verbose:
         print 'by calling "' + FTPcommand + '"'
     os.system(FTPcommand)
@@ -130,7 +129,7 @@ def set_exposure_time(exposuretime):
     # set in ms. The PHP script will convert ms to us.
     ExposureURL = CamIP + '/var/setexposure.php?exposure=' +\
         str(exposuretime)
-    print 'Setting exposure time to', exposuretime, 'ms' 
+    print 'Setting exposure time to', exposuretime, 'ms'
     if options.Verbose:
         print 'by calling "' + ExposureURL + '"'
     urllib.urlretrieve(ExposureURL)
@@ -140,8 +139,8 @@ def set_exposure_time(exposuretime):
             '/parsedit.php?title=ROI+and+Exposure&WOI_WIDTH&WOI_HEIGHT&' +\
             'AUTOEXP_ON&EXPOS" in the browser'
 
-# Make a subdirectory relative to the current directory to save the images. Then
-# make the necessary subdirectories for the different use-cases
+# Make a subdirectory relative to the current directory to save the images.
+# Then make the necessary subdirectories for the different use-cases
 SubDirName = 'Images'
 try:
     os.mkdir(os.path.join(os.getcwd(), SubDirName))
@@ -208,7 +207,7 @@ if options.Images:
     if not options.Verbose:
         print 'Getting', options.Images, 'images as fast as possible'
         print 'Please stand by'
-    for i in range(1, options.Images+1):
+    for i in range(1, options.Images + 1):
         FileName = 'img_' + str('%.04d' % i) + '.jpg'
         if options.Verbose:
             print 'writing image ' + str(i) + '/' +\
@@ -219,8 +218,9 @@ if options.Images:
         # images
         urllib.urlretrieve(ImageURL, os.path.join(SaveDir, FileName))
     TimeUsed = time.time() - StartTime
-    print 'Saved', options.Images, 'images in', np.round(TimeUsed, decimals=3),\
-        'seconds (' +  str(np.round(options.Images/TimeUsed, decimals=3)) +\
+    print 'Saved', options.Images, 'images in', \
+        np.round(TimeUsed, decimals=3),\
+        'seconds (' + str(np.round(options.Images / TimeUsed, decimals=3)) + \
         ' img/s)'
 elif options.Show:
     # Remove snapshots from prior runs
@@ -262,7 +262,7 @@ elif options.Show:
             TimeUsed = time.time() - StartTime
             ImageTitle = str(FileName) + ' written in ' +\
                 str(int(np.round(TimeUsed))) + ' s = (' +\
-                r(np.round(Counter/TimeUsed, decimals=3)) +\
+                r(np.round(Counter / TimeUsed, decimals=3)) +\
                 ' img/s) \nshown ' + str(DownScale) + 'x downscaled'
             plt.title(ImageTitle)
             Counter += 1
@@ -277,7 +277,7 @@ elif options.Trigger:
         print 'You have not specified an exposure time. In triggered mode I',\
             '*need* one. Please start the script again with the added -e',\
             'Option:'
-        print ' '.join(sys.argv), '-e ExposureTime'       
+        print ' '.join(sys.argv), '-e ExposureTime'
         sys.exit(1)
     # Try to import the GPIO library
     try:
@@ -302,7 +302,7 @@ elif options.Trigger:
     GPIO.setup(26, GPIO.OUT)
     print 'As soon as you press the trigger, I will expose the camera'
     print 'with an exposure time of', options.Exposure, 'ms (or',\
-        np.round(double(options.Exposure)/1000, decimals=3), 's)'
+        np.round(double(options.Exposure) / 1000, decimals=3), 's)'
     raw_input('Simulate a trigger by pressing Enter... [Enter]')
     # Set the pin to high, sleep for options.Exposure time and set it to
     # low
@@ -311,9 +311,9 @@ elif options.Trigger:
     print
     GPIO.output(26, GPIO.HIGH)
     print 'sleeping for',\
-        np.round(double(options.Exposure)/1000, decimals=3),\
+        np.round(double(options.Exposure) / 1000, decimals=3),\
         's, then getting image'
-    time.sleep(np.round(double(options.Exposure)/1000, decimals=3))
+    time.sleep(np.round(double(options.Exposure) / 1000, decimals=3))
     GPIO.output(26, GPIO.LOW)
     print
     if options.OutputName:

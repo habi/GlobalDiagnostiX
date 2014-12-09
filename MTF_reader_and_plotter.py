@@ -3,9 +3,9 @@ Script to calculate the MTF from a real image.
 
 Based on /afs/EssentialMed/Dev/MTF.py
 '''
-from pylab import *
+
+import matplotlib.pylab as plt
 import numpy as np
-import scipy
 import os
 
 ion()
@@ -20,8 +20,8 @@ ImagePath = '/afs/psi.ch/project/EssentialMed/Images'
 ImageDir = '11-MTF'
 
 Camera = 'iPhone'
-#~ Camera = 'tiscam'
-#~ Camera = 'Elphel'
+# Camera = 'tiscam'
+# Camera = 'Elphel'
 
 if Camera == 'iPhone':
     # use iPhone images
@@ -68,7 +68,7 @@ plt.imshow(np.fft.fft2(Image))
 ioff()
 plt.show()
 
-sys.exit('done')
+exit()
 
 
 def MTF(edgespreadfunction):
@@ -96,14 +96,6 @@ def LSF(edgespreadfunction):
     return np.abs(np.diff(edgespreadfunction))
 
 
-def rgb2gray(rgb):
-    '''
-    convert an image from rgb to grayscale
-    http://stackoverflow.com/a/12201744/323100
-    '''
-    return np.dot(rgb[..., :3], [0.299, 0.587, 0.144])
-
-
 def polynomialfit(data, order):
     '''
     calculate the polynomial fit of an input for a defined degree
@@ -122,7 +114,7 @@ Image = rgb2gray(ImageRGB)
 ImageWidth = Image.shape[0]
 ImageHeight = Image.shape[1]
 print 'The image we loaded is', ImageWidth, 'by', ImageHeight, \
-    'pixels big. That is', round(ImageWidth * ImageHeight/1e6, 3), 'MPx.'
+    'pixels big. That is', round(ImageWidth * ImageHeight / 1e6, 3), 'MPx.'
 
 plt.subplot(221)
 plt.imshow(ImageRGB, origin='lower')
@@ -134,9 +126,9 @@ else:
         PickPoint = [[1500, 1000]]
     elif Camera[:6] == 'tiscam':
         # Select middle of image...
-        PickPoint = [[ImageHeight/2, ImageWidth/2]]
+        PickPoint = [[ImageHeight / 2, ImageWidth / 2]]
     elif Camera == 'Elphel':
-        PickPoint = [[ImageHeight/2, ImageWidth/2]]
+        PickPoint = [[ImageHeight / 2, ImageWidth / 2]]
 plt.title('Original image')
 Horizon = int(PickPoint[0][1])
 Vertigo = int(PickPoint[0][0])
@@ -151,13 +143,13 @@ plt.subplot(223)
 HorizontalProfile = Image[Horizon, :]
 plt.plot(HorizontalProfile, 'r')
 plt.title('Horizontal Profile')
-#~ plt.xlim(0, ImageHeight)
-#~ plt.ylim(0, 256)
+# plt.xlim(0, ImageHeight)
+# plt.ylim(0, 256)
 plt.subplot(222)
 VerticalProfile = Image[:, Vertigo]
 plt.plot(VerticalProfile, range(ImageWidth), 'b')
-#~ plt.xlim(0, 256)
-#~ plt.ylim(0, ImageWidth)
+# plt.xlim(0, 256)
+# plt.ylim(0, ImageWidth)
 plt.title('Vertical Profile')
 plt.draw()
 
@@ -168,7 +160,7 @@ print 'The vertical profile (blue) goes from', min(VerticalProfile), 'to',\
 
 # Set range of the region we want to look at to 'Edgerange', about 10% of Image
 # width
-EdgeRange = int(round(Image.shape[0] * .05/10)*10)
+EdgeRange = int(round(Image.shape[0] * .05 / 10) * 10)
 
 plt.figure(figsize=(16, 9))
 plt.subplot(311)
@@ -182,33 +174,33 @@ else:
     EdgePosition = [[LSF(VerticalProfile).argmax(), np.nan]]
     plt.title('Vertical Profile\n(zoom region selected automatically, width ' +
               '= ' + str(EdgeRange) + ' px, approx. 5% of image)')
-plt.axvspan(EdgePosition[0][0]-EdgeRange, EdgePosition[0][0]+EdgeRange,
+plt.axvspan(EdgePosition[0][0] - EdgeRange, EdgePosition[0][0] + EdgeRange,
             facecolor='r', alpha=0.5)
 
 plt.subplot(312)
 plt.plot(LSF(VerticalProfile))
-plt.axvspan(EdgePosition[0][0]-EdgeRange, EdgePosition[0][0]+EdgeRange,
+plt.axvspan(EdgePosition[0][0] - EdgeRange, EdgePosition[0][0] + EdgeRange,
             facecolor='r', alpha=0.5)
 plt.title('LSF')
 
-#~ plt.subplot(413)
-#~ plt.plot(MTF(VerticalProfile))
-#~ plt.title('MTF')
+# plt.subplot(413)
+# plt.plot(MTF(VerticalProfile))
+# plt.title('MTF')
 
 plt.subplot(3, 3, 7)
 plt.plot(VerticalProfile)
-plt.xlim(EdgePosition[0][0]-EdgeRange, EdgePosition[0][0]+EdgeRange)
+plt.xlim(EdgePosition[0][0] - EdgeRange, EdgePosition[0][0] + EdgeRange)
 plt.title('Zoomed Edge')
 
 plt.subplot(3, 3, 8)
 plt.plot(LSF(VerticalProfile))
-plt.xlim(EdgePosition[0][0]-EdgeRange, EdgePosition[0][0]+EdgeRange)
+plt.xlim(EdgePosition[0][0] - EdgeRange, EdgePosition[0][0] + EdgeRange)
 plt.title('Zoomed LSF')
 
 plt.subplot(3, 3, 9)
 plt.plot(MTF(VerticalProfile), alpha=0.5)
 plt.plot(polynomialfit(MTF(VerticalProfile), PolynomialOrder), linewidth=5)
-plt.xlim(0, len(MTF(VerticalProfile))/2)
+plt.xlim(0, len(MTF(VerticalProfile)) / 2)
 plt.title('MTF with polynomial fit of order ' + str(PolynomialOrder) +
           '\nwith a minimum at :' +
           str(round(min(polynomialfit(MTF(VerticalProfile), PolynomialOrder)),

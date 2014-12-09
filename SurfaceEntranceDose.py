@@ -8,11 +8,11 @@ the BAG-page, in the right side-bar of http://is.gd/E2qIPA.
 The calculation is based on 'Merkblatt R-06-04' from BAG
 """
 
-from pylab import *
 import numpy as np
+import matplotlib.pylab as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-ion()
+plt.ion()
 
 # Parameters
 
@@ -101,7 +101,7 @@ ax.set_zlabel('Dose [mGy]')
 savemovie = False
 if savemovie:
     # Save output as movie: http://stackoverflow.com/a/12905458/323100
-    angles = range(225-44, 225+44)  # 150:270 good values for presentation
+    angles = range(225 - 44, 225 + 44)  # 150:270 good values for presentation
     counter = 1
     for angle in angles:
         ax.view_init(elev=34.4, azim=angle)
@@ -116,7 +116,7 @@ else:
     ax.view_init(elev=34.4, azim=225)
     plt.savefig('Dose' + str(showCase) + '.png', transparent=True)
 
-ioff()
+plt.ioff()
 print
 print 'done'
 plt.show()
