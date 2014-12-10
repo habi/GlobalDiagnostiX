@@ -80,15 +80,14 @@ def add_lens(z, f, diam, lbl):
              horizontalalignment='center')
 
 
-def propagate_beam(p0, NA, nr, zl, ff, label='', color='b'):
+def propagate_beam(p0, NA, nr, zl, ff, rc='b'):
     # geometrical propagation of light rays from given source parameters:
-    # - p0:    location of the source (z0, x0) along and off axis (in mm)
-    # - NA:    numerical aperture of the beam (in degrees)
-    # - nr:    number of rays to trace
-    # - zl:    array with the location of the lenses
-    # - ff:    array with the focal length of lenses
-    # - label: label for the nature of the source
-    # - color: color of the rays on plot
+    # - p0: location of the source (z0, x0) along and off axis (in mm)
+    # - NA: numerical aperture of the beam (in degrees)
+    # - nr: number of rays to trace
+    # - zl: array with the location of the lenses
+    # - ff: array with the focal length of lenses
+    # - rc: color of the rays on plot
     apa = NA * np.pi / 180.0
     z0 = p0[0]
     if (np.size(p0) == 2):
@@ -112,7 +111,7 @@ def propagate_beam(p0, NA, nr, zl, ff, label='', color='b'):
 
         zz[nl + 1] = zmax
         xx[nl + 1] = xx[nl] + (zz[nl + 1] - zz[nl]) * tani[nl]
-        plt.plot(zz, xx, color=color)
+        plt.plot(zz, xx, color=rc)
 
 FOVSize = np.array([430 / 3., 430 / 4.])
 FOVDiagonal = np.sqrt(FOVSize[0] ** 2 + FOVSize[1] ** 2)
@@ -319,7 +318,7 @@ plt.savefig(os.path.join(Savepath, Sensor, 'lens_simulation_view_' +
             str(round(options.CMOSDistance, 1)).zfill(5) + 'mm.png'),
             transparent=True)
 plt.savefig(os.path.join(Savepath, Sensor, 'movie_lens_simulation_view_' +
-            str(int(round(options.CMOSDistance, 1)*10)).zfill(7) + 'mm.png'),
+            str(int(round(options.CMOSDistance, 1) * 10)).zfill(7) + 'mm.png'),
             transparent=True)
 plt.ioff()
 # plt.show()

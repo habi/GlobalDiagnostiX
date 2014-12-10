@@ -13,13 +13,8 @@ This script should alleviate this problem.
 
 import os
 import subprocess
-import sys
 import fnmatch
 import glob
-
-from functions import get_experiment_list
-from functions import get_git_hash
-from functions import myLogger
 
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
     'XrayImages')
@@ -60,6 +55,6 @@ for counter, item in enumerate(ListOfTARs):
             except:
                 print 'The analysis images are already gone!'
     except:
-            print 'The log file is already gone!'
+        print 'The log file is already gone!'
     print 80 * '-'
 print 'Done'

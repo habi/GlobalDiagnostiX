@@ -5,14 +5,11 @@ Script to load the results of DetectWhichImageIsRadiography.py and show it in
 such a way that we can make a conclusion.
 """
 
-import sys
 import os
 import matplotlib.pyplot as plt
 import numpy as np
 import random
 
-from functions import myLogger
-from functions import get_git_hash
 from functions import distance
 from functions import estimate_image_noise
 
@@ -165,12 +162,9 @@ for c, item in enumerate(sortedIDs):
         str(round(sortedSTD[c], 1)).rjust(4), '| Noise', \
         str(round(sortedNoise[c], 1)).rjust(4), '| Distance', \
         str(sortedDistance[c]), '| Experiment', \
-        sortedIDs[c].rjust(8), '| Image', os.path.join(sortedFolder[c],
-                                                       sortedIDs[c] +
-                                                       '.image.corrected.stretched.png')[
-
-
-                                          len(StartingFolder):]
+        sortedIDs[c].rjust(8), '| Image', \
+        os.path.join(sortedFolder[c], sortedIDs[c] +
+                     '.image.corrected.stretched.png')[len(StartingFolder):]
 
 plt.figure(figsize=(23, 10))
 for c, i in enumerate(sortedImages):

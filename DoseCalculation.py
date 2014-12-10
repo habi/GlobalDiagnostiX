@@ -157,19 +157,22 @@ print 'A SED of', '%.3e' % (SED / 1000), 'Gy (mJ/kg) corresponds to', \
 # 3.1.5
 eta = 1.1e-9 * 74 * options.kV * 1000
 
-N0 = (options.kV * 1000 * ((options.mAs / 1000) / (options.Exposuretime / 1000)) / (PhotonEnergy)) * eta * ((options.Length / 100) ** 2 / (4 * np.pi * (options.Distance / 100) ** 2))
+N0 = (options.kV * 1000 * \
+    ((options.mAs / 1000) / (options.Exposuretime / 1000)) / (PhotonEnergy)) *\
+    eta * \
+    ((options.Length / 100) ** 2 / (4 * np.pi * (options.Distance / 100) ** 2))
 
 print 'The source emits %.3e' % N0, 'photons with a mean energy of', \
     '%.3e' % PhotonEnergy, 'each'
 
-print 'We assume these photons are all the photons that reached the patient, ' \
-      'and thus can calculate the photon flux from this.'
+print 'We assume these photons are all the photons that reached the ' \
+      'patient, and thus can calculate the photon flux from this.'
 
 Flux = N0 / (options.Exposuretime / 1000)
 print 'With an exposure time of', options.Exposuretime, \
     'ms the aforementioned number of photons corresponds to a photon flux ' \
-    'of', '%.3e' % Flux, 'photons per second (from the source to the patient ' \
-                         'surface).'
+    'of', '%.3e' % Flux, 'photons per second (from the source to the ' \
+    'patient surface).'
 
 exit()
 
@@ -177,7 +180,7 @@ exit()
 AttenuationCoefficient = 0.5  # For calculation we just simply assume 50%.
 # We NEED to read the data from the NIST tables, but they're in shutdown now...
 print 'Attenuation coefficient set to', AttenuationCoefficient, \
-    'cm^-1 (@' +  str(Voltage[ChosenVoltage]), 'kV)'
+    'cm^-1 (@' + str(Voltage[ChosenVoltage]), 'kV)'
 # Number of absorbed photons
 # N = N0(e^-uT)
 N = N0 * (np.exp((-AttenuationCoefficient * (options.Thickness / 100))))
@@ -200,36 +203,36 @@ AttenuationCoefficient.append(np.mean((2.685e-1, 6.655e-1)))
 AttenuationCoefficient.append(np.mean((np.mean((2.048e-01, 3.148e-01)),
                                        np.mean((1.823e-01, 2.229e-01)))))
 
-'''
-Skeletal muscle (http://is.gd/D88OFv)
-    Energy         mu/rho       mu_en/rho
-    (MeV)       (cm2/g)    (cm2/g)
-    1.00000E-02  5.356E+00  4.964E+00
-    1.50000E-02  1.693E+00  1.396E+00
-    2.00000E-02  8.205E-01  5.638E-01
-    3.00000E-02  3.783E-01  1.610E-01
-    4.00000E-02  *2.685E-01*  7.192E-02
-    5.00000E-02  2.262E-01  4.349E-02
-    6.00000E-02  *2.048E-01*  3.258E-02
-    8.00000E-02  *1.823E-01*  2.615E-02
-    1.00000E-01  1.693E-01  2.544E-02
-    1.50000E-01  1.492E-01  2.745E-02
-    2.00000E-01  1.358E-01  2.942E-02
-Cortical bone (http://is.gd/2176eQ)
-    Energy         mu/rho       mu_en/rho
-    (MeV)       (cm2/g)    (cm2/g)
-    1.00000E-02  2.851E+01  2.680E+01
-    1.50000E-02  9.032E+00  8.388E+00
-    2.00000E-02  4.001E+00  3.601E+00
-    3.00000E-02  1.331E+00  1.070E+00
-    4.00000E-02  *6.655E-01*  4.507E-01
-    5.00000E-02  4.242E-01  2.336E-01
-    6.00000E-02  *3.148E-01*  1.400E-01
-    8.00000E-02  *2.229E-01*  6.896E-02
-    1.00000E-01  1.855E-01  4.585E-02
-    1.50000E-01  1.480E-01  3.183E-02
-    2.00000E-01  1.309E-01  3.003E-02
-'''
+
+# Skeletal muscle (http://is.gd/D88OFv)
+#     Energy         mu/rho       mu_en/rho
+#     (MeV)       (cm2/g)    (cm2/g)
+#     1.00000E-02  5.356E+00  4.964E+00
+#     1.50000E-02  1.693E+00  1.396E+00
+#     2.00000E-02  8.205E-01  5.638E-01
+#     3.00000E-02  3.783E-01  1.610E-01
+#     4.00000E-02  *2.685E-01*  7.192E-02
+#     5.00000E-02  2.262E-01  4.349E-02
+#     6.00000E-02  *2.048E-01*  3.258E-02
+#     8.00000E-02  *1.823E-01*  2.615E-02
+#     1.00000E-01  1.693E-01  2.544E-02
+#     1.50000E-01  1.492E-01  2.745E-02
+#     2.00000E-01  1.358E-01  2.942E-02
+# Cortical bone (http://is.gd/2176eQ)
+#     Energy         mu/rho       mu_en/rho
+#     (MeV)       (cm2/g)    (cm2/g)
+#     1.00000E-02  2.851E+01  2.680E+01
+#     1.50000E-02  9.032E+00  8.388E+00
+#     2.00000E-02  4.001E+00  3.601E+00
+#     3.00000E-02  1.331E+00  1.070E+00
+#     4.00000E-02  *6.655E-01*  4.507E-01
+#     5.00000E-02  4.242E-01  2.336E-01
+#     6.00000E-02  *3.148E-01*  1.400E-01
+#     8.00000E-02  *2.229E-01*  6.896E-02
+#     1.00000E-01  1.855E-01  4.585E-02
+#     1.50000E-01  1.480E-01  3.183E-02
+#     2.00000E-01  1.309E-01  3.003E-02
+
 
 r = 140  # cm, Distance from source to sample
 eta = 1e-9  # *ZV

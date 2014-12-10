@@ -124,8 +124,8 @@ def subset_seletor(Selector, label=False):
     MaskedI = [str(item) for item, flag in zip(ExperimentID, Scintillator) if
         Selector in flag]
     currentaxis = fig.gca()
-    plot = currentaxis.scatter(MaskedX, MaskedY, MaskedZ, 'o', c=MaskedC,
-                               cmap='hot', s=250)
+    currentaxis.scatter(MaskedX, MaskedY, MaskedZ, 'o', color=MaskedC,
+                        cmap='hot', s=250)
     if label:
         for x, y, z, label in zip(MaskedX, MaskedY, MaskedZ, MaskedI):
             currentaxis.text(x, y, z, label)

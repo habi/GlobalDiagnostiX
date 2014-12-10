@@ -31,6 +31,7 @@ ManualSelection = False
 SaveOutputImages = True
 
 # Where shall we start?
+RootFolder = []
 if platform.node() == 'anomalocaris':
     RootFolder = '/Volumes/slslc/EssentialMed/MasterArbeitBFH/XrayImages'
 else:
@@ -38,8 +39,11 @@ else:
         # If running on work machine, use AFS
         RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
                       'XrayImages')
+    else:
         # If running on Ivans machine, look on the connected harddisk
-        StartingFolder = '/Volumes/WINDOWS/Aptina/'
+        RootFolder = '/Volumes/WINDOWS/Aptina/'
+
+StartingFolder = []
 case = 1
 if case == 1:
     # Look through all folders
@@ -177,8 +181,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print
     else:
         # Otherwise do all the work now!
-        logfile = functions.myLogger(os.path.dirname(Experiment[SelectedExperiment]),
-                                     ExperimentID[SelectedExperiment] +
+        logfile = functions.myLogger(os.path.dirname(Experiment[
+            SelectedExperiment]), ExperimentID[SelectedExperiment] +
                                      '.analysis.log')
         logfile.info('Log file for Experiment ID %s, Analsyis performed on '
                      '%s', ExperimentID[SelectedExperiment],
@@ -194,14 +198,18 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         # Grab the information from the filenames
         Scintillator = Radiographies[SelectedExperiment][0].split('_')[1]
         Sensor = Radiographies[SelectedExperiment][0].split('_')[2]
-        Size = [int(Radiographies[SelectedExperiment][0].split('_')[3].split('x')[1]),
-                int(Radiographies[SelectedExperiment][0].split('_')[3].split('x')[0])]
+        Size = [int(Radiographies[SelectedExperiment][0].split('_')[3].split(
+            'x')[1]),
+                int(Radiographies[SelectedExperiment][0].split('_')[3].split(
+                    'x')[0])]
         Lens = Radiographies[SelectedExperiment][0].split('_')[4]
         SCD = int(Radiographies[SelectedExperiment][0].split('_')[5][:-5])
         Modality = Radiographies[SelectedExperiment][0].split('_')[6]
-        Voltage = float(Radiographies[SelectedExperiment][0].split('_')[7][:-2])
+        Voltage = float(Radiographies[SelectedExperiment][0].split('_')[7][
+                        :-2])
         mAs = float(Radiographies[SelectedExperiment][0].split('_')[8][:-3])
-        SourceExposuretime = float(Radiographies[SelectedExperiment][0].split('_')[9][:-6])
+        SourceExposuretime = float(Radiographies[SelectedExperiment][
+                                       0].split('_')[9][:-6])
         CMOSExposuretime = float(Radiographies[SelectedExperiment][0].split(
             '_')[10][:-6])
 
@@ -353,8 +361,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         plt.subplots_adjust(wspace=.05)
         plt.draw()
         if SaveOutputImages:
-            SaveFigName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
-                                       ExperimentID[SelectedExperiment] +
+            SaveFigName = os.path.join(os.path.dirname(Experiment[
+                SelectedExperiment]), ExperimentID[SelectedExperiment] +
                                        '.overview.all.png')
             plt.savefig(SaveFigName)
             logfile.info('Overview plot saved as %s',
@@ -387,8 +395,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         plt.title('Contrast stretched corrected image')
         plt.draw()
         if SaveOutputImages:
-            SaveFigName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
-                                       ExperimentID[SelectedExperiment] +
+            SaveFigName = os.path.join(os.path.dirname(Experiment[
+                SelectedExperiment]), ExperimentID[SelectedExperiment] +
                                        '.overview.darkflatscorrected.png')
             plt.savefig(SaveFigName)
             logfile.info('Dark/Flats/Corrected plot saved as %s',
@@ -398,8 +406,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         # Save final output images (dark, images, corrected)
         if SaveOutputImages:
             print 'Saving mean dark frame'
-            DarkName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
-                                    ExperimentID[SelectedExperiment] +
+            DarkName = os.path.join(os.path.dirname(Experiment[
+                SelectedExperiment]), ExperimentID[SelectedExperiment] +
                                     '.image.dark')
             scipy.misc.imsave(DarkName + '.png', normalizeimage(MeanDarkImage))
             scipy.misc.imsave(DarkName + '.stretched.png',
@@ -407,8 +415,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             logfile.info('Average of %s dark frames saved as %s.png',
                          len(DarkImages), DarkName)
             print 'Saving summed images'
-            SummedName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
-                                      ExperimentID[SelectedExperiment] +
+            SummedName = os.path.join(os.path.dirname(Experiment[
+                SelectedExperiment]), ExperimentID[SelectedExperiment] +
                                       '.image.sum')
             scipy.misc.imsave(SummedName + '.png', normalizeimage(SummedImage))
             scipy.misc.imsave(SummedName + '.stretched.png',
@@ -416,10 +424,11 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             logfile.info('Sum of %s image frames saved as %s.png',
                          len(RealImages), SummedName)
             print 'Saving corrected image'
-            CorrName = os.path.join(os.path.dirname(Experiment[SelectedExperiment]),
-                                    ExperimentID[SelectedExperiment] +
+            CorrName = os.path.join(os.path.dirname(Experiment[
+                SelectedExperiment]), ExperimentID[SelectedExperiment] +
                                     '.image.corrected')
-            scipy.misc.imsave(CorrName + '.png', normalizeimage(CorrectedImage))
+            scipy.misc.imsave(CorrName + '.png',
+                              normalizeimage(CorrectedImage))
             scipy.misc.imsave(CorrName + '.stretched.png', contrast_stretch(
                 CorrectedImage))
             logfile.info('Sum of %s images subtracted with the mean of %s ' +

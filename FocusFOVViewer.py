@@ -8,13 +8,13 @@ information on the images (distance, exposure time, etc) in a nice image
 The images were acquired with the INI file part "[Python: Focus-Distance-Test
 for Ivan]" of GDX.ini in DevWare
 """
+
 from __future__ import division
 import os
 import glob
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, \
-     AnnotationBbox
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 
 BaseDir = '/afs/psi.ch/project/EssentialMed/Images/Lens_FOV_and_Distance'
 #~ BaseDir = '/scratch/tmp/DevWareX/FocusDistance/'
@@ -81,9 +81,9 @@ for Sensor in SensorList:
         # Label data with lens name: http://stackoverflow.com/a/5147430/323100
         plt.annotate(item, xy=(SDD[counter],
                                ExposureTime[counter] + np.random.random()),
-            xytext=(0, 10), textcoords='offset points', ha='center',
-            va='center',
-            bbox=dict(boxstyle='round,pad=0.5', fc='b', alpha=0.125))
+                     xytext=(0, 10), textcoords='offset points', ha='center',
+                     va='center', bbox=dict(boxstyle='round,pad=0.5', fc='b',
+                                            alpha=0.125))
     plt.title(Sensor)
     plt.xlabel('Szintillator-Sensor-Distance [mm]')
     plt.ylabel('Exposure time [ms]')
@@ -101,8 +101,8 @@ for Sensor in SensorList:
     ax = plt.subplot(122)
     for counter, item in enumerate(ImageFiles):
         imagebox = OffsetImage(ImageData[counter], zoom=0.1, cmap=plt.cm.gray)
-        SubImage = AnnotationBbox(imagebox,
-                                  [SDD[counter], ExposureTime[counter]], pad=0)
+        SubImage = AnnotationBbox(imagebox, [SDD[counter],
+                                             ExposureTime[counter]], pad=0)
         ax.add_artist(SubImage)
     plt.xlim([0, max(SDD) * 1.1])
     plt.ylim([0, max(ExposureTime) * 1.1])

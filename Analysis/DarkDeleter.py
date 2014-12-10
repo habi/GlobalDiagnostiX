@@ -15,7 +15,6 @@ import glob
 import os
 import time
 import numpy
-import sys
 import resource
 
 import functions

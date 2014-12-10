@@ -7,11 +7,36 @@ import glob
 import os
 import numpy
 import matplotlib.pylab as plt
+import matplotlib.gridspec as gridspec
 import platform
+
+import lineprofiler
 
 # CameraSize
 CameraWidth = 1280
 CameraHeight = 1024
+
+
+def my_display_image(image):
+    """
+    Display an image with the 'bone' color map, bicubic interpolation and with
+    the gray values from the minimum of the image to the mean plus three times
+    the standard deviation of the image
+    """
+    plt.imshow(image, cmap='bone', interpolation='bicubic',
+               vmin=numpy.min(image),
+               vmax=numpy.mean(image) + 3 * numpy.std(image))
+    plt.axis('off')
+
+def my_draw_lineprofile_location(coordinates):
+    """
+    Draws a line profile over the image, with a yellow starting and a black
+    ending point.
+    """
+    plt.plot((coordinates[0][0], coordinates[1][0]),
+             (coordinates[0][1], coordinates[1][1]), color=MyColors[counter])
+    plt.plot(coordinates[0][0], coordinates[0][1], color='yellow', marker='o')
+    plt.plot(coordinates[1][0], coordinates[1][1], color='black', marker='o')
 
 # Get images
 if platform.node() == 'anomalocaris':
@@ -20,111 +45,157 @@ else:
     RootPath = '/afs/psi.ch/project/EssentialMed/Images' \
                '/DetectorElectronicsTests'
 
+MyColors = ['#95C5B5', '#BF55C4', '#BC4E35', '#7FCE56', '#51364A', '#CDB151',
+            '#7D81C2', '#576239', '#CA6787']
+
 # Get Folders
 Folder = '*Gain-Se*'
 
-Radiographies = sorted(glob.glob(os.path.join(RootPath, Folder, '*1-44.gray')))
-Darks = sorted(glob.glob(os.path.join(RootPath, Folder, '*0-44.gray')))
+RadiographyNames = sorted(glob.glob(os.path.join(RootPath, Folder,
+                                                 '*1-44.gray')))
+DarkNames = sorted(glob.glob(os.path.join(RootPath, Folder, '*0-44.gray')))
 
-Mean = numpy.zeros(len(Radiographies))
-Max = numpy.zeros(len(Radiographies))
-STD = numpy.zeros(len(Radiographies))
+print 'Reading images'
+Radiography = [numpy.fromfile(i, dtype=numpy.int16).reshape(CameraHeight,
+                                                            CameraWidth)
+               for i in RadiographyNames]
+Dark = [numpy.fromfile(i, dtype=numpy.int16).reshape(CameraHeight, CameraWidth)
+        for i in DarkNames]
 
-CorrectedMean = numpy.zeros(len(Radiographies))
-CorrectedMax = numpy.zeros(len(Radiographies))
-CorrectedSTD = numpy.zeros(len(Radiographies))
+print 'Correcting images with darks'
+CorrectedImages = [i - k for i, k in zip(Radiography, Dark)]
 
-ZoomedMean = numpy.zeros(len(Radiographies))
-ZoomedMax = numpy.zeros(len(Radiographies))
-ZoomedSTD = numpy.zeros(len(Radiographies))
+print 'Crop zoomed region'
+ZoomedImages = [i[445:775, 510:615] for i in CorrectedImages]
 
-# Display difference
-plt.figure(figsize=(16, 9))
+print 'Get line profiles in zoomed region'
+CoordinatesLeadPhantom = [(30, 310), (35, 10)]
+# The lineprofiler gives back a tuple with coordinates and line profile based
+# on these cordinates. To plot the profile, we can access it with
+# LineProfile[i][1].
+LineProfileLeadPhantom = [lineprofiler.lineprofile(i, CoordinatesLeadPhantom)
+                          for i in ZoomedImages]
 
-for counter in range(len(Radiographies)):
-    # Inform user
-    print counter + 1, 'of', len(Radiographies), 'Reading Images'
+print 'Get min, mean, max and STD for each set of images (original, corrected' \
+      ' and zoomed).'
 
-    # Grab data
-    ImageData = numpy.fromfile(Radiographies[counter],
-                               dtype=numpy.int16).reshape(CameraHeight,
-                                                          CameraWidth)
-    DarkData = numpy.fromfile(Darks[counter], dtype=numpy.int16).reshape(
-        CameraHeight, CameraWidth)
-    CorrectedData = ImageData - DarkData
-    ZoomedData = CorrectedData[445:775, 510:615]
+MinImage = [numpy.min(i) for i in Radiography]
+MeanImage = [numpy.mean(i) for i in Radiography]
+MaxImage = [numpy.max(i) for i in Radiography]
+STDImage = [numpy.std(i) for i in Radiography]
 
-    Mean[counter] = numpy.mean(ImageData)
-    Max[counter] = numpy.max(ImageData)
-    STD[counter] = numpy.std(ImageData)
+MinCorrected = [numpy.min(i) for i in CorrectedImages]
+MeanCorrected = [numpy.mean(i) for i in CorrectedImages]
+MaxCorrected = [numpy.max(i) for i in CorrectedImages]
+STDCorrected = [numpy.std(i) for i in CorrectedImages]
 
-    CorrectedMean[counter] = numpy.mean(CorrectedData)
-    CorrectedMax[counter] = numpy.max(CorrectedData)
-    CorrectedSTD[counter] = numpy.std(CorrectedData)
+MinZoomed = [numpy.min(i) for i in ZoomedImages]
+MeanZoomed = [numpy.mean(i) for i in ZoomedImages]
+MaxZoomed = [numpy.max(i) for i in ZoomedImages]
+STDZoomed = [numpy.std(i) for i in ZoomedImages]
 
-    ZoomedMean[counter] = numpy.mean(ZoomedData)
-    ZoomedMax[counter] = numpy.max(ZoomedData)
-    ZoomedSTD[counter] = numpy.std(ZoomedData)
+print 'Get exposure time and gain from image names'
 
-    ExposureTime = os.path.basename(Radiographies[counter]).split('-e')[
-        1].split('-g')[0]
-    Gain = os.path.basename(Radiographies[counter]).split('-g')[1].split(
-        '-i')[0]
+ExposureTime = [os.path.basename(i).split('-e')[1].split('-g')[0] for i in
+                RadiographyNames]
+Gain = [os.path.basename(i).split('-g')[1].split('-i')[0] for i in
+        RadiographyNames]
 
-    # Display data
-    plt.subplot(4, len(Radiographies), counter + 1)
-    plt.imshow(ImageData, cmap='bone', vmin=0, vmax=2 ** 10,
-               interpolation='bicubic')
-    plt.axis('off')
-    plt.title('Gain ' + Gain)
-    plt.subplots_adjust(hspace=0.01)
-    plt.subplots_adjust(wspace=0.01)
+print 'Displaying information'
+# Display
+plt.figure(1, figsize=(18, 12))
+Grid = gridspec.GridSpec(5, len(RadiographyNames))
 
-    plt.subplot(4, len(Radiographies), counter + 1 + len(Radiographies))
-    plt.imshow(CorrectedData, cmap='bone', interpolation='bicubic',
-               vmax=CorrectedMean[counter] + 3 * CorrectedSTD[counter])
-    plt.axis('off')
-    plt.title('Mean+3xSTD')
-    plt.subplots_adjust(hspace=0.025)
-    plt.subplots_adjust(wspace=0.025)
+# Plot global stuff
+plt.rc('lines', linewidth=2, marker='o')
 
-    plt.subplot(4, len(Radiographies), counter + 1 + 2 * len(Radiographies))
-    plt.imshow(ZoomedData, cmap='bone', interpolation='bicubic',
-               vmax=CorrectedMean[counter] + 3 * CorrectedSTD[counter])
-    plt.axis('off')
-    plt.title('Zoom')
-    plt.subplots_adjust(hspace=0.025)
-    plt.subplots_adjust(wspace=0.025)
-
-    ShowHistograms = False
-    if ShowHistograms:
-        plt.hist(ImageData.flatten(), log=True, bins=32, fc='y', ec='y',
-                 alpha=0.25)
-        plt.hist(CorrectedData.flatten(), bins=32, fc='k', ec='k', alpha=0.5)
-        # turn off tick labels of histogram
-        plt.gca().get_xaxis().set_ticks([])
-        plt.gca().get_yaxis().set_ticks([])
-
-
-# Plot max, mean and standard deviation of images
-plt.subplot(414)
-plt.plot(Max, '-', label='Max')
-plt.plot(Mean, '-', label='Mean')
-plt.plot(STD, '-', label='STD')
-
-plt.plot(CorrectedMax, '-o', label='Corrected Max')
-plt.plot(CorrectedMean, '-o', label='Corrected Mean')
-plt.plot(CorrectedSTD, '-o', label='Corrected STD')
-
-plt.plot(ZoomedMax, '-*', label='Zoomed Max')
-plt.plot(ZoomedMean, '-*', label='Zoomed Mean')
-plt.plot(ZoomedSTD, '-*', label='Zoomed STD')
-
-plt.xlim([-0.5, len(Radiographies) - 0.5])
-plt.xlabel('Image')
-plt.ylabel('Brightness')
-
+plt.subplot(Grid[2, 0:3])
+plt.gca().set_color_cycle(['c', 'm', 'y', 'k'])
+plt.plot(MeanCorrected, label='Original')
+plt.plot(MeanImage, label='Corrected')
+plt.plot(MeanZoomed, label='Zoomed')
+plt.title('Mean pixel value')
 plt.legend(loc='best')
 
-plt.savefig('Gainseries.png')
+plt.subplot(Grid[2, 3:6])
+plt.gca().set_color_cycle(['c', 'm', 'y', 'k'])
+plt.plot(MaxCorrected, label='Original')
+plt.plot(MaxImage, label='Corrected')
+plt.plot(MaxZoomed, label='Zoomed')
+plt.title('Maximum pixel value')
+plt.legend(loc='best')
+
+plt.subplot(Grid[2, 6:9])
+plt.gca().set_color_cycle(['c', 'm', 'y', 'k'])
+plt.plot(STDCorrected, label='Original')
+plt.plot(STDImage, label='Corrected')
+plt.plot(STDZoomed, label='Zoomed')
+plt.title('Standard deviation')
+plt.legend(loc='best')
+
+plt.subplot(Grid[4, :])
+plt.rc('lines', linewidth=2, marker='')
+for c, i in enumerate(LineProfileLeadPhantom):
+    plt.plot(i[:][1] + 25 * c, color=MyColors[c], label=Gain[c])
+plt.title('Line Profiles')
+plt.ylabel('[a. u.]')
+plt.gca().yaxis.set_major_locator(plt.NullLocator())
+plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+# Show single images
+for counter in range(len(RadiographyNames)):
+    plt.subplot(Grid[0, counter])
+    plt.imshow(Radiography[counter], cmap='bone', interpolation='bicubic')
+    plt.title(str(counter) + ': Gain ' + Gain[counter])
+    plt.axis('off')
+
+    plt.subplot(Grid[1, counter])
+    my_display_image(CorrectedImages[counter])
+    plt.title('Mean+3xSTD')
+
+    plt.subplot(Grid[3, counter])
+    my_display_image(ZoomedImages[counter])
+    my_draw_lineprofile_location(CoordinatesLeadPhantom )
+
+plt.savefig('Gainseries.png', bbox_inches='tight')
+
+# Plot some more line profiles
+print 'Get different line profile in background'
+CoordinatesDiagonal = [(70, 875), (450, 305)]
+CoordinatesHorizontal = [(80, 47), (1200, 47)]
+# The lineprofiler gives back a tuple with coordinates and line profile based
+# on these cordinates. To plot the profile, we can access it with
+# LineProfile[i][1].
+LineProfileDiagonal = [lineprofiler.lineprofile(i, CoordinatesDiagonal)
+                       for i in CorrectedImages]
+LineProfileHorizontal = [lineprofiler.lineprofile(i, CoordinatesHorizontal)
+                       for i in CorrectedImages]
+
+plt.figure(2, figsize=(16, 9))
+Grid = gridspec.GridSpec(3, len(RadiographyNames))
+for counter in range(len(Radiography)):
+    plt.subplot(Grid[0, counter])
+    my_display_image(CorrectedImages[counter])
+    my_draw_lineprofile_location(CoordinatesDiagonal)
+    my_draw_lineprofile_location(CoordinatesHorizontal)
+
+plt.subplot(Grid[1:, 0:4])
+for c, i in enumerate(LineProfileDiagonal):
+    plt.plot(i[:][1] + 25 * c, color=MyColors[c], label=Gain[c])
+plt.title('Diagonal line profile')
+plt.xlim([0, len(LineProfileDiagonal[0][1])])
+plt.ylabel('[a. u.]')
+plt.gca().yaxis.set_major_locator(plt.NullLocator())
+plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+plt.subplot(Grid[1:, 5:9])
+for c, i in enumerate(LineProfileHorizontal):
+    plt.plot(i[:][1] + 25 * c, color=MyColors[c], label=Gain[c])
+plt.xlim([0, len(LineProfileHorizontal[0][1])])
+plt.ylabel('[a. u.]')
+plt.gca().yaxis.set_major_locator(plt.NullLocator())
+plt.title('Horizontal line profile')
+
+plt.savefig('GainseriesProfiles.png', bbox_inches='tight')
+
 plt.show()
