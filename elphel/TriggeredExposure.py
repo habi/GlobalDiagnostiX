@@ -142,7 +142,7 @@ else:
     # Set the 'AnodePin' to HIGH to spin up the anode
     GPIO.output(AnodePin, GPIO.HIGH)
     # wait for half a second until the anode is ready
-    time.slee(0.5)
+    time.sleep(0.5)
 # Wait for camera signaling that it is ready by listening on the input port
 if options.Test:
     print 'TESTING: Setting up "InputPin"'
