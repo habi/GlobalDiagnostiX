@@ -65,9 +65,9 @@ SaveFigure = False
     #~ print 'Plotting', iteration, 'of', Total
 
 noise_sigma = 0.001
-gauss_1_noise = gauss_1 + noise_sigma * randn(len(dirac))
-gauss_2_noise = gauss_2 + noise_sigma * randn(len(dirac))
-gauss_3_noise = gauss_3 + noise_sigma * randn(len(dirac))
+gauss_1_noise = gauss_1 + noise_sigma * np.random.randn(len(dirac))
+gauss_2_noise = gauss_2 + noise_sigma * np.random.randn(len(dirac))
+gauss_3_noise = gauss_3 + noise_sigma * np.random.randn(len(dirac))
 
 
 '''

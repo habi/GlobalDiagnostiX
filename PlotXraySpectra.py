@@ -1,6 +1,7 @@
 import matplotlib.pylab as plt
 import os
 import scipy
+import numpy as np
 from scipy.integrate import trapz
 
 # http://stackoverflow.com/a/11249430/323100

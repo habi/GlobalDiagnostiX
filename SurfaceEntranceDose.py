@@ -56,11 +56,7 @@ print 'SED = K*(U/100)^2*Q*(1/FOD)^2*RSF'
 fig = plt.figure()
 ax = Axes3D(fig)
 X, Y = np.meshgrid(Range_kV, Range_mAs)
-ax.plot_surface(X, Y, Dose,
-                cmap=cm.jet,
-                cstride=1,
-                rstride=1,
-                linewidth=0)
+    ax.plot_surface(X, Y, Dose, cmap='jet', cstride=1, rstride=1, linewidth=0)
 
 showCase = 1
 if showCase == 1:
