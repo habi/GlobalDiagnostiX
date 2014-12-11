@@ -5,6 +5,7 @@ from __future__ import division
 import matplotlib.pylab as plt
 import os
 import glob
+import numpy as np
 
 GOTTHARDArea = 1130 * (50 / 1000) * 2  # mm
 Distance = 163  # cm
@@ -19,7 +20,7 @@ SiliconDensity = 2.329  # g/cm³
 SiliconThickness = 320  # um
 
 plt.figure()
-hold(True)
+plt.hold(True)
 plt.subplot(1, 2, 1)
 plt.plot(SiliconAttenuation[:, 0] * 1000,
          1 - (np.exp(1) ** - (SiliconAttenuation[:, 1] * SiliconDensity *

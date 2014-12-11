@@ -6,6 +6,7 @@ We'd like to know a bit more about the dose we inflict on the patient.
 This script is used to calculate said dose based on the x-ray spectra that we
 will be able to set (see Source-Specifications).
 """
+
 from __future__ import division  # fix integer division
 from optparse import OptionParser
 import sys
@@ -244,9 +245,8 @@ ExposureTime = 1000e-3  # s
 
 # Calculate the number of photons from the tube to the sample
 # ~ N0 = (VI/E)*eta*(A/4*Pi*r^2)
-N0 = (Voltage * Current) / (Voltage * eV) * \
-     eta * Z * Voltage * \
-     Area / (4 * np.pi * r ** 2)
+N0 = (Voltage * Current) / (Voltage * eV) *  eta * Z * Voltage * \
+    Area / (4 * np.pi * r ** 2)
 print '    - the tube emitts %.4e' % N0, 'photons per second'
 
 # Absorbed radiation dose per second

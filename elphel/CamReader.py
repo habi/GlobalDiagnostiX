@@ -14,6 +14,9 @@ import urllib
 import urllib2
 import time
 import matplotlib.pylab as plt
+import sys
+import os
+import numpy as np
 
 # Setup the Options
 parser = OptionParser()
@@ -236,7 +239,7 @@ elif options.Show:
     plt.figure()
     # make matplotlib interactive, so we can just plt.draw() the image
     # into a plt.figure()
-    ion()
+    plt.ion()
     plt.show()
     print 'Saving camera images to ' + os.path.join(os.getcwd(), SubDirName,
                                                     'Snapshots',
@@ -270,7 +273,7 @@ elif options.Show:
     except KeyboardInterrupt:
         print '\nGoodbye'
         # switch back to normal matplotlib behaviour
-        ioff()
+        plt.ioff()
 elif options.Trigger:
     # if we work in triggered mode, we need to have set the exposure time
     if not options.Exposure:

@@ -3,14 +3,15 @@
 
 from __future__ import division
 import matplotlib.pylab as plt
+import numpy as np
 import os
 import glob
 from scipy import interpolate
 
 FigureSize = [8, 9]
 Spectrapath = '/afs/psi.ch/user/h/haberthuer/EssentialMed/Images/' \
-              '12-GOTTHARD_and_TIS/GOTTHARD'
-Spectra = sort(glob.glob(os.path.join(Spectrapath, '*.txt')))
+              'GOTTHARD_and_TIS/GOTTHARD'
+Spectra = sorted(glob.glob(os.path.join(Spectrapath, '*.txt')))
 
 FileName = [os.path.basename(item) for item in Spectra]
 Data = [np.loadtxt(item) for item in Spectra]
@@ -176,7 +177,7 @@ for i in range(int(len(Spectra) / 2)):
     plt.ylim(ymin=1)
     plt.savefig('6_' + DataName[i] + 'log.pdf', transparent=True)
 
-sys.exit()
+exit()
 
 print 'Plotting Spectra, Logplot and Difference for'
 for i in range(int(len(Spectra) / 2)):
