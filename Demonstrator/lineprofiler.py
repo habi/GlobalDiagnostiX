@@ -24,6 +24,9 @@ def lineprofile(inputimage, coordinates=False, showimage=False, debug=False):
     if debug:
         inputimage = scipy.misc.lena()
 
+    if coordinates is False:
+        showimage = True
+
     # Prepare image
     if showimage:
         # make large figure numbers, so we don't get into troubles with
