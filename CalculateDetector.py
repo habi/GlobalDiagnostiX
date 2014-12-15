@@ -18,7 +18,7 @@ import numpy
 from scipy import constants
 from scipy import integrate
 import matplotlib.pylab as plt
-from matplotlib.patches import Wedge
+from matplotlib.patches import Wedge, Rectangle
 from optparse import OptionParser
 import sys
 import os
@@ -146,8 +146,8 @@ ScintillatorThickness = 1.0  # mm
 ConversionEfficiency = 1.0
 NumericalApertureCalculated = FlatPanelPixelSize / (ScintillatorThickness / 2)
 NumericalApertureAverage = \
-    integrate.quad(lambda x: np.arctan(FlatPanelPixelSize / (2 * x)), 0.01,
-                   1)[0]
+    integrate.quad(lambda x: numpy.arctan(FlatPanelPixelSize / (2 * x)),
+                   0.01, 1)[0]
 NumericalApertureDetermined = (SensorPosition * 10) / (
     options.FStop * 2 * SensorPosition * 10 / (1 / Demagnification))
 FStopJBAG = 0.8
@@ -179,8 +179,9 @@ plt.ylabel('Distance [cm]')
 plt.axhline(color='k', linestyle='--')
 
 # X-rays
-x = np.arange(0, XRaySourcePosition - Thickness - SupportThickness, 0.1)
-for yshift in np.arange(-options.FOV / 2, options.FOV / 2, options.FOV / 10.0):
+x = numpy.arange(0, XRaySourcePosition - Thickness - SupportThickness, 0.1)
+for yshift in numpy.arange(-options.FOV / 2, options.FOV / 2,
+                            options.FOV / 10.0):
     plt.plot(-x - Thickness - SupportThickness, numpy.sin(x) + yshift, 'k')
 
 # Scintillator
@@ -188,10 +189,10 @@ ScintillatorSupport = Rectangle(
     (-Thickness - SupportThickness, (options.FOV / 2) + SupportThickness),
     Thickness + SupportThickness, -options.FOV - SupportThickness * 2,
     facecolor="black")
-gca().add_patch(ScintillatorSupport)
+plt.gca().add_patch(ScintillatorSupport)
 Scintillator = Rectangle((-Thickness, options.FOV / 2), Thickness,
                          -options.FOV, facecolor="lightgreen")
-gca().add_patch(Scintillator)
+plt.gca().add_patch(Scintillator)
 
 # Light-Cone
 # Opening angle
@@ -215,11 +216,11 @@ plt.plot([WorkingDistance, WorkingDistance + SensorPosition],
 # Camera
 Sensor = Rectangle((WorkingDistance + SensorPosition, options.SensorSize / 2),
                    Thickness / 4, -options.SensorSize, facecolor="black")
-gca().add_patch(Sensor)
+plt.gca().add_patch(Sensor)
 Housing = Rectangle((WorkingDistance + SensorPosition + Thickness / 4,
                      options.SensorSize / 2 / .618), Thickness / 4 / .618,
                     -options.SensorSize / .618, facecolor="black")
-gca().add_patch(Housing)
+plt.gca().add_patch(Housing)
 
 # Text
 step = options.FOV / 8.0
@@ -253,7 +254,7 @@ plt.text(1.618 * WorkingDistance, options.FOV / 2 - 9 * step,
 # Plot NA
 plt.subplot(234)
 plt.axis('equal')
-Magnification = np.arange(0, 1.01, 0.01)
+Magnification = numpy.arange(0, 1.01, 0.01)
 for FStop in [0.5, 0.8, 1, 1.2, 1.4, 2]:
     plt.plot(Magnification, Magnification / (2 * FStop * (1 + Magnification)),
              label='f/' + str('%0.2f' % FStop))
@@ -305,7 +306,7 @@ FilterMaterial = [str(open(FileName).readlines()[9].split()[1]) for FileName in
                   Spectra]
 FilterThickness = [int(open(FileName).readlines()[9].split()[2]) for FileName
                    in Spectra]
-Data = [(np.loadtxt(FileName)) for FileName in Spectra]
+Data = [(numpy.loadtxt(FileName)) for FileName in Spectra]
 
 for i in range(len(Spectra)):
     plt.plot(Data[i][:, 0], Data[i][:, 1],
@@ -322,7 +323,7 @@ plt.ylabel('Photons')
 
 # Plot of Ball Lenses
 plt.subplot(236)
-Dia = np.arange(0, 15, 0.2)
+Dia = numpy.arange(0, 15, 0.2)
 NA = (0.918919 * (-1.0 + Dia)) / Dia
 FNo = (0.544118 * Dia) / (-1.0 + Dia)
 
@@ -335,8 +336,8 @@ plt.ylim([0.3, 1.2])
 for i in (2, 8):
     plt.axvline(i, color='k')
     if i > 3:
-        plt.axhline(NA[np.where(Dia == i)], color='k')
-        plt.axhline(FNo[np.where(Dia == i)], color='k')
+        plt.axhline(NA[numpy.where(Dia == i)], color='k')
+        plt.axhline(FNo[numpy.where(Dia == i)], color='k')
 
 plt.savefig('CalculateDetector.png')
 
@@ -360,7 +361,8 @@ if options.Output:
     # a nice filename for the output.
 
     # FIGURE
-    savefig(os.path.join(Prefix, ''.join([SaveName, '.png'])), dpi=fig.dpi)
+    plt.savefig(os.path.join(Prefix, ''.join([SaveName, '.png'])),
+                dpi=fig.dpi)
     print 'Figure saved to ' + os.path.join(Prefix,
                                             ''.join([SaveName, '.png']))
     print
