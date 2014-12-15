@@ -206,5 +206,5 @@ plt.title('MTF with polynomial fit of order ' + str(PolynomialOrder) +
           str(round(min(polynomialfit(MTF(VerticalProfile), PolynomialOrder)),
                     3)))
 
-ioff()
+plt.ioff()
 plt.show()

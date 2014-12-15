@@ -353,7 +353,6 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         plt.xlim([-0.5, NumberOfRadiographies[SelectedExperiment] - 0.5])
         plt.legend(loc='best')
         if 'linux' in sys.platform:
-            import platform
             if platform.node() != 'slslc06' and platform.node() != \
                     'x02da-cons-2':
                 plt.tight_layout()
