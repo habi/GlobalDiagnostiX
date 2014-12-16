@@ -1,12 +1,11 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""
+'''
 Tiny tool to calculate the surface entrance dose of a certain x-ray measurement
 Gives the same results as the 'Diagnostische Referenzwerte' Excel calculator on
 the BAG-page, in the right side-bar of http://is.gd/E2qIPA.
 The calculation is based on 'Merkblatt R-06-04' from BAG
-"""
+'''
 
 import numpy as np
 import matplotlib.pylab as plt
@@ -56,7 +55,7 @@ print 'SED = K*(U/100)^2*Q*(1/FOD)^2*RSF'
 fig = plt.figure()
 ax = Axes3D(fig)
 X, Y = np.meshgrid(Range_kV, Range_mAs)
-    ax.plot_surface(X, Y, Dose, cmap='jet', cstride=1, rstride=1, linewidth=0)
+ax.plot_surface(X, Y, Dose, cmap='jet', cstride=1, rstride=1, linewidth=0)
 
 showCase = 1
 if showCase == 1:
