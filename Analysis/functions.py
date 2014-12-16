@@ -87,7 +87,6 @@ def get_experiment_list(StartingFolder):
     Experiment = []
     ExperimentID = []
     for root, dirs, files in os.walk(StartingFolder):
-        # ~ print 'Looking for experiment IDs in folder', os.path.basename(root)
         if (len(os.path.basename(root)) == 7
             or len(os.path.basename(root)) == 8) \
                 and not os.path.basename(root).startswith('2014') \

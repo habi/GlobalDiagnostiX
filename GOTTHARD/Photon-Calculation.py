@@ -61,12 +61,9 @@ plt.xlim([0, 120])
 # plt.savefig('Si_Attenuation_Transmission.pdf')
 plt.show()
 
-exit()
-
-
 Spectrapath = '/afs/psi.ch/user/h/haberthuer/EssentialMed/Images/' \
-              '12-GOTTHARD_and_TIS/GOTTHARD'
-Spectra = sort(glob.glob(os.path.join(Spectrapath, '*.txt')))
+              'GOTTHARD_and_TIS/GOTTHARD'
+Spectra = sorted(glob.glob(os.path.join(Spectrapath, '*.txt')))
 
 FileName = [os.path.basename(item) for item in Spectra]
 Data = [np.loadtxt(item) for item in Spectra]
