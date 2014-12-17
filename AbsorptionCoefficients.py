@@ -7,9 +7,11 @@ The absorption coefficient data was downloaded as ASCII format table from
 http://physics.nist.gov/PhysRefData/XrayMassCoef/tab4.html as "material.dat"
 for some materials.
 """
+
 import os
 import glob
 import matplotlib.pylab as plt
+import numpy as np
 
 BaseDir = os.path.join(os.getcwd(), 'nist', '*')
 print 'Found', len(glob.glob(BaseDir)), 'files with data from NIST'

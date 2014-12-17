@@ -8,7 +8,7 @@ import matplotlib.pylab as plt
 import numpy as np
 import os
 
-ion()
+plt.ion()
 
 # SETUP
 SelectStartPointManually = False
@@ -65,7 +65,7 @@ Image = rgb2gray(ImageRGB)
 
 plt.imshow(np.fft.fft2(Image))
 #~ plt.imshow(Image)
-ioff()
+plt.ioff()
 plt.show()
 
 exit()
@@ -120,7 +120,7 @@ plt.subplot(221)
 plt.imshow(ImageRGB, origin='lower')
 plt.title('Pick point for drawing\n horizontal and vertical profile')
 if SelectStartPointManually:
-    PickPoint = ginput(1)
+    PickPoint = plt.ginput(1)
 else:
     if Camera == 'iPhone':
         PickPoint = [[1500, 1000]]
@@ -167,7 +167,7 @@ plt.subplot(311)
 plt.plot(VerticalProfile)
 if SelectEdgeManually:
     plt.title('Select approximate middle of knife edge')
-    EdgePosition = ginput(1)
+    EdgePosition = plt.ginput(1)
     plt.title('Vertical Profile\n(zoom reguion selected manually, width = ' +
               str(EdgeRange) + ' px, approx. 5% of image)')
 else:
@@ -206,5 +206,5 @@ plt.title('MTF with polynomial fit of order ' + str(PolynomialOrder) +
           str(round(min(polynomialfit(MTF(VerticalProfile), PolynomialOrder)),
                     3)))
 
-ioff()
+plt.ioff()
 plt.show()

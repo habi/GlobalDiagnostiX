@@ -54,7 +54,7 @@ for F in Apertures[-4:]:
         ax1.imshow(tif.asarray(key=i), cmap=plt.cm.gray)
         ax1.set_xlim([0, 2048])
         ax1.set_ylim([2048, 0])
-        axis('off')
+        plt.axis('off')
         if SimpleHorizontalLine == 1:
             ax1.plot([0 + 400, 2048 - 400], [1024 - YSHIFT, 1024 - YSHIFT],
                 'r')
@@ -114,7 +114,7 @@ for F in Apertures[-4:]:
             '_LineProfile_from_' + str(line.split()[1]) + '_to_' + \
             str(line.split()[3]) + '_on_height_' + str(line.split()[2]) + \
             '.png'
-        savefig(SaveName)
+        plt.savefig(SaveName)
         print 'Figure ' + str(i) + ' saved to ' + SaveName
         plt.close()
 

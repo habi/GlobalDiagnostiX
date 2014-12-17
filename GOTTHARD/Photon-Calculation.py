@@ -5,6 +5,7 @@ from __future__ import division
 import matplotlib.pylab as plt
 import os
 import glob
+import numpy as np
 
 GOTTHARDArea = 1130 * (50 / 1000) * 2  # mm
 Distance = 163  # cm
@@ -19,7 +20,7 @@ SiliconDensity = 2.329  # g/cm³
 SiliconThickness = 320  # um
 
 plt.figure()
-hold(True)
+plt.hold(True)
 plt.subplot(1, 2, 1)
 plt.plot(SiliconAttenuation[:, 0] * 1000,
          1 - (np.exp(1) ** - (SiliconAttenuation[:, 1] * SiliconDensity *
@@ -60,12 +61,9 @@ plt.xlim([0, 120])
 # plt.savefig('Si_Attenuation_Transmission.pdf')
 plt.show()
 
-exit()
-
-
 Spectrapath = '/afs/psi.ch/user/h/haberthuer/EssentialMed/Images/' \
-              '12-GOTTHARD_and_TIS/GOTTHARD'
-Spectra = sort(glob.glob(os.path.join(Spectrapath, '*.txt')))
+              'GOTTHARD_and_TIS/GOTTHARD'
+Spectra = sorted(glob.glob(os.path.join(Spectrapath, '*.txt')))
 
 FileName = [os.path.basename(item) for item in Spectra]
 Data = [np.loadtxt(item) for item in Spectra]

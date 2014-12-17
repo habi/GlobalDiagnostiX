@@ -80,14 +80,14 @@ def add_lens(z, f, diam, lbl):
              horizontalalignment='center')
 
 
-def propagate_beam(p0, NA, nr, zl, ff, rc='b'):
+def propagate_beam(p0, NA, nr, zl, ff, raycolor='b'):
     # geometrical propagation of light rays from given source parameters:
     # - p0: location of the source (z0, x0) along and off axis (in mm)
     # - NA: numerical aperture of the beam (in degrees)
     # - nr: number of rays to trace
     # - zl: array with the location of the lenses
     # - ff: array with the focal length of lenses
-    # - rc: color of the rays on plot
+    # - raycolor: color of the rays on plot
     apa = NA * np.pi / 180.0
     z0 = p0[0]
     if (np.size(p0) == 2):
@@ -111,7 +111,7 @@ def propagate_beam(p0, NA, nr, zl, ff, rc='b'):
 
         zz[nl + 1] = zmax
         xx[nl + 1] = xx[nl] + (zz[nl + 1] - zz[nl]) * tani[nl]
-        plt.plot(zz, xx, color=rc)
+        plt.plot(zz, xx, color=raycolor)
 
 FOVSize = np.array([430 / 3., 430 / 4.])
 FOVDiagonal = np.sqrt(FOVSize[0] ** 2 + FOVSize[1] ** 2)
@@ -273,15 +273,15 @@ c = ['blue', 'blue', 'blue', 'blue', 'blue', 'blue']
 NumberOfRays = 5
 BeamNA = 10
 propagate_beam((-options.CMOSDistance, 0), BeamNA, NumberOfRays, LensPosition,
-               FocalLength, color=c[0])
+               FocalLength, raycolor=c[0])
 propagate_beam((-options.CMOSDistance, CMOSSize[0] / 4), BeamNA, NumberOfRays,
-               LensPosition, FocalLength, color=c[1])
+               LensPosition, FocalLength, raycolor=c[1])
 propagate_beam((-options.CMOSDistance, CMOSSize[0] / 2), BeamNA, NumberOfRays,
-               LensPosition, FocalLength, color=c[2])
+               LensPosition, FocalLength, raycolor=c[2])
 propagate_beam((-options.CMOSDistance, -CMOSSize[0] / 4), BeamNA, NumberOfRays,
-               LensPosition, FocalLength, color=c[3])
+               LensPosition, FocalLength, raycolor=c[3])
 propagate_beam((-options.CMOSDistance, -CMOSSize[0] / 2), BeamNA, NumberOfRays,
-               LensPosition, FocalLength, color=c[4])
+               LensPosition, FocalLength, raycolor=c[4])
 plt.xlim([-30, 250])
 plt.ylim([-FOVSize[0] / 2 * 1.1, FOVSize[0] / 2 * 1.1])
 
@@ -299,15 +299,15 @@ for i in range(np.size(LensPosition)):
     add_lens(LensPosition[i], FocalLength[i], LensDiameter, "L" + str(i))
 # Draw beam paths
 propagate_beam((-options.CMOSDistance, 0), BeamNA, NumberOfRays, LensPosition,
-               FocalLength, color=c[0])
+               FocalLength, raycolor=c[0])
 propagate_beam((-options.CMOSDistance, CMOSSize[1] / 4), BeamNA, NumberOfRays,
-               LensPosition, FocalLength, color=c[1])
+               LensPosition, FocalLength, raycolor=c[1])
 propagate_beam((-options.CMOSDistance, CMOSSize[1] / 2), BeamNA, NumberOfRays,
-               LensPosition, FocalLength, color=c[2])
+               LensPosition, FocalLength, raycolor=c[2])
 propagate_beam((-options.CMOSDistance, -CMOSSize[1] / 4), BeamNA, NumberOfRays,
-               LensPosition, FocalLength, color=c[3])
+               LensPosition, FocalLength, raycolor=c[3])
 propagate_beam((-options.CMOSDistance, -CMOSSize[1] / 2), BeamNA, NumberOfRays,
-               LensPosition, FocalLength, color=c[4])
+               LensPosition, FocalLength, raycolor=c[4])
 plt.xlabel('Distance [mm]')
 plt.ylabel('Distance [mm]')
 plt.xlim([-30, 250])
