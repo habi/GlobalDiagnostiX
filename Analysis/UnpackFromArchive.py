@@ -40,7 +40,7 @@ for counter, item in enumerate(ListOfTARs):
     print 'Unpacking done, now removing', item[len(RootFolder) + 1:],
     try:
         os.remove(item)
-    except:
+    except OSError:
         print 'It is already gone!'
     ExperimentID = os.path.splitext(os.path.splitext(item)[0])[0]
     DeletionLog = ExperimentID + '.deletion.log'
@@ -52,9 +52,9 @@ for counter, item in enumerate(ListOfTARs):
         for i in glob.glob(ExperimentID + '*.png'):
             try:
                 os.remove(i)
-            except:
+            except OSError:
                 print 'The analysis images are already gone!'
-    except:
+    except OSError:
         print 'The log file is already gone!'
     print 80 * '-'
 print 'Done'

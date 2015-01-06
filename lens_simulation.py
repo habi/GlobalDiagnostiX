@@ -138,7 +138,7 @@ elif options.UseSensor == 3:
 # Make output directory
 try:
     os.makedirs(os.path.join(Savepath, Sensor))
-except:
+except OSError:
     # Don't do anything if the folder already exists
     pass
 

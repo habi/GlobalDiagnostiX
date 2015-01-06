@@ -13,7 +13,7 @@ parser.add_option('-i', dest='Images', help='how many images should I save?',
 # Make a subdirectory to the current directory we're in
 try:
     os.mkdir(os.path.join(os.getcwd(), 'Elphel'))
-except:
+except OSError:
     print 'Elphel-directory already exists'
 SaveDir = os.path.join(os.getcwd(), 'Elphel', str(time.time()))
 os.mkdir(SaveDir)

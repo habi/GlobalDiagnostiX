@@ -86,7 +86,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print
         print 'Please archive the data for this Experiment with',\
             'TarToArchive.py, then run this script again'
-        time.sleep(1)
+        break
     print 80 * '-'
     #~ print str(Counter + 1) + '/' + str(len(AnalyisList)) + \
         #~ ': Deleting darks experiment', ExperimentID[SelectedExperiment]

@@ -24,17 +24,16 @@ def readit(InputFolder):
     Folder = []
     ExperimentID = []
     for root, dirs, files in os.walk(InputFolder):
-        # Go through all the directories
+        # Go through all the directories and see if the last foldername is a
+        # number
         try:
-            # If the last foldername is a number,
-            int(os.path.basename(root))
-            # see if it's in the list of IDs above,
             if int(os.path.basename(root)):
                 Folder.append(root)
                 ExperimentID.append(int(os.path.basename(root)))
         # otherwise just continue
-        except:
+        except ValueError:
             continue
+
     return Folder, ExperimentID
 
 # Read *all* experiment IDs from HD
