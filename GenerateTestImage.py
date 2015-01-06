@@ -40,7 +40,7 @@ print 'Generating random image with a size of', Size[0], 'x', Size[1], 'px'
 # Generate random image
 ImageRandom = numpy.random.randint(2, size=Size) * 256
 scipy.misc.imsave(FilePrefix + 'random.png', ImageRandom)
-print 'Saved random image'
+print 'Saved random image as', FilePrefix + 'random.png\n'
 
 # Write grid onto image
 GridSize = 100
@@ -51,7 +51,7 @@ for x, y in itertools.izip_longest(range(0, Size[0], GridSize),
     if y:
         ImageRandom[:, y] = 1
 scipy.misc.imsave(FilePrefix + 'random_grid.png', ImageRandom)
-print 'Saved random image with grid'
+print 'Saved random image with grid as', FilePrefix + 'random_grid.png\n'
 
 # Checkerboard
 print 'Generating checkerboard pattern with a size of', Size[0], 'x', Size[1], \
@@ -71,7 +71,7 @@ for y in range(Size[1]):
             else:
                 CheckerBoard[y,x] = 1
 scipy.misc.imsave(FilePrefix + 'checkerboard.png', CheckerBoard)
-print 'Saved checkerboard image'
+print 'Saved checkerboard image as', FilePrefix + 'checkerboard.png\n'
 
 print 'Generating star pattern with a size of', Size[0], 'x', Size[1], 'px'
 # Draw star-pattern with defined length
@@ -94,20 +94,30 @@ plt.axis([0, Size[1], 0, Size[0]])
 plt.gca().axes.get_xaxis().set_visible(False)
 plt.gca().axes.get_yaxis().set_visible(False)
 fig.savefig(FilePrefix + 'star.png', dpi=saveDPI)
-print 'Saved star pattern'
+plt.close()
+print 'Saved star pattern as', FilePrefix + 'star.png\n'
 
 # Show what we've done
-plt.figure('Result', figsize=(8, 8))
+plt.figure('Result', figsize=(10, 10))
+plt.suptitle('Images from script version ' + get_git_hash())
 plt.subplot(221)
 plt.imshow(plt.imread(FilePrefix + 'random.png'), cmap='gray',
            interpolation='nearest')
+plt.title('Random image')
+plt.axis('off')
 plt.subplot(222)
 plt.imshow(plt.imread(FilePrefix + 'random_grid.png'), cmap='gray',
            interpolation='nearest')
+plt.title('with superimposed grid')
+plt.axis('off')
 plt.subplot(223)
 plt.imshow(plt.imread(FilePrefix + 'star.png'), cmap='gray',
            interpolation='nearest')
+plt.title('Poor mans Siemens star')
 plt.subplot(224)
+plt.axis('off')
 plt.imshow(plt.imread(FilePrefix + 'checkerboard.png'), cmap='gray',
            interpolation='nearest')
+plt.title('Checkerboard pattern')
+plt.axis('off')
 plt.show()
