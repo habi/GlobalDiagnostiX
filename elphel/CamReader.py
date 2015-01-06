@@ -1,13 +1,12 @@
-#!/usr/bin/python
-# coding=utf8
+# -*- coding: utf-8 -*-
 
-'''
+"""
 Script to grab images from the Elphel camera, with several options.
 Based on the simplest case (wget http://192.168.0.9/img) and complexified
 from there. Due to using RPi.GPIO the script has to be run with 'sudo'
 when acquiring a triggered exposure. The script does warn if he user does
 not know this. If the user doesn't provide an option, he/she gets help.
-'''
+"""
 
 from optparse import OptionParser
 import urllib
@@ -84,7 +83,7 @@ except urllib2.URLError as err:
 
 def query_yes_no(question, default="yes"):
     # from http://code.activestate.com/recipes/577058/
-    '''
+    """
     Ask a yes/no question via raw_input() and return the answer.
 
     "question" is a string that is presented to the user.
@@ -93,7 +92,7 @@ def query_yes_no(question, default="yes"):
         required by the user).
 
     The "answer" return value is one of "yes" or "no".
-    '''
+    """
 
     valid = {"yes": "yes", "y": "yes", "ye": "yes", "no": "no", "n": "no"}
     if default is None:
@@ -118,24 +117,24 @@ def query_yes_no(question, default="yes"):
 
 
 def set_exposure_time(exposuretime):
-    '''
+    """
     Sets the exposure time of the camera to 'exposuretime' ms
-    '''
+    """
     # upload PHP script.
     print 'Uploading ~/Dev/Elphel/globaldiagnostix.php to', CamIP + '/var'
-    FTPcommand = 'curl -s -T ~/Dev/Elphel/setexposure.php ftp' +\
+    ftpcommand = 'curl -s -T ~/Dev/Elphel/setexposure.php ftp' +\
         CamIP[4:] + '/var/html/ --user root:pass'  # CamIP[4:] deletes 'http'
     if options.Verbose:
-        print 'by calling "' + FTPcommand + '"'
-    os.system(FTPcommand)
+        print 'by calling "' + ftpcommand + '"'
+    os.system(ftpcommand)
     # Set Exposure via using the PHP file we just uploaded. Exposure time is
     # set in ms. The PHP script will convert ms to us.
-    ExposureURL = CamIP + '/var/setexposure.php?exposure=' +\
+    exposureurl = CamIP + '/var/setexposure.php?exposure=' +\
         str(exposuretime)
     print 'Setting exposure time to', exposuretime, 'ms'
     if options.Verbose:
-        print 'by calling "' + ExposureURL + '"'
-    urllib.urlretrieve(ExposureURL)
+        print 'by calling "' + exposureurl + '"'
+    urllib.urlretrieve(exposureurl)
     if options.Verbose:
         print
         print 'You can check if everything worked by looking at "' + CamIP + \
@@ -147,7 +146,7 @@ def set_exposure_time(exposuretime):
 SubDirName = 'Images'
 try:
     os.mkdir(os.path.join(os.getcwd(), SubDirName))
-except:
+except OSError:
     pass
 
 if options.Images:
@@ -159,9 +158,9 @@ if options.Images:
         SaveDir = os.path.join(os.getcwd(), SubDirName, str(time.time()))
     try:
         os.mkdir(SaveDir)
-    except:
+    except OSError:
         print 'Directory', SaveDir, 'already exists.'
-        if query_yes_no('Are you sure you want to overwrite the files in ' +\
+        if query_yes_no('Are you sure you want to overwrite the files in ' +
                         SaveDir, default='no') == 'no':
             print
             print 'Start again with a different -o parameter'
@@ -173,7 +172,7 @@ elif options.Show:
                                                'Snapshots')
     try:
         os.mkdir(os.path.join(os.getcwd(), SubDirName, 'Snapshots'))
-    except:
+    except OSError:
         print 'Directory', os.path.join(os.getcwd(), SubDirName, 'Snapshots'),\
             'already exists.'
 elif options.Trigger:
@@ -181,7 +180,7 @@ elif options.Trigger:
                                                'Triggered')
     try:
         os.mkdir(os.path.join(os.getcwd(), SubDirName, 'Triggered'))
-    except:
+    except OSError:
         print 'Directory', os.path.join(os.getcwd(), SubDirName, 'Triggered'),\
             'already exists.'
 
@@ -265,7 +264,7 @@ elif options.Show:
             TimeUsed = time.time() - StartTime
             ImageTitle = str(FileName) + ' written in ' +\
                 str(int(np.round(TimeUsed))) + ' s = (' +\
-                r(np.round(Counter / TimeUsed, decimals=3)) +\
+                str(np.round(Counter / TimeUsed, decimals=3)) +\
                 ' img/s) \nshown ' + str(DownScale) + 'x downscaled'
             plt.title(ImageTitle)
             Counter += 1
@@ -285,7 +284,7 @@ elif options.Trigger:
     # Try to import the GPIO library
     try:
         import RPi.GPIO as GPIO
-    except:
+    except ImportError:
         print
         print 'I cannot import RPI.GPIO, you have to run the script as root'
         print 'try running it again with'
@@ -305,7 +304,7 @@ elif options.Trigger:
     GPIO.setup(26, GPIO.OUT)
     print 'As soon as you press the trigger, I will expose the camera'
     print 'with an exposure time of', options.Exposure, 'ms (or',\
-        np.round(double(options.Exposure) / 1000, decimals=3), 's)'
+        np.round(float(options.Exposure) / 1000, decimals=3), 's)'
     raw_input('Simulate a trigger by pressing Enter... [Enter]')
     # Set the pin to high, sleep for options.Exposure time and set it to
     # low
@@ -314,9 +313,9 @@ elif options.Trigger:
     print
     GPIO.output(26, GPIO.HIGH)
     print 'sleeping for',\
-        np.round(double(options.Exposure) / 1000, decimals=3),\
+        np.round(float(options.Exposure) / 1000, decimals=3),\
         's, then getting image'
-    time.sleep(np.round(double(options.Exposure) / 1000, decimals=3))
+    time.sleep(np.round(float(options.Exposure) / 1000, decimals=3))
     GPIO.output(26, GPIO.LOW)
     print
     if options.OutputName:
@@ -326,11 +325,10 @@ elif options.Trigger:
         FileName = 'Triggered_' + str(time.time()) + '_' +\
             str(options.Exposure) + 'ms.jpg'
     print FileName
-    urllib.urlretrieve(CamIP + ':8081/trig/pointers',
-                       os.path.join(os.getcwd(),
-                       SubDirName,
-                       'Triggered',
-                       FileName))
+    urllib.urlretrieve(CamIP + ':8081/trig/pointers', os.path.join(os.getcwd(),
+                                                                   SubDirName,
+                                                                   'Triggered',
+                                                                   FileName))
     # Reset RPi channels after we're done
     GPIO.cleanup()
 

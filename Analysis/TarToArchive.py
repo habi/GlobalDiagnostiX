@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf8 -*-
 
 """
 Script to `tar` each experiment folder and send it to ftp://archivftp.psi.ch/
@@ -24,7 +24,7 @@ ManualSelection = False
 
 # Where shall we start?
 RootFolder = '/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages'
-case = 2
+case = 3
 StartingFolder = []
 if case == 1:
     # Look through all folders

@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 """
 Script to "analyze" the grid shown in the radiographies from Ivan.
 

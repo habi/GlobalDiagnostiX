@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf8 -*-
 
 """
 Script to load the results of DetectWhichImageIsRadiography.py and show it in

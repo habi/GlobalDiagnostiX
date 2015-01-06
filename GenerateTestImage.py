@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Generate test-image for calculating the MTF
 """

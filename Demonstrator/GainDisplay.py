@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Script to read and display the experiments done with the iAi electronics
 prototype

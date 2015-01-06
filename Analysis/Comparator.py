@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 """
 Script to compare the contents of Ivans HD with the stuff present on AFS.
 Due to space shortage, some folders might have been missed during copying.
