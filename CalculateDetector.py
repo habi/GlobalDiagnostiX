@@ -1,10 +1,15 @@
-#!/usr/bin/python
-
-# You can run this script to produce several frames of output as so:
-# (or use the command at the end of the script to also start Fiji and do some
-# more stuff)
+# -*- coding: utf-8 -*-
 
 """
+Script to "calculate" the detector.
+The script estimates the number of photons landing on the scintillator
+from the source and the number of photons reaching the detector.
+Also it displays the geometrical situation depending no the chosen parameters.
+
+You can run this script to produce several frames of output as so:
+(or use the command at the end of the script to also start Fiji and do some
+more stuff)
+
 for f in {10..15..1};
     do for o in {45..50..1};
         do for s in {5..10..1};

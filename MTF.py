@@ -1,11 +1,13 @@
-'''
+# -*- coding: utf-8 -*-
+
+"""
 Script to calculate the Modulation transfer function of a edge target.
 
 Kickstarted from from https://gist.github.com/stefanv/2051954 and additional
 info from http://www.normankoren.com/Tutorials/MTF.html which tells us that
 "MTF can be defined as the magnitude of the Fourier transform of the point or
 line spread function. And some wikipedia lookup.
-'''
+"""
 
 import numpy as np
 import scipy

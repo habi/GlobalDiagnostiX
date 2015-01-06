@@ -1,4 +1,4 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
 
 """
 based on code from http://www.frantzmarti$che.com/blog/?p=84

@@ -1,9 +1,10 @@
-#!/usr/bin/python
-# coding=utf8
+# -*- coding: utf-8 -*-
 
-# Script to work with the Input/Output Pins of the RPi
-# Ultimately thought to trigger the Elphel camera
-# Based on http://code.google.com/p/raspberry-gpio-python/
+"""
+Script to work with the Input/Output Pins of the RPi, ltimately thought to
+trigger the Elphel camera.
+Based on http://code.google.com/p/raspberry-gpio-python/
+"""
 
 import sys
 import time

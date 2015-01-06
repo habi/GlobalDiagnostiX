@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf8 -*-
 
 """
 Script to load the set of images acquired in the x-ray lab.

@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+
+"""
+Quickly grab images from the Elphel camera we have on loan
+"""
+
 from optparse import OptionParser
 import os
 import urllib

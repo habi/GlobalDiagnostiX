@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+
+"""
+Plot the x-ray spectra downloaded from the [Siemens simulator]
+(https://w9.siemens.com/cms/oemproducts/Home/X-rayToolbox/spektrum/)
+"""
+
 import matplotlib.pylab as plt
 import os
 import scipy

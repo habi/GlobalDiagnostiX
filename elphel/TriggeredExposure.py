@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# coding=utf8
+# -*- coding: utf-8 -*-
 
 """
 Script to use the internal clock of the Elphel camera to trigger the anode

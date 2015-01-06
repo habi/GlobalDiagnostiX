@@ -1,8 +1,10 @@
-'''
+# -*- coding: utf-8 -*-
+
+"""
 Script to calculate the MTF from a real image.
 
 Based on /afs/EssentialMed/Dev/MTF.py
-'''
+"""
 
 import matplotlib.pylab as plt
 import numpy as np

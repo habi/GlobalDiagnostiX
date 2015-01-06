@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-'''
-Tiny tool to calculate the surface entrance dose of a certain x-ray measurement
-Gives the same results as the 'Diagnostische Referenzwerte' Excel calculator on
-the BAG-page, in the right side-bar of http://is.gd/E2qIPA.
-The calculation is based on 'Merkblatt R-06-04' from BAG
-'''
+"""
+Script used to calculate the surface entrance dose of a certain x-ray
+measurement. Gives the same results as the 'Diagnostische Referenzwerte'
+Excel calculator on the BAG-page, in the right side-bar of http://is.gd/E2qIPA.
+The calculation is based on 'Merkblatt R-06-04' from BAG.
+"""
 
 import numpy as np
 import matplotlib.pylab as plt

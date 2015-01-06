@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 """
 Script to display only some experiments, based on either choice of ID or choice
 of component

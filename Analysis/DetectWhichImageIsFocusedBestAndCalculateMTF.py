@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 """
 Script to calculate the Modulation transfer function of some input images
 

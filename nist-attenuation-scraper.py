@@ -1,4 +1,8 @@
-#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+"""
+Get some data from NIST
+"""
 
 from BeautifulSoup import BeautifulSoup
 import urllib2
@@ -26,11 +30,11 @@ for row in table.findAll('tr'):
         Muen.append(col[2].find(text=True))
 print col[1]
 
-# plt.loglog(Energy,Mu,label='Mu')
-# plt.loglog(Energy,Muen,label='Muen')
-# plt.title(soup.title(text=True))
-# plt.legend()
-# plt.show()
+plt.loglog(Energy,Mu,label='Mu')
+plt.loglog(Energy,Muen,label='Muen')
+plt.title(soup.title(text=True))
+plt.legend()
+plt.show()
 
 URL = 'http://physics.nist.gov/PhysRefData/XrayMassCoef/ComTab/bone.html'
 response = urllib2.urlopen(URL)
