@@ -242,6 +242,9 @@ eV = 1.602e-19  # J
 QFactor = 1  # http://en.wikipedia.org/wiki/Dosimetry#Equivalent_Dose
 WeightingFactor = 0.12  # http://en.wikipedia.org/wiki/Dosimetry#Effective_dose
 ExposureTime = 1000e-3  # s
+Current = (options.mAs / 1000) / (options.Exposuretime / 1000))
+Area = (options.Length / 100) ** 2
+Weight = 10  # kg
 
 # Calculate the number of photons from the tube to the sample
 # ~ N0 = (VI/E)*eta*(A/4*Pi*r^2)
@@ -251,7 +254,7 @@ print '    - the tube emitts %.4e' % N0, 'photons per second'
 
 # Absorbed radiation dose per second
 #~ Da = Eneregy / Weight  # J/kg per second
-Da = N * AverageEnergy[case] * 1000 * eV / Weight
+Da = N * MeanEnergy * 1000 * eV / Weight
 
 print '    -', round(Da * 1000, 4), 'mGy/s are absorbed by the sample,', \
     ' if we assume it is', Weight, 'kg'

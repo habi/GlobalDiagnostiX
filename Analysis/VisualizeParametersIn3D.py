@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
+VisualizeParametersin3D.py | David Haberthür <david.haberthuer@psi.ch>
+
 This script loads the log files gerated with http://git.io/Ydwc8A and plots
 the exposure time, brightness of the brightest image and scintillator-CMOS-
 distance in 3D.
@@ -8,7 +10,7 @@ distance in 3D.
 This should help to visualize the results and come to a conclusion on which
 combination of components is the best to use
 """
-import glob
+
 import os
 import linecache
 import matplotlib.pyplot as plt
@@ -35,32 +37,27 @@ else:
 
 # Generate a list of log files, based on http://stackoverflow.com/a/14798263
 LogFiles = [os.path.join(dirpath, f)
-    for dirpath, dirnames, files in os.walk(StartingFolder)
-    for f in files if f.endswith('analysis.log')]
+            for dirpath, dirnames, files in os.walk(StartingFolder)
+            for f in files if f.endswith('analysis.log')]
 
 print 'I found', len(LogFiles), 'log files in', StartingFolder
+print 'Reading *all* necessary values from them.'
 
 # Grab all the necessary parameters from the log files
 ExperimentID = \
-    [int(linecache.getline(i, 1).split('ID')[1].split(',')[0].strip())
-    for i in LogFiles]
+    [int(linecache.getline(i, 1).split('ID')[1].split(',')[0].strip()) for i
+     in LogFiles]
 Sensor = [linecache.getline(i, 10).split(':')[1].strip() for i in LogFiles]
-Scintillator = [linecache.getline(i, 9).split(':')[1].strip()
-    for i in LogFiles]
+Scintillator = [linecache.getline(i, 9).split(':')[1].strip() for i in LogFiles]
 Lens = [str(linecache.getline(i, 11).split(':')[1].strip()) for i in LogFiles]
 SDD = [float(linecache.getline(i, 13).split(':')[1].split('mm')[0].strip())
-    for i in LogFiles]
-Modality = [linecache.getline(i, 14).split(':')[1].strip()
-    for i in LogFiles]
-Exposuretime = [float(linecache.getline(i, 18)
-    .split(':')[1].split('ms')[0].strip()) for i in LogFiles]
-Max = [float(linecache.getline(i, 25).split(':')[1].strip())
-    for i in LogFiles]
-
-Mean = [float(linecache.getline(i, 26).split(':')[1].strip())
-    for i in LogFiles]
-STD = [float(linecache.getline(i, 27).split(':')[1].strip())
-    for i in LogFiles]
+       for i in LogFiles]
+Modality = [linecache.getline(i, 14).split(':')[1].strip() for i in LogFiles]
+Exposuretime = [float(linecache.getline(i, 18).split(
+    ':')[1].split('ms')[0].strip()) for i in LogFiles]
+Max = [float(linecache.getline(i, 25).split(':')[1].strip()) for i in LogFiles]
+Mean = [float(linecache.getline(i, 26).split(':')[1].strip()) for i in LogFiles]
+STD = [float(linecache.getline(i, 27).split(':')[1].strip()) for i in LogFiles]
 
 # Information about what we did
 print 'In these log files, we have data for'
@@ -108,26 +105,25 @@ if histograms:
     plt.draw()
 
 
-def subset_seletor(Selector, label=False):
+def subset_seletor(selector, label=False):
     """
     Select only a subset of items to present in the second plot, according to
     http://stackoverflow.com/a/3555387/323100
     """
-    MaskedX = [item for item, flag in zip(SDD, Scintillator) if Selector in
-        flag]
-    MaskedY = [item for item, flag in zip(Mean, Scintillator) if Selector in
-        flag]
-    MaskedZ = [item for item, flag in zip(STD, Scintillator) if Selector in
-        flag]
-    MaskedC = [item for item, flag in zip(STD, Scintillator) if Selector in
-        flag]
-    MaskedI = [str(item) for item, flag in zip(ExperimentID, Scintillator) if
-        Selector in flag]
+    maskedx = [item for item, flag in zip(SDD, Scintillator) if selector in
+               flag]
+    maskedy = [item for item, flag in zip(Mean, Scintillator) if selector in
+               flag]
+    maskedz = [item for item, flag in zip(STD, Scintillator) if selector in
+               flag]
+    maskedc = [item for item, flag in zip(STD, Scintillator) if selector in
+               flag]
+    maskedi = [str(item) for item, flag in zip(ExperimentID, Scintillator) if
+               selector in flag]
     currentaxis = fig.gca()
-    currentaxis.scatter(MaskedX, MaskedY, MaskedZ, 'o', color=MaskedC,
-                        cmap='hot', s=250)
+    currentaxis.scatter(maskedx, maskedy, maskedz, 'o', s=250, c=maskedc)
     if label:
-        for x, y, z, label in zip(MaskedX, MaskedY, MaskedZ, MaskedI):
+        for x, y, z, label in zip(maskedx, maskedy, maskedz, maskedi):
             currentaxis.text(x, y, z, label)
 
     currentaxis.set_xlabel('Scintillator-CMOS distance [mm]')
@@ -138,8 +134,8 @@ def subset_seletor(Selector, label=False):
     currentaxis.set_ylim([0, 500])
     currentaxis.set_zlim([0, 200])
 
-    plt.title(' '.join([str(len(MaskedX)), 'images for', Selector]))
-    return Selector
+    plt.title(' '.join([str(len(maskedx)), 'images for', selector]))
+    return selector
 
 ## Prepare the plot
 fig = plt.figure(figsize=(16, 9))
@@ -170,25 +166,25 @@ Animate = False
 if Animate:
     # Initialization function: Initialize plot, move the camera
     def init():
-        Azimuth = 45
-        Elevation = 30
-        for axis in (ax1, ax2, ax3, ax4):
-            axis.azim = Azimuth
-            axis.elev = Elevation
+        azimuth = 45
+        elevation = 30
+        for ax in (ax1, ax2, ax3, ax4):
+            ax.azim = azimuth
+            ax.elev = elevation
         return ax1, ax2, ax3, ax4,
 
     # Animation function.
-    def animate_camera(i):
-        for axis in (ax1, ax2, ax3, ax4):
-            axis.azim = 45 + 40 * numpy.sin(numpy.radians(i))
-            axis.elev = 30 + 10 * numpy.sin(numpy.radians(i))
-        print 'animating frame', i, 'of', numframes
+    def animate_camera(framenumber):
+        for ax in (ax1, ax2, ax3, ax4):
+            ax.azim = 45 + 40 * numpy.sin(numpy.radians(framenumber))
+            ax.elev = 30 + 10 * numpy.sin(numpy.radians(framenumber))
+        print 'animating frame', framenumber, 'of', numframes
         return ax1, ax2, ax3, ax4,
 
     # Call the actual animation function.
     numframes = 360
     Movie = animation.FuncAnimation(fig, animate_camera, init_func=init,
-                                   frames=numframes, interval=10, blit=True)
+                                    frames=numframes, interval=10, blit=True)
 
     # Save the animation as an mp4.
     Movie.save('scintillators.mp4', fps=24, extra_args=['-vcodec', 'libx264'])

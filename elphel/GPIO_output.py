@@ -61,7 +61,6 @@ try:
 except KeyboardInterrupt:
     print
     print 'User aborted sequence, goodbye'
-    pass
 
 # Reset every channel that has been set up by this program to INPUT with no
 # pullup/pulldown and no event detection.

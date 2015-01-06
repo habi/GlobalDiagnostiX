@@ -31,7 +31,7 @@ parser.add_option('-t', dest='Test',
 # Try to import the GPIO library
 try:
     import RPi.GPIO as GPIO
-except:
+except ImportError:
     # If testing, we are probably not on the RPi, omitting exit
     if options.Test is False:
         print 'I cannot import RPI.GPIO, you have to run the script as root'
@@ -59,21 +59,19 @@ SubDirName = 'Radiographies'
 # Make a subdirectory relative to the current directory to save the images
 try:
     os.mkdir(os.path.join(os.getcwd(), SubDirName))
-except:
+except OSError:
     pass
 
-"""
-The script will do this:
-- Set exposure time of the camera
-- Spin up anode with a 3.2V signal over one pin (hope that's enough, since
-    we measured 4.2V over the trigger in the x-ray lab)
-- Wait for camera signaling to be ready with an exposure
-- Trigger camera exposure, marginally longer than x-ray pulse, so we catch all
-    photons
-- Trigger x-ray pulse with another 3.2V signal over another pin
-- Download image from from camera and save it someplace sensible
-- Process the Image, or show it
-"""
+# The script will do this:
+# - Set exposure time of the camera
+# - Spin up anode with a 3.2V signal over one pin (hope that's enough, since
+#     we measured 4.2V over the trigger in the x-ray lab)
+# - Wait for camera signaling to be ready with an exposure
+# - Trigger camera exposure, marginally longer than x-ray pulse, so we catch all
+#     photons
+# - Trigger x-ray pulse with another 3.2V signal over another pin
+# - Download image from from camera and save it someplace sensible
+# - Process the Image, or show it
 
 # http://wiki.elphel.com/index.php?title=Imgsrv#imgsrv_usage describes what
 # the StartURL and ImageURL commands do; some pointery thingies.
@@ -190,10 +188,8 @@ print 'The image name "' + str(ImageName) + \
     '.jpg" also tells you that the image was saved on', \
     time.strftime("%d %B %Y %Y at %H:%M:%S", time.localtime(ImageName))
 
-"""
-ImageName is in epoch seconds, time.localtime converts it to local time,
-time.mktime back to epoch, time.ctime to a nice human readable string. As
-specified on http://docs.python.org/2/library/time.html
-"""
+# ImageName is in epoch seconds, time.localtime converts it to local time,
+# time.mktime back to epoch, time.ctime to a nice human readable string. As
+# specified on http://docs.python.org/2/library/time.html
 print
 print 'Thanks for working with us.'
