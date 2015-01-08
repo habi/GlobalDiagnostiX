@@ -51,7 +51,9 @@ for counter, experiment in enumerate(IDHD):
     if experiment not in IDAFS:
         InputPath = FolderHD[IDHD.index(experiment)]
         OutputPath = os.path.dirname(os.path.join(RootFolderAFS,
-            FolderHD[IDHD.index(experiment)][len(RootFolderHD) + 1:]))
+                                                  FolderHD[IDHD.index(
+                                                      experiment)][len(
+                                                      RootFolderHD) + 1:]))
         print 'Experiment', experiment, 'was not found on AFS'
         print
         print 'It should be moved from'

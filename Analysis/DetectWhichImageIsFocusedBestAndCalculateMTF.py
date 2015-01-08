@@ -38,7 +38,7 @@ Hues = ["#9D6188", "#97A761"]
 # images over a given rail distance])
 print 'Looking for sensor-folders in', Root, 'and disregarding other folders'
 SensorList = [os.path.basename(i) for
-    i in sorted(glob.glob(os.path.join(Root, '*')))]
+              i in sorted(glob.glob(os.path.join(Root, '*')))]
 if len(SensorList) > 1:
     print 'Please select the sensor you want to look at'
     for i, item in enumerate(SensorList):
@@ -54,7 +54,7 @@ else:
 # In this folder, look for lenses (saved as above)
 print 'Looking for lens folders in', os.path.join(Root, SensorList[Sensor])
 LensList = [os.path.basename(i) for
-    i in sorted(glob.glob(os.path.join(Root, SensorList[Sensor], '*')))]
+            i in sorted(glob.glob(os.path.join(Root, SensorList[Sensor], '*')))]
 if len(LensList) > 1:
     # Only let the user select if we found more than one lens folder
     print 'Please select the lens you want to look at'
@@ -68,7 +68,7 @@ else:
 
 # And finally, look for folders in which we saved the images
 print 'Looking for image folders in', os.path.join(Root, SensorList[Sensor],
-                                                    LensList[Lens])
+                                                   LensList[Lens])
 FolderList = [i for i in sorted(glob.glob(os.path.join(Root,
                                                        SensorList[Sensor],
                                                        LensList[Lens], '*')))]
