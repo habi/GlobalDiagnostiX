@@ -17,7 +17,7 @@ import fnmatch
 import glob
 
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-    'XrayImages')
+              'XrayImages')
 
 ListOfTARs = []
 for root, dirnames, filenames in os.walk(os.path.join(RootFolder)):
