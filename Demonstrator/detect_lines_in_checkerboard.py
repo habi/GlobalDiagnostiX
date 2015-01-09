@@ -6,6 +6,7 @@ The script is based on the answers to
 [this Stack Overflow question](http://stackoverflow.com/q/7227074/323100)
 """
 
+from __future__ import division
 import matplotlib
 import matplotlib.pylab as plt
 import os
@@ -25,12 +26,14 @@ plt.figure(figsize=[16, 9])
 
 InputImage = cv2.imread(os.path.join(BasePath, ImageName))
 
-RegionSize = 200
-for i in range(1, InputImage.shape[1] - RegionSize, 50):
+RegionWidth = 200
+for i in range(0, InputImage.shape[1] - RegionWidth, RegionWidth):
+    print i
     plt.clf()
-    plt.suptitle(' '.join(['Region of size', str(RegionSize),
+    plt.suptitle(' '.join(['Region of size', str(RegionWidth),
                            'starting at px.', str(i)]))
-    img = InputImage[:, i:i + 200, :]
+    img = InputImage[:, i:i + RegionWidth, :]
+    # img = cv2.GaussianBlur(img, (5, 5), 0)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     edges = cv2.Canny(gray, 80, 120)
     lines = cv2.HoughLinesP(cv2.flip(edges, flipCode=0), 1, math.pi / 2, 2,
@@ -41,19 +44,19 @@ for i in range(1, InputImage.shape[1] - RegionSize, 50):
 
     plt.subplot(141)
     plt.imshow(InputImage, interpolation='none')
-    window = matplotlib.patches.Rectangle((i, 0), RegionSize,
+    window = matplotlib.patches.Rectangle((i, 0), RegionWidth,
                                           InputImage.shape[0], color='blue',
                                           alpha=0.25)
     plt.gca().add_patch(window)
     plt.axvline(x=i)
-    plt.axvline(x=i + 200)
+    plt.axvline(x=i + RegionWidth)
     plt.title('Sliding window along image')
     plt.subplot(142)
     plt.imshow(gray, interpolation='none', cmap='gray')
-    plt.title('Grayscale image')
+    plt.title('Region')
     plt.subplot(143)
     plt.imshow(edges, interpolation='none', cmap='gray')
-    plt.title('Edges')
+    plt.title('Detected Edges')
     plt.subplot(144)
     plt.imshow(cv2.flip(gray, flipCode=0), interpolation='none', cmap='gray')
     for coordinates in lines[0]:
