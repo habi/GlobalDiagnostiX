@@ -34,7 +34,7 @@ def get_git_hash():
     return output.strip()
 
 # Setup
-Size = [1024, 1024]
+Size = [800, 600]
 numpy.random.seed(1796)
 FilePrefix = 'Phantom_' + get_git_hash() + '_'
 
@@ -60,18 +60,22 @@ print 'Generating checkerboard pattern with a size of', Size[0], 'x', Size[1], \
     'px'
 StripeSize = 50
 CheckerBoard = numpy.zeros(Size)
-# Vertical stripes
+# Horizontal stripes
 for x in range(Size[0]):
     if math.fmod(x, StripeSize * 2) < StripeSize:
-        CheckerBoard[:,x] = 1
-# Horizontal stipes -> flip vertical 0/1
+        CheckerBoard[x, :] = 1
+# vertical stripes stipes -> flip vertical 0/1
 for y in range(Size[1]):
     if math.fmod(y, StripeSize * 2) < StripeSize:
         for x in range(Size[0]):
-            if CheckerBoard[y,x]:
-                CheckerBoard[y,x] = 0
+            if CheckerBoard[x, y]:
+                CheckerBoard[x, y] = 0
             else:
-                CheckerBoard[y,x] = 1
+                CheckerBoard[x,y] = 1
+CheckerBoard[:StripeSize, :] = 1
+CheckerBoard[-StripeSize:, :] = 1
+CheckerBoard[:, :StripeSize] = 1
+CheckerBoard[:, -StripeSize:] = 1
 scipy.misc.imsave(FilePrefix + 'checkerboard.png', CheckerBoard)
 print 'Saved checkerboard image as', FilePrefix + 'checkerboard.png\n'
 
