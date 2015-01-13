@@ -1,5 +1,8 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
+
+"""
+Plot Attenuation and transmission of GOTTHARD detector element
+"""
 
 from __future__ import division
 import matplotlib.pylab as plt
@@ -61,7 +64,7 @@ plt.xlim([0, 120])
 # plt.savefig('Si_Attenuation_Transmission.pdf')
 plt.show()
 
-Spectrapath = '/afs/psi.ch/user/h/haberthuer/EssentialMed/Images/' \
+Spectrapath = '/afs/psi.ch/project/EssentialMed/Images/' \
               'GOTTHARD_and_TIS/GOTTHARD'
 Spectra = sorted(glob.glob(os.path.join(Spectrapath, '*.txt')))
 

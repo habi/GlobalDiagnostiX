@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 """
@@ -17,14 +16,13 @@ import matplotlib.pylab as plt
 # give some help to the user
 parser = OptionParser()
 usage = "usage: %prog [options] arg1 arg2"
-parser = OptionParser(usage=usage)
 parser.add_option("-c", "--camera", dest="camera",
                   default="tis", type='str', metavar='name',
                   help="Camera to use; at the moment 'tis', 'aptina' and "
                        "'awaiba', even when the two latter options are not "
                        "implemented yet... (default: %default)")
 parser.add_option("-d", "--display", dest="display",
-                  action="store_true", default=False,
+                  action="store_true", default=True,
                   help="Display middle frame of the movie at the end. "
                        "(default: %default)")
 parser.add_option("-e", "--exposure", dest="exposuretime",
@@ -52,15 +50,13 @@ parser.add_option("-v", "--verbose", dest="verbose",
                   help="Be chatty. (default: %default)")
 (options, args) = parser.parse_args()
 
-if len(sys.argv[1:]) == 0:
-    print "You need to enter at least one option, here's the help"
-    parser.print_help()
-    sys.exit()
-
 if not options.exposuretime:
-    print 'You need to supply an exposure time we should use.'
-    print 'Enter the command like so:'
+    os.system('clear')
+    print 'You need to supply at least an exposure time!'
+    print '\nEnter the command like so:'
     print '    ', ' '.join(sys.argv), "-e exposuretime"
+    print '\nAll possible options are'
+    parser.print_help()
     sys.exit()
 
 print 80 * "-"
@@ -74,7 +70,7 @@ for device in range(6):
     else:
         if options.verbose:
             print 'Nothing found at /dev/video' + str(device)
-# If we didn't "CameraPath", there's no cam, thus exit.
+# If we didn't get a "CameraPath", there's no cam, thus exit.
 try:
     CameraPath
 except NameError:
@@ -124,7 +120,7 @@ if options.verbose:
     print 'The desired exposure time is', options.exposuretime, 'ms',
 else:
     print 'Setting exposure time to', options.exposuretime, 'ms'
-options.exposuretime = options.exposuretime * 10
+options.exposuretime *= 10
 if options.verbose:
     print '(corresponding to', int(options.exposuretime), '"100 µs units").'
 
@@ -132,9 +128,10 @@ if options.verbose:
     process = subprocess.Popen(['v4l2-ctl', '--device=' + CameraPath, '-L'],
                                stdout=subprocess.PIPE)
     output, error = process.communicate()
+    print output
     for line in output.split("\n"):
         if line and line.split()[0].startswith("exp"):
-            print "The camera was set from an exposure time of",\
+            print "The camera was set from a preset exposure time of",\
                 line.split("=")[-1], "units",
 
 #~ Use 'v4l2-ctl -c exposure_absolute=time' to set exposure time
@@ -177,7 +174,6 @@ if options.preview:
 # We save option.images images, since we often demand an image from the camera
 # while it is in the middle of a circle, thus it's a corrupted image...
 
-
 # Construct path
 FileSavePath = os.path.join('Images', options.camera, str(int(time.time())))
 if options.suffix:
@@ -190,9 +186,12 @@ if options.framerate:
 try:
     # Generating necessary directories
     os.makedirs(FileSavePath)
-except:
+except OSError:
     print FileSavePath, 'cannot be generated'
     sys.exit(1)
+
+print 'Video is saved to', os.path.join(os.path.abspath(FileSavePath),
+                                        'video.mkv')
 
 # Use ffmpeg to save video stream to lossless video, then extract single frames
 # from this video
@@ -215,6 +214,7 @@ ffmpegcommand = "ffmpeg -y -f video4linux2 -s " + str(CMOSwidth) + "x" +\
 # -preset ultrafast -qp 0 -> lossless
 # -t $time$ -> save $time$ seconds of video
 # -y overwrite always
+
 if options.verbose:
     print 'Recording video with'
     print 20 * '-'
@@ -249,20 +249,13 @@ if options.verbose:
     print convertcommand
     print 20 * '-'
 
-image = plt.imread(filename)
-plt.imshow(image, origin="lower")
-figuretitle = "Snapshot", str(int(round(options.images / 2.0))), "of",\
-    str(options.images), "from", FileSavePath, "\nwith an exposure time of",\
-    str(options.exposuretime / 10), "ms",
-if options.preview:
-    plt.axhspan(ymin=CMOSheight - previewheight, ymax=CMOSheight,
-                xmin=0, xmax=float(previewwidth) / CMOSwidth,
-                facecolor='r', alpha=0.5)
-    plt.xlim([0, CMOSwidth])
-    plt.ylim([0, CMOSheight])
-    figuretitle += "\nred=preview area",
-plt.title(' '.join(figuretitle))
-plt.show()
+print 'Converting the video into single frames.'
+print 'This will take a while!'
+t0 = time.time()
+subprocess.call(convertcommand, stdout=DEVNULL, stderr=subprocess.STDOUT,
+                shell=True)
+t1 = time.time()
+print "Converting the video took me", str(round(t1 - t0, 2)), "seconds"
 
 # Save 'Log'-file
 logfile = open(os.path.join(FileSavePath, '_log.txt'), "w")
@@ -271,7 +264,7 @@ logfile.write(' '.join(sys.argv))
 logfile.close()
 
 print
-print 'In the directory', FileSavePath, 'you now have'
+print 'In the directory', os.path.abspath(FileSavePath), 'you now have'
 print '    * a logfile (_log.txt)'
 print '    * the raw video from the camera (video.mkv)'
 # Count only certain files (http://stackoverflow.com/a/1321138)
@@ -285,13 +278,14 @@ print 'Have fun with this!'
 if options.display:
     # Get middle frame
     filename = os.path.join(FileSavePath,
-        "frame_%05d" % (int(round(NumberOfFrames / 2.0))) + ".tif")
+                            "frame_%05d" % (int(round(NumberOfFrames / 2.0)))
+                            + ".tif")
     # Make image
     image = plt.imread(filename)
-    plt.imshow(image, origin="lower", cmap=plt.cm.Greys_r)
-    figuretitle = "Snapshot", str(int(round(NumberOfFrames / 2.0))), "of",\
-        str(NumberOfFrames), "from", FileSavePath, "\nwith an exposure time",\
-        "of", str(options.exposuretime), "ms"
+    plt.imshow(image, cmap='bone')
+    figuretitle = "Snapshot", str(int(round(NumberOfFrames / 2.0))), "of", \
+                  str(NumberOfFrames), "from", FileSavePath,\
+                  "\nwith an exposure time of", str(options.exposuretime), "ms"
     if options.preview:
         plt.axhspan(ymin=CMOSheight - previewheight, ymax=CMOSheight,
                     xmin=0, xmax=float(previewwidth) / CMOSwidth,

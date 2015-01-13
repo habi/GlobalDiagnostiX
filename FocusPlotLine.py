@@ -1,4 +1,4 @@
-#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 """
 Script to plot line on TIFF, useful for 'calculating' the best focus of

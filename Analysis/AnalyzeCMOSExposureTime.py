@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+# -*- coding: utf8 -*-
 
 """
 Script to load image sets acquired with equal source exposure time but
@@ -44,15 +43,15 @@ Radiographies = [sorted(glob.glob(os.path.join(Folder, '*.raw')))
 NumberOfRadiographies = [len(Radiographies[i])
                          for i in range(len(Experiment))]
 Scintillator = [FileName[0].split('_')[1] for FileName in Radiographies]
-Sensor = [FileName[0].split('_')[2]  for FileName in Radiographies]
+Sensor = [FileName[0].split('_')[2] for FileName in Radiographies]
 Size = [[int(FileName[0].split('_')[3].split('x')[1]),
         int(FileName[0].split('_')[3].split('x')[0])]
         for FileName in Radiographies]
-Lens = [FileName[0].split('_')[4]  for FileName in Radiographies]
-SCD = [int(FileName[0].split('_')[5][:-5])  for FileName in Radiographies]
-Modality = [FileName[0].split('_')[6]  for FileName in Radiographies]
+Lens = [FileName[0].split('_')[4] for FileName in Radiographies]
+SCD = [int(FileName[0].split('_')[5][:-5]) for FileName in Radiographies]
+Modality = [FileName[0].split('_')[6] for FileName in Radiographies]
 Voltage = [float(FileName[0].split('_')[7][:-2]) for FileName in Radiographies]
-mAs = [float(FileName[0].split('_')[8][:-3])  for FileName in Radiographies]
+mAs = [float(FileName[0].split('_')[8][:-3]) for FileName in Radiographies]
 SourceExposuretime = [float(FileName[0].split('_')[9][:-6])
                       for FileName in Radiographies]
 CMOSExposuretime = [float(FileName[0].split('_')[10][:-6])
@@ -76,7 +75,8 @@ for counter, item in enumerate(Experiment):
         ': Looking at experiment', os.path.basename(Experiment[counter])
     # Write logfile
     logfile = myLogger(os.path.dirname(Experiment[counter]),
-        'Exposuretime_' + os.path.basename(Experiment[counter] + '.log'))
+                       'Exposuretime_' + os.path.basename(Experiment[counter]
+                                                          + '.log'))
     logfile.info('Log file for Experiment ID %s', Experiment[counter])
     logfile.info('Analsyis performed at %s',
         time.strftime('%d.%m.%Y at %H:%M:%S'))

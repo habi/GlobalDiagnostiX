@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+# -*- coding: utf8 -*-
 
 """
 Script to load a bunch of images and caculate the focus of them, based on the
@@ -73,11 +72,11 @@ if normalize:
 plt.figure(figsize=(16, 9))
 plt.subplot(311)
 plt.title(' '.join([str(len(Images)), 'Images read from',
-    os.path.basename(Directories[ChosenFolder])]))
+                    os.path.basename(Directories[ChosenFolder])]))
 # Plot values
 plt.plot(MeanExposure, color='r', alpha=0.5,
-    label='Exposure with Max @ Img. ' + \
-    str(MeanExposure.index(max(MeanExposure))))
+         label='Exposure with Max @ Img. ' +
+               str(MeanExposure.index(max(MeanExposure))))
 plt.plot(STD, color='b', alpha=0.5,
     label='STD with Max @ Img. ' + str(STD.index(max(STD))))
 # Print details and plot positions of 'Details' chosen images

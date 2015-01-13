@@ -1,5 +1,8 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
+
+"""
+Plotting GOTTHARD spectra
+"""
 
 from __future__ import division
 import matplotlib.pylab as plt

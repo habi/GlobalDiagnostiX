@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+# -*- coding: utf8 -*-
 
 """
 Script to plot some absorption coefficients from NIST.

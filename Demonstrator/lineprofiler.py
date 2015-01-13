@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+
+"""
+Line profile function used in several scripts.
+"""
+
 def lineprofile(inputimage, coordinates=False, showimage=False, debug=False):
     """
     Function to draw a line profile from a selection in the image.

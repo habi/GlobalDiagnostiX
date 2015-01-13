@@ -1,4 +1,4 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
 
 """
 based on code from http://www.frantzmarti$che.com/blog/?p=84
@@ -66,8 +66,8 @@ def add_lens(z, f, diam, lbl):
     # - diam: lens diameter in mm
     # - lbl:  label to identify the lens on the drawing
     ww, tw, rad = diam / 10.0, diam / 3.0, diam / 2.0
-    plt.plot([z, z],    [-rad, rad],                'k', linewidth=2)
-    #~ plt.plot([z, z + tw], [-rad, -rad + np.sign(f) * ww], 'y', linewidth=2)
+    plt.plot([z, z], [-rad, rad], 'k', linewidth=2)
+    # ~ plt.plot([z, z + tw], [-rad, -rad + np.sign(f) * ww], 'y', linewidth=2)
     #~ plt.plot([z, z - tw], [-rad, -rad + np.sign(f) * ww], 'y', linewidth=2)
     #~ plt.plot([z, z + tw],  [rad,  rad - np.sign(f) * ww], 'y', linewidth=2)
     #~ plt.plot([z, z - tw],  [rad,  rad - np.sign(f) * ww], 'y', linewidth=2)
@@ -113,6 +113,7 @@ def propagate_beam(p0, NA, nr, zl, ff, raycolor='b'):
         xx[nl + 1] = xx[nl] + (zz[nl + 1] - zz[nl]) * tani[nl]
         plt.plot(zz, xx, color=raycolor)
 
+
 FOVSize = np.array([430 / 3., 430 / 4.])
 FOVDiagonal = np.sqrt(FOVSize[0] ** 2 + FOVSize[1] ** 2)
 
@@ -138,7 +139,7 @@ elif options.UseSensor == 3:
 # Make output directory
 try:
     os.makedirs(os.path.join(Savepath, Sensor))
-except:
+except OSError:
     # Don't do anything if the folder already exists
     pass
 
@@ -170,8 +171,8 @@ for x in range(3):
                                 facecolor='g', linewidth=2)
         figure1.gca().add_patch(FOV)
         Ellipse = patches.Ellipse((FOVSize[0] / 2 - CMOSSize[0] / 2 + x *
-                                  FOVSize[0], FOVSize[1] / 2 -
-                                  CMOSSize[1] / 2 + y * FOVSize[1]),
+                                   FOVSize[0], FOVSize[1] / 2 -
+                                   CMOSSize[1] / 2 + y * FOVSize[1]),
                                   width=FOVSize[0] / 0.618,
                                   height=FOVSize[1] / 0.618, color='k',
                                   alpha=0.125)
@@ -235,7 +236,7 @@ print 'was used to generate this plot'
 
 print 80 * '-'
 
-#~ Lens
+# ~ Lens
 # Draw the lens at the origin, to simplify things
 LensPosition = np.array([0])
 # Since we only draw *one* lens for the moment, we convert the focal length
@@ -315,10 +316,12 @@ plt.ylim([-FOVSize[0] / 2 * 1.1, FOVSize[0] / 2 * 1.1])
 plt.draw()
 
 plt.savefig(os.path.join(Savepath, Sensor, 'lens_simulation_view_' +
-            str(round(options.CMOSDistance, 1)).zfill(5) + 'mm.png'),
+                         str(round(options.CMOSDistance, 1)).zfill(
+                             5) + 'mm.png'),
             transparent=True)
 plt.savefig(os.path.join(Savepath, Sensor, 'movie_lens_simulation_view_' +
-            str(int(round(options.CMOSDistance, 1) * 10)).zfill(7) + 'mm.png'),
+                         str(int(round(options.CMOSDistance, 1) * 10)).zfill(
+                             7) + 'mm.png'),
             transparent=True)
 plt.ioff()
 # plt.show()

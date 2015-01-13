@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf8 -*-
 
 """
 Script to delete unused darks of each image.
@@ -27,7 +27,7 @@ resource.setrlimit(resource.RLIMIT_NOFILE, (4096, 4096))
 
 # Where shall we start?
 RootFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-    'XrayImages')
+              'XrayImages')
 case = 2
 if case == 1:
     # Look through all folders
@@ -43,10 +43,10 @@ elif case == 3:
     Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
     Sensors = ('AR0130', 'AR0132', 'MT9M001')
     Lenses = ('Computar-11A', 'Framos-DSL219D-650-F2.0',
-        'Framos-DSL224D-650-F2.0', 'Framos-DSL311A-NIR-F2.8',
-        'Framos-DSL949A-NIR-F2.0', 'Lensation-CHR4020',
-        'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
-        'TIS-TBL-6C-3MP', '')
+              'Framos-DSL224D-650-F2.0', 'Framos-DSL311A-NIR-F2.8',
+              'Framos-DSL949A-NIR-F2.0', 'Lensation-CHR4020',
+              'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
+              'TIS-TBL-6C-3MP', '')
     ChosenScintillator = functions.AskUser(
         'Which scintillator do you want to look at?', Scintillators)
     ChosenSensor = functions.AskUser(
@@ -55,7 +55,7 @@ elif case == 3:
         'Which lens do you want to look at? ("empty" = "all")',
         Lenses)
     StartingFolder = os.path.join(RootFolder, ChosenScintillator,
-        ChosenSensor, ChosenLens)
+                                  ChosenSensor, ChosenLens)
 
 # Look for all folders matching the naming convention
 Experiment, ExperimentID = functions.get_experiment_list(StartingFolder)
@@ -86,7 +86,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
         print
         print 'Please archive the data for this Experiment with',\
             'TarToArchive.py, then run this script again'
-        time.sleep(1)
+        break
     print 80 * '-'
     #~ print str(Counter + 1) + '/' + str(len(AnalyisList)) + \
         #~ ': Deleting darks experiment', ExperimentID[SelectedExperiment]

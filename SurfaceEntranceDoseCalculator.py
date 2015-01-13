@@ -1,13 +1,12 @@
-#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 """
-Tiny tool to calculate the surface entrance dose of a certain x-ray measurement
-based on commandline input.
-Gives the same results as the 'Diagnostische Referenzwerte' Excel calculator on
-the BAG-page, in the right side-bar of http://is.gd/E2qIPA.
+Script used to calculate the surface entrance dose of a certain x-ray
+measurement. Gives the same results as the 'Diagnostische Referenzwerte'
+Excel calculator on the BAG-page, in the right side-bar of http://is.gd/E2qIPA.
 The calculation is based on 'Merkblatt R-06-04' from BAG.
-The file is based on SurfaceEntranceDose.py, which was used to plot the SED for
-a talk at an SLS Symposium.
+The file is an extensiuon of SurfaceEntranceDose.py, which was used to plot
+the SED for a talk at an SLS Symposium.
 """
 
 from __future__ import division  # fix integer division

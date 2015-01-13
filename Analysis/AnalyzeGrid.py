@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 """
 Script to "analyze" the grid shown in the radiographies from Ivan.
 
@@ -29,8 +31,8 @@ StartingFolder = os.path.join(RootFolder, 'Toshiba')
 StartingFolder = RootFolder
 
 # Look for a special folder
-#~ StartingFolder = os.path.join(RootFolder, 'Hamamatsu', 'MT9M001',
-    #~ 'TIS-TBL-6C-3MP')
+# StartingFolder = os.path.join(RootFolder, 'Hamamatsu', 'MT9M001',
+#                               'TIS-TBL-6C-3MP')
 
 # Ask user for a special case
 Scintillators = ('AppScinTech-HE', 'Pingseng', 'Hamamatsu', 'Toshiba')
@@ -39,12 +41,12 @@ Sensors = ('AR0130', 'AR0132', 'MT9M001')
 ChosenScintillator = functions.AskUser(
     'Which scintillator do you want to look at?', Scintillators)
 ChosenSensor = functions.AskUser('Which sensor do you want to look at?',
-    Sensors)
+                                 Sensors)
 StartingFolder = os.path.join(RootFolder, ChosenScintillator, ChosenSensor)
 
 # Testing
-#~ StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
-    #~ 'Lensation-CHR6020')
+# StartingFolder = os.path.join(RootFolder, '20140731', 'Toshiba', 'AR0132',
+#                               'Lensation-CHR6020')
 # Testing
 
 # Setup
@@ -64,8 +66,8 @@ def tellme(blurb):
 
 # Generate a list of log files, based on http://stackoverflow.com/a/14798263
 LogFiles = [os.path.join(dirpath, f)
-    for dirpath, dirnames, files in os.walk(StartingFolder)
-    for f in files if f.endswith('analysis.log')]
+            for dirpath, dirnames, files in os.walk(StartingFolder)
+            for f in files if f.endswith('analysis.log')]
 
 print 'I found', len(LogFiles), 'log files in', StartingFolder
 

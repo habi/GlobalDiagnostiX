@@ -1,9 +1,10 @@
-#!/usr/bin/python
-# coding=utf8
+# -*- coding: utf-8 -*-
 
-# Script to work with the Input/Output Pins of the RPi
-# Ultimately thought to trigger the Elphel camera
-# Based on http://code.google.com/p/raspberry-gpio-python/
+"""
+Script to work with the Input/Output Pins of the RPi, utimately thought to
+trigger the Elphel camera.
+Based on http://code.google.com/p/raspberry-gpio-python/
+"""
 
 import sys
 import time
@@ -61,7 +62,6 @@ try:
 except KeyboardInterrupt:
     print
     print 'User aborted sequence, goodbye'
-    pass
 
 # Reset every channel that has been set up by this program to INPUT with no
 # pullup/pulldown and no event detection.

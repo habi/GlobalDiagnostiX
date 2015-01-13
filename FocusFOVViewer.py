@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Script to view the images from the lens-test (FOV and distance)
 The 'old' version from the first lenses was before git commit a100d19

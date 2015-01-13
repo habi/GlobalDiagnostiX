@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+
+"""
+This script reads the RAW files from the Aptina cameras as numpy arrays,
+ready for display or further use.
+Made to help Valerie Duay get up to speed :)
+"""
 import os
 import numpy
 import matplotlib.pyplot as plt

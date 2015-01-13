@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 """
 Script to display only some experiments, based on either choice of ID or choice
 of component
@@ -8,23 +10,23 @@ import matplotlib.pyplot as plt
 import numpy as np
 from functions import estimate_image_noise
 
-# ID = [
-#     8466438,
-#     8466246,
-#     8596690,
-#     8595968,
-#     5808743,
-#     5814382,
-#     5814190,
-#     9078293,
-#     9074884,
-#     9071872,
-#     8466170,
-#     9080226,
-#     7733379
-# ]
+ID = [
+    8466438,
+    8466246,
+    8596690,
+    8595968,
+    5808743,
+    5814382,
+    5814190,
+    9078293,
+    9074884,
+    9071872,
+    8466170,
+    9080226,
+    7733379
+]
 
-ID = [10280776]
+# ID = [123456]
 
 getfromHD = False
 if getfromHD:
@@ -37,6 +39,8 @@ else:
 Folder = []
 ExperimentID = []
 for root, dirs, files in os.walk(RootFolder):
+    # Go through all the directories, see if the last foldername is a number,
+    # and it's in the list of IDs above,
     # Go through all the directories
     try:
         # If the last foldername is a number,
@@ -49,7 +53,7 @@ for root, dirs, files in os.walk(RootFolder):
             ExperimentID.append(int(os.path.basename(root)))
             # print len(Folder), len(ExperimentID), len(ID)
         # otherwise just pass
-    except:
+    except ValueError:
         continue
 
 if getfromHD:

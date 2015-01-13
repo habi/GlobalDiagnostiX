@@ -1,11 +1,11 @@
-#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
-'''
+"""
 Script to switch Network interfaces between DHCP and Elphel
 First version based on reading the values from their respective outputs
 New version simply sets to Elphel as default when called without a flag.
 Options -p or -p switch to the *P*SI *D*HCP server
-'''
+"""
 
 import os
 from optparse import OptionParser

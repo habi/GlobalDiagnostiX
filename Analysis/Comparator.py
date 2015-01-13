@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 """
 Script to compare the contents of Ivans HD with the stuff present on AFS.
 Due to space shortage, some folders might have been missed during copying.
@@ -24,17 +26,16 @@ def readit(InputFolder):
     Folder = []
     ExperimentID = []
     for root, dirs, files in os.walk(InputFolder):
-        # Go through all the directories
+        # Go through all the directories and see if the last foldername is a
+        # number
         try:
-            # If the last foldername is a number,
-            int(os.path.basename(root))
-            # see if it's in the list of IDs above,
             if int(os.path.basename(root)):
                 Folder.append(root)
                 ExperimentID.append(int(os.path.basename(root)))
         # otherwise just continue
-        except:
+        except ValueError:
             continue
+
     return Folder, ExperimentID
 
 # Read *all* experiment IDs from HD
@@ -50,7 +51,9 @@ for counter, experiment in enumerate(IDHD):
     if experiment not in IDAFS:
         InputPath = FolderHD[IDHD.index(experiment)]
         OutputPath = os.path.dirname(os.path.join(RootFolderAFS,
-            FolderHD[IDHD.index(experiment)][len(RootFolderHD) + 1:]))
+                                                  FolderHD[IDHD.index(
+                                                      experiment)][len(
+                                                      RootFolderHD) + 1:]))
         print 'Experiment', experiment, 'was not found on AFS'
         print
         print 'It should be moved from'

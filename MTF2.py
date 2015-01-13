@@ -1,10 +1,12 @@
-'''
+# -*- coding: utf-8 -*-
+
+"""
 Script to calculate the Modulation transfer function of a lens-detector system
 
 It's based on the idea that once can use a random pattern to calculate the MTF,
 as specified by Daniels et al. in http://dx.doi.org/10.1117/12.190433, which
 was found through http://stackoverflow.com/q/18823968
-'''
+"""
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec

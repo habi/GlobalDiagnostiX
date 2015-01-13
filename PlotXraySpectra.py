@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+
+"""
+Plot the x-ray spectra downloaded from the [Siemens simulator]
+(https://w9.siemens.com/cms/oemproducts/Home/X-rayToolbox/spektrum/)
+"""
+
 import matplotlib.pylab as plt
 import os
 import scipy
@@ -19,15 +26,13 @@ Spectra = [
     (os.path.join(Spectrapath, 'Xray-Spectrum_120kV.txt'))]
 
 Data = [(np.loadtxt(FileName)) for FileName in Spectra]
-Energy = [int(open(FileName).readlines()[2].split()[4])
-          for FileName in Spectra]
-Mean = [float(open(FileName).readlines()[5].split()[3])
-        for FileName in Spectra]
+Energy = [int(open(FileName).readlines()[2].split()[4]) for FileName in Spectra]
+Mean = [float(open(FileName).readlines()[5].split()[3]) for FileName in Spectra]
 
 for i in range(len(Spectra)):
     plt.plot(Data[i][:, 0], Data[i][:, 1],
              label=str(Energy[i]) + 'kV, Mean=' +
-                   str(round(Mean[i], 3)) + 'keV')
+             str(round(Mean[i], 3)) + 'keV')
 
 plt.legend(loc='best')
 plt.title('X-ray spectra')
