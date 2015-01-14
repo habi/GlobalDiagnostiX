@@ -14,14 +14,17 @@ import numpy
 import cv2
 import glob
 import matplotlib.pylab as plt
+from scipy import ndimage
 
 LoadOmmatidiag = True
 
 if LoadOmmatidiag:
     BaseDir = '/afs/psi.ch/project/EssentialMed/Images' \
               '/DetectorElectronicsTests/EssentialLab/Valerie'
-    OriginalsList = glob.glob(os.path.join(BaseDir, '???.???.?.??.png'))
+    BaseDir = '/Users/habi/Dev/DemonstratorElectronics/1421142758_output'
+    OriginalsList = glob.glob(os.path.join(BaseDir, 'data-e*-g*-i*-??.png'))
     ImageList = glob.glob(os.path.join(BaseDir, '*_edit.jpg'))
+    ImageList = OriginalsList
 else:
     BaseDir = '/afs/psi.ch/project/EssentialMed/Dev/Demonstrator'
     ImageList = glob.glob(os.path.join(BaseDir, 'left*.jpg'))
@@ -37,7 +40,8 @@ criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 50, 0.001)
 # For the edited checkerboard images, we use (5, 4).
 # See http://dasl.mem.drexel.edu/~noahKuntz/openCVTut10.html for counting :)
 if LoadOmmatidiag:
-    PatternSize = (3, 3)
+    PatternSize = (9, 5)
+    # PatternSize = (3, 3)
 else:
     PatternSize = (7, 6)
 # Prepare object points, like (0,0,0), (1,0,0), (2,0,0) ...., (6,5,0)
@@ -56,7 +60,7 @@ if not ImageList:
         'images in the same folder as this script'
     exit('FilesNotFound')
 
-plt.figure('Original images', figsize=[16, 9])
+plt.figure('Original images', figsize=[12, 11])
 for counter, FileName in enumerate(ImageList):
     print 'processing %s...' % FileName
     Image = cv2.imread(FileName)
@@ -77,8 +81,9 @@ for counter, FileName in enumerate(ImageList):
         ImagePoints.append(Corners)
         RealWorldPoints.append(ObjectPoints)
         cv2.drawChessboardCorners(Image, PatternSize, Corners, Found)
-    plt.subplot(3, 5, counter + 1)
-    plt.imshow(Image)
+    plt.subplot(3, 4, 11 - counter + 1)
+    plt.imshow(ndimage.rotate(Image, 270), cmap='gray',
+               interpolation='nearest')
     ImageTitle = os.path.basename(FileName)
     if Found:
         ImageTitle = '\n'.join(('Pattern found on', ImageTitle))
@@ -86,8 +91,8 @@ for counter, FileName in enumerate(ImageList):
     plt.axis('off')
 
 if not ImagePoints:
-    print 'I was not able to find a pattern on any image, maybe tray another ' \
-          '"PatternSize"...'
+    print 'I was not able to find a pattern on any image, maybe try ' \
+          'another "PatternSize"...'
     exit('PatternNotFound')
 
 print '\nApplying undistortion parameters found on %s images to %s ' \
@@ -99,7 +104,7 @@ RMS, CameraMatrix, DistortionCoefficients, rvecs, tvecs = \
                         None)
 
 # Display images
-plt.figure('Undistorted images', figsize=[16, 9])
+plt.figure('Undistorted images', figsize=[12, 11.2])
 for counter, FileName in enumerate(OriginalsList):
     print 'undistorting %s...' % FileName
     Image = cv2.imread(FileName)
@@ -113,15 +118,26 @@ for counter, FileName in enumerate(OriginalsList):
                                      DistortionCoefficients, None,
                                      NewCameraMatrix)
     plt.imsave(FileName[:-4] + '_undistort.png', UndistortedImage)
-    plt.subplot(3, 5, counter + 1)
-    plt.imshow(UndistortedImage)
-    plt.title(os.path.basename(FileName))
+
+    # The images are rotated in respect to the "viewing plane" of the user,
+    # we thus plot them in the "from bottom right to top left" order
+    plt.subplot(3, 4, 11 - counter + 1)
+    # and to show them "correctly", we need to rotate the images 270°
+    clip = 65
+    plt.imshow(ndimage.rotate(UndistortedImage[clip:-clip, clip:-clip], 270),
+               cmap='gray', interpolation='nearest')
+    plt.axis('off')
+    plt.gca().text(512, 640, FileName.split('-')[-1].split('.')[0],
+                   verticalalignment='center', horizontalalignment='center',
+                   bbox={'facecolor': 'white', 'alpha': 0.5, 'pad': 10})
+    plt.subplots_adjust(wspace=0, hspace=0)
+    plt.suptitle(' '.join(['Undistorted images, clipped by %s pixels on each '
+                           'side' % clip]))
     plt.axis('off')
 
 print "RMS:", RMS
 print "camera matrix:\n\t", CameraMatrix
-print "distortion coefficients: ", DistortionCoefficients.ravel()
-
+print "distortion coefficients: ", DistortionCoefficients
 print 'Checkerboard pattern found on', len(ImagePoints), 'images'
 
 plt.show()
