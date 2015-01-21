@@ -10,15 +10,22 @@ from __future__ import division
 import glob
 import os
 import platform
-
 import matplotlib.pyplot as plt
 import numpy
 
 
+def processimage(inputimage, clip=3):
+    """
+    Clip image brightness to "mean +- 3 STD" (by default). Another value can
+    be given. This is applied to the input images if the -c commandline
+    parameter is given.
+    """
+    return numpy.clip(inputimage,
+                      numpy.mean(inputimage) - (clip * numpy.std(inputimage)),
+                      numpy.mean(inputimage) + (clip * numpy.std(inputimage)))
+
 if 'anomalocaris' in platform.node():
-    # RootFolder = '/Volumes/slslc/EssentialMed/MasterArbeitBFH/XrayImages'
-    RootFolder = '/Users/habi/Desktop/XrayImages/Volumes/slslc/EssentialMed' \
-                 '/MasterArbeitBFH/XrayImages'
+    RootFolder = '/Volumes/slslc/EssentialMed/MasterArbeitBFH/XrayImages'
 else:
     RootFolder = '/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/XrayImages'
 
@@ -31,107 +38,111 @@ Lenses = ('Computar-11A', 'Framos-DSL219D-650-F2.0',
           'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
           'TIS-TBL-6C-3MP')
 
-LensCounter = 0
 plt.ion()
-plt.show()
-for CurrentLens in Lenses:
-    LensCounter += 1
-    print 'Lens', LensCounter, 'of', len(Lenses), '|', CurrentLens
-    print
+for CounterLens, CurrentLens in enumerate(Lenses):
+    print 'Lens', CounterLens + 1, 'of', len(Lenses), '|', CurrentLens
     CombinationCounter = 0
-    for CurrentScintillator in Scintillators:
-        for CurrentSensor in Sensors:
-            OverViewFigure = plt.figure(LensCounter, figsize=[20, 12])
-            plt.title(' | '.join([CurrentScintillator, CurrentSensor,
-                                  CurrentLens]))
+    for CounterScintillator, CurrentScintillator in enumerate(Scintillators):
+        for CounterSensor, CurrentSensor in enumerate(Sensors):
             CombinationCounter += 1
-            Axis1 = plt.subplot(len(Scintillators), len(Sensors),
-                                CombinationCounter)
-            print 'Folder', CombinationCounter, 'of', len(Scintillators) * len(
-                Sensors), '|', CurrentScintillator, '|', CurrentSensor, '|', \
-                CurrentLens, '|',
-            LoadStretched = False
-            if LoadStretched:
-                ImageNames = glob.glob(os.path.join(RootFolder,
-                                                    CurrentScintillator,
-                                                    CurrentSensor,
-                                                    CurrentLens, 'Hand',
-                                                    '*.image.corrected.' +
-                                                    'stretched.png'))
-            else:
-                ImageNames = glob.glob(os.path.join(RootFolder,
-                                                    CurrentScintillator,
-                                                    CurrentSensor,
-                                                    CurrentLens, 'Hand',
-                                                    '*.image.corrected.png'))
+            print '\tFolder', CombinationCounter, 'of',\
+                len(Scintillators) * len(Sensors), '|', CurrentScintillator, \
+                '|', CurrentSensor, '|', CurrentLens, '|',
+            ImageNames = glob.glob(os.path.join(RootFolder,
+                                                CurrentScintillator,
+                                                CurrentSensor,
+                                                CurrentLens, 'Hand',
+                                                '*.image.corrected.png'))
             if len(ImageNames):
                 print len(ImageNames), 'images found'
             else:
-                print 'No images found for this combination'
+                print 'No images found for this combination!'
 
             # Extract values
             Images = [plt.imread(image) for image in ImageNames]
+            CropImages = True
+            if CropImages:
+                Ycrop = (Images[0].shape[0] - 500) / 2
+                Xcrop = (Images[0].shape[1] - 500) / 2
+                Images = [plt.imread(image)[Ycrop:-Ycrop, Xcrop:-Xcrop] for
+                          image in ImageNames]
             Min = [numpy.min(image) for image in Images]
             Mean = [numpy.mean(image) for image in Images]
             Max = [numpy.max(image) for image in Images]
             STD = [numpy.std(image) for image in Images]
 
+            OverViewFigure = plt.figure(0, figsize=[20, 12])
+            OverViewPlot = plt.subplot(len(Scintillators), len(Sensors),
+                                       CombinationCounter)
+
             # Plot Mean
-            plt.plot(Mean, linestyle='none', marker='.', color='k')
+            OverViewPlot.plot(Mean, linestyle='-', marker='.', color='k',
+                              label='Max: %0.2f' % numpy.max(Mean))
             # Prepare for plotting the mean +- STD as a band around the mean
             MeanPlusSTD = [Mean[i] + STD[i] for i in range(len(Mean))]
             MeanMinusSTD = [Mean[i] - STD[i] for i in range(len(Mean))]
             # Fill the band between Mean+STD and Mean-STD
-            plt.fill_between(range(len(Mean)), MeanPlusSTD, MeanMinusSTD,
-                             alpha=0.309, color='k')
+            OverViewPlot.fill_between(range(len(Mean)), MeanPlusSTD,
+                                      MeanMinusSTD, alpha=0.309, color='k')
 
             # Plot the mean of the mean and the band between the mean of the
             # mean +- the mean of the STD
-            Axis1.axhline(numpy.mean(Mean), linestyle='--', color='k')
-            Axis1.fill_between(range(len(Mean)), numpy.mean(Mean) +
-                               numpy.mean(STD), numpy.mean(Mean) -
-                               numpy.mean(STD), alpha=0.309, color='r')
+            OverViewPlot.axhline(numpy.mean(Mean), linestyle='-', color='r',
+                                 label='Mean: %0.2f' % numpy.mean(Mean))
+            OverViewPlot.fill_between(range(len(Mean)),
+                                      numpy.mean(Mean) + numpy.mean(STD),
+                                      numpy.mean(Mean) - numpy.mean(STD),
+                                      alpha=0.309, color='r')
 
             # Scale all the plots the same way, so we can compare them
-            plt.ylim((0, 0.75))
-            plt.xlim((0, 35))
+            plt.ylim((0, 1))
+            plt.xlim((0, len(Images) - 1))
+            OverViewPlot.legend(loc='upper left')
             plt.title(' | '.join([CurrentScintillator, CurrentSensor,
                                   CurrentLens]))
+            plt.pause(0.1)
+            plt.draw()
 
             # Show all the images of this component combination , so that we
             # can quickly see which ones are good and which ones are not
-            LensFigure = plt.figure(CombinationCounter + LensCounter,
-                                    figsize=[16, 9])
+            LensFigure = plt.figure(CombinationCounter, figsize=[12, 13])
             plt.suptitle(' | '.join([CurrentScintillator, CurrentSensor,
                                      CurrentLens]))
+            DisplayStrechedImages = True
             for c, i in enumerate(Images):
-                Axis2 = plt.subplot(5, len(Images) / 4, c + 1)
-                Axis2.imshow(i, cmap='bone')
-                Axis2.axis('off')
-                plt.title(':'.join([str(c),
-                                    os.path.basename(ImageNames[c]).split(
-                                        '.')[0]]))
+                ImagesPlot = plt.subplot(6, 6, c + 1)
+                if DisplayStrechedImages:
+                    ImagesPlot.imshow(processimage(i), cmap='bone_r',
+                                      interpolation='bicubic')
+                else:
+                    ImagesPlot.imshow(i, cmap='bone_r',
+                                      interpolation='bicubic')
+                ImagesPlot.axis('off')
+                plt.title('\n'.join([os.path.basename(ImageNames[c]).split(
+                    '.')[0], 'Mean ' + str(round(Mean[c], 2))]))
             try:
                 os.makedirs(os.path.join(RootFolder, 'BrightnessOutput',
                                          CurrentLens))
             except OSError:
                 pass
+            # plt.tight_layout()
             LensFigure.savefig(os.path.join(RootFolder, 'BrightnessOutput',
                                             CurrentLens, 'Images_' +
                                             CurrentScintillator + '_' +
-                                            CurrentSensor + '_' + CurrentLens
-                                            + '.png'))
-    plt.draw()
-
+                                            CurrentSensor + '_' +
+                                            CurrentLens + '.png'))
+            plt.pause(0.1)
+            plt.draw()
     # Display
-    OverViewFigure = plt.figure(LensCounter, figsize=[20, 12])
-    OverViewFigure.savefig(os.path.join(RootFolder,  'BrightnessOutput',
-                                        CurrentLens, 'Overview_' +
-                                        CurrentLens + '.png'))
+    OverViewFigure.tight_layout()
+    OverViewFigure.savefig(os.path.join(RootFolder, 'BrightnessOutput',
+                                        'Overview_' + CurrentLens + '.png'))
     print
     print 'Done with', CurrentLens
     print 80 * '-'
+    plt.pause(0.1)
     plt.draw()
+    plt.ioff()
     plt.close('all')
 
 print 'Done with everything'
