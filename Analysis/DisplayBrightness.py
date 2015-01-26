@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import numpy
 import logging
 import time
+import sys
 from functions import get_git_hash
 
 
@@ -50,7 +51,7 @@ log.addHandler(handler)
 
 # Start
 log.info('Analsyis performed at %s', time.strftime('%d.%m.%Y at %H:%M:%S'))
-log.info('Analsyis performed with script version %s', get_git_hash())
+log.info('Analsyis performed with ' + sys.argv[0] + ' version %s', get_git_hash())
 log.info('\n' + 80 * '-')
 log.info('{0: <15}'.format('Scintillator') + '{0: <8}'.format('Sensor') +
          '{0: <24}'.format('Lens') + '{0: <8}'.format('Mean') +
@@ -152,8 +153,7 @@ for CounterLens, CurrentLens in enumerate(Lenses):
                                             CurrentLens, 'Images_' +
                                             CurrentScintillator + '_' +
                                             CurrentSensor + '_' +
-                                            CurrentLens + '.png'),
-                               bbox_inches='tight')
+                                            CurrentLens + '.png'))
             plt.pause(0.1)
             plt.draw()
     # Display
