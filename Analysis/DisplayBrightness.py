@@ -12,6 +12,9 @@ import os
 import platform
 import matplotlib.pyplot as plt
 import numpy
+import logging
+import time
+from functions import get_git_hash
 
 
 def processimage(inputimage, clip=3):
@@ -38,8 +41,23 @@ Lenses = ('Computar-11A', 'Framos-DSL219D-650-F2.0',
           'Lensation-CHR6020', 'Lensation-CM6014N3', 'Lensation-CY0614',
           'TIS-TBL-6C-3MP')
 
+# Set up logging
+LogFileName = os.path.join(RootFolder, 'BrightnessOutput', 'Logfile.log')
+log = logging.getLogger(LogFileName)
+log.setLevel(logging.INFO)
+handler = logging.FileHandler(LogFileName, 'w')
+log.addHandler(handler)
+
+# Start
+log.info('Analsyis performed at %s', time.strftime('%d.%m.%Y at %H:%M:%S'))
+log.info('Analsyis performed with script version %s', get_git_hash())
+log.info('\n' + 80 * '-')
+log.info('{0: <15}'.format('Scintillator') + '{0: <8}'.format('Sensor') +
+         '{0: <24}'.format('Lens') + '{0: <8}'.format('Mean') +
+         '{0: <8}'.format('Max'))
 plt.ion()
 for CounterLens, CurrentLens in enumerate(Lenses):
+    log.info(80 * '-')
     print 'Lens', CounterLens + 1, 'of', len(Lenses), '|', CurrentLens
     CombinationCounter = 0
     for CounterScintillator, CurrentScintillator in enumerate(Scintillators):
@@ -48,11 +66,9 @@ for CounterLens, CurrentLens in enumerate(Lenses):
             print '\tFolder', CombinationCounter, 'of',\
                 len(Scintillators) * len(Sensors), '|', CurrentScintillator, \
                 '|', CurrentSensor, '|', CurrentLens, '|',
-            ImageNames = glob.glob(os.path.join(RootFolder,
-                                                CurrentScintillator,
-                                                CurrentSensor,
-                                                CurrentLens, 'Hand',
-                                                '*.image.corrected.png'))
+            ImageNames = sorted(glob.glob(
+                os.path.join(RootFolder, CurrentScintillator, CurrentSensor,
+                             CurrentLens, 'Hand', '*.image.corrected.png')))
             if len(ImageNames):
                 print len(ImageNames), 'images found'
             else:
@@ -71,13 +87,20 @@ for CounterLens, CurrentLens in enumerate(Lenses):
             Max = [numpy.max(image) for image in Images]
             STD = [numpy.std(image) for image in Images]
 
+            # Log values
+            log.info('{0: <15}'.format(CurrentScintillator) +
+                     '{0: <8}'.format(CurrentSensor) +
+                     '{0: <24}'.format(CurrentLens) +
+                     '{0: <8}'.format(str(round(numpy.mean(Mean), 5))) +
+                     '{0: <8}'.format(str(round(numpy.max(Mean), 5))))
+
             OverViewFigure = plt.figure(0, figsize=[20, 12])
             OverViewPlot = plt.subplot(len(Scintillators), len(Sensors),
                                        CombinationCounter)
 
             # Plot Mean
             OverViewPlot.plot(Mean, linestyle='-', marker='.', color='k',
-                              label='Max: %0.2f' % numpy.max(Mean))
+                              label='Max: %0.3f' % numpy.max(Mean))
             # Prepare for plotting the mean +- STD as a band around the mean
             MeanPlusSTD = [Mean[i] + STD[i] for i in range(len(Mean))]
             MeanMinusSTD = [Mean[i] - STD[i] for i in range(len(Mean))]
@@ -88,14 +111,14 @@ for CounterLens, CurrentLens in enumerate(Lenses):
             # Plot the mean of the mean and the band between the mean of the
             # mean +- the mean of the STD
             OverViewPlot.axhline(numpy.mean(Mean), linestyle='-', color='r',
-                                 label='Mean: %0.2f' % numpy.mean(Mean))
+                                 label='Mean: %0.3f' % numpy.mean(Mean))
             OverViewPlot.fill_between(range(len(Mean)),
                                       numpy.mean(Mean) + numpy.mean(STD),
                                       numpy.mean(Mean) - numpy.mean(STD),
                                       alpha=0.309, color='r')
 
             # Scale all the plots the same way, so we can compare them
-            plt.ylim((0, 1))
+            plt.ylim((0, 0.75))
             plt.xlim((0, len(Images) - 1))
             OverViewPlot.legend(loc='upper left')
             plt.title(' | '.join([CurrentScintillator, CurrentSensor,
@@ -125,12 +148,12 @@ for CounterLens, CurrentLens in enumerate(Lenses):
                                          CurrentLens))
             except OSError:
                 pass
-            # plt.tight_layout()
             LensFigure.savefig(os.path.join(RootFolder, 'BrightnessOutput',
                                             CurrentLens, 'Images_' +
                                             CurrentScintillator + '_' +
                                             CurrentSensor + '_' +
-                                            CurrentLens + '.png'))
+                                            CurrentLens + '.png'),
+                               bbox_inches='tight')
             plt.pause(0.1)
             plt.draw()
     # Display
@@ -143,6 +166,7 @@ for CounterLens, CurrentLens in enumerate(Lenses):
     plt.pause(0.1)
     plt.draw()
     plt.ioff()
+    # plt.show()
     plt.close('all')
 
 print 'Done with everything'
