@@ -106,7 +106,7 @@ if options.chatty:
         print 'Peak tube voltage', v, 'kV = mean energy', int(round(e)), 'keV'
 
 print 'For a peak tube voltage of', options.kV, 'kV and a current of', \
-    int(round(options.mAs / (options.Exposuretime / 1000.))), 'mAs (exp.', \
+    int(round(options.mAs * (options.Exposuretime / 1000.))), 'mAs (exp.', \
     'time', options.Exposuretime, 'ms) we get a mean energy of', \
     round(MeanEnergy[ChosenVoltage], 3), 'keV.'
 print
@@ -136,12 +136,12 @@ BSF = 1.35
 SED = K * (options.kV / 100) ** 2 * options.mAs * \
       (100 / options.Distance) ** 2 * BSF
 print 'The surface entrance dose for an x-ray pulse with'
-print '   * U =', options.kV, 'kV'
-print '   * Q =', options.mAs, 'mAs'
-print '   * FOD =', options.Distance / 100, 'm'
-print '   * A =', int(options.Length ** 2), 'cm^2'
-print '   * K =', K, 'mGy*m^2/mAs'
-print '   * BSF =', BSF
+print '\t* U =', options.kV, 'kV'
+print '\t* Q =', options.mAs, 'mAs'
+print '\t* FOD =', options.Distance / 100, 'm'
+print '\t* A =', int(options.Length ** 2), 'cm^2'
+print '\t* K =', K, 'mGy*m^2/mAs'
+print '\t* BSF =', BSF
 print 'is SED = K*(U/100)^2*Q*(1/FOD)^2*BSF =', round(SED, 3), 'mGy (mJ/kg).'
 print
 
