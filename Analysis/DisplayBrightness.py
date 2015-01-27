@@ -10,11 +10,13 @@ from __future__ import division
 import glob
 import os
 import platform
-import matplotlib.pyplot as plt
-import numpy
 import logging
 import time
 import sys
+
+import matplotlib.pyplot as plt
+import numpy
+
 from functions import get_git_hash
 
 
@@ -51,14 +53,15 @@ log.addHandler(handler)
 
 # Start
 log.info('Analsyis performed at %s', time.strftime('%d.%m.%Y at %H:%M:%S'))
-log.info('Analsyis performed with ' + sys.argv[0] + ' version %s', get_git_hash())
+log.info('Analsyis performed with ' + sys.argv[0] + ' version %s',
+         get_git_hash())
 log.info('\n' + 80 * '-')
 log.info('{0: <15}'.format('Scintillator') + '{0: <8}'.format('Sensor') +
          '{0: <24}'.format('Lens') + '{0: <8}'.format('Mean') +
          '{0: <8}'.format('Max'))
 plt.ion()
 for CounterLens, CurrentLens in enumerate(Lenses):
-    log.info(80 * '-')
+    log.info('\n')
     print 'Lens', CounterLens + 1, 'of', len(Lenses), '|', CurrentLens
     CombinationCounter = 0
     for CounterScintillator, CurrentScintillator in enumerate(Scintillators):
@@ -170,3 +173,31 @@ for CounterLens, CurrentLens in enumerate(Lenses):
     plt.close('all')
 
 print 'Done with everything'
+
+# Log file parsing
+LogFile = numpy.genfromtxt(LogFileName, skip_header=6,
+                           dtype=[('Scintillator', 'S15'), ('Sensor', 'S10'),
+                                  ('Lens', 'S20'), ('Mean', 'f8'),
+                                  ('Max', 'f8')])
+MeanAppScinTech = []
+MeanPingseng = []
+MeanHamamatsu = []
+MeanToshiba = []
+
+Lens = ''
+for line in LogFile:
+    if 'App' in line[0] and Lens in line[2]:
+        MeanAppScinTech.append(line[3])
+    if 'Ping' in line[0] and Lens in line[2]:
+        MeanPingseng.append(line[3])
+    if 'Hama' in line[0] and Lens in line[2]:
+        MeanHamamatsu.append(line[3])
+    if 'Tosh' in line[0] and Lens in line[2]:
+        MeanToshiba.append(line[3])
+
+print 'For the', Lens, 'lens'
+print 'AppScinTech has a mean brightness of',\
+    round(numpy.mean(MeanAppScinTech), 3)
+print 'Pingseng has a mean brightness of', round(numpy.mean(MeanPingseng), 3)
+print 'Hamamatsu has a mean brightness of', round(numpy.mean(MeanHamamatsu), 3)
+print 'Toshiba has a mean brightness of', round(numpy.mean(MeanToshiba), 3)
