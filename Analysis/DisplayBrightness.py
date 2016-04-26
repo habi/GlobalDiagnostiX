@@ -13,11 +13,17 @@ import platform
 import logging
 import time
 import sys
-
 import matplotlib.pyplot as plt
 import numpy
 
 from functions import get_git_hash
+
+# make lines a bit wider
+plt.rc('lines', linewidth=2)
+# display all images the same way
+plt.rc('image', cmap='gray', interpolation='nearest')
+
+minimal = False  # save minimized figures
 
 
 def processimage(inputimage, clip=3):
@@ -133,8 +139,9 @@ for CounterLens, CurrentLens in enumerate(Lenses):
             # Show all the images of this component combination , so that we
             # can quickly see which ones are good and which ones are not
             LensFigure = plt.figure(CombinationCounter, figsize=[12, 13])
-            plt.suptitle(' | '.join([CurrentScintillator, CurrentSensor,
-                                     CurrentLens]))
+            if not minimal:
+                plt.suptitle(' | '.join([CurrentScintillator, CurrentSensor,
+                                         CurrentLens]))
             DisplayStrechedImages = True
             for c, i in enumerate(Images):
                 ImagesPlot = plt.subplot(6, 6, c + 1)
@@ -152,17 +159,28 @@ for CounterLens, CurrentLens in enumerate(Lenses):
                                          CurrentLens))
             except OSError:
                 pass
-            LensFigure.savefig(os.path.join(RootFolder, 'BrightnessOutput',
-                                            CurrentLens, 'Images_' +
-                                            CurrentScintillator + '_' +
-                                            CurrentSensor + '_' +
-                                            CurrentLens + '.png'))
+            if minimal:
+                LensFigure.savefig(os.path.join(RootFolder, 'BrightnessOutput',
+                                                CurrentLens, 'Images_' +
+                                                CurrentScintillator + '_' +
+                                                CurrentSensor + '_' +
+                                                CurrentLens + '.png'), bbox_inches='tight')
+            else:
+                LensFigure.savefig(os.path.join(RootFolder, 'BrightnessOutput',
+                                                CurrentLens, 'Images_' +
+                                                CurrentScintillator + '_' +
+                                                CurrentSensor + '_' +
+                                                CurrentLens + '.png'))
             plt.pause(0.1)
             plt.draw()
     # Display
     OverViewFigure.tight_layout()
-    OverViewFigure.savefig(os.path.join(RootFolder, 'BrightnessOutput',
-                                        'Overview_' + CurrentLens + '.png'))
+    if minimal:
+        OverViewFigure.savefig(os.path.join(RootFolder, 'BrightnessOutput',
+                                            'Overview_' + CurrentLens + '.png'), bbox_inches='tight')
+    else:
+        OverViewFigure.savefig(os.path.join(RootFolder, 'BrightnessOutput',
+                                            'Overview_' + CurrentLens + '.png'))
     print
     print 'Done with', CurrentLens
     print 80 * '-'
