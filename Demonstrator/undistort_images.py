@@ -20,10 +20,8 @@ LoadOmmatidiag = True
 
 if LoadOmmatidiag:
     BaseDir = '/afs/psi.ch/project/EssentialMed/Images' \
-              '/DetectorElectronicsTests/EssentialLab/Valerie'
-    BaseDir = '/Users/habi/Dev/DemonstratorElectronics/1421142758_output'
+              '/DetectorElectronicsTests/EssentialLab/1421142758_checkerboard'
     OriginalsList = glob.glob(os.path.join(BaseDir, 'data-e*-g*-i*-??.png'))
-    ImageList = glob.glob(os.path.join(BaseDir, '*_edit.jpg'))
     ImageList = OriginalsList
 else:
     BaseDir = '/afs/psi.ch/project/EssentialMed/Dev/Demonstrator'
@@ -81,6 +79,8 @@ for counter, FileName in enumerate(ImageList):
         ImagePoints.append(Corners)
         RealWorldPoints.append(ObjectPoints)
         cv2.drawChessboardCorners(Image, PatternSize, Corners, Found)
+        plt.imsave(FileName[:-4] + '_pattern.png', Image)
+        print 'Saving found pattern image as %s' % FileName[:-4] + '_pattern.png'
     plt.subplot(3, 4, 11 - counter + 1)
     plt.imshow(ndimage.rotate(Image, 270), cmap='gray',
                interpolation='nearest')
