@@ -30,7 +30,7 @@ def myLogger(Folder, LogFileName):
     return logger
 
 StartingFolder = ('/afs/psi.ch/project/EssentialMed/MasterArbeitBFH/' +
-                  'XrayImages/20140721/Pingseng/MT9M001/Computar-11A/Spine')
+                  'XrayImages/Pingseng/MT9M001/Computar-11A/Spine')
 
 Experiment = [x[0] for x in os.walk(StartingFolder)][1:]
 
