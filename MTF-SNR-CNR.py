@@ -9,10 +9,16 @@ import sys
 import os
 from optparse import OptionParser
 import matplotlib.pylab as plt
-import scipy
+from scipy import stats
+import numpy
 
 # clear the commandline
 os.system('clear')
+
+# set display defaults
+plt.rc('image', cmap='gray', interpolation='nearest')  # Display all images the same way
+plt.rc('lines', linewidth=2)  # Make lines a bit wider
+plt.rc('lines', marker='o')  # Always with line markers
 
 # setup interactive plotting
 plt.ion()
@@ -43,8 +49,8 @@ parser.add_option('-t', '--test', dest='Test', default=False,
 
 print
 print 'Temporarily setting filename'
-options.Filename = '/afs/psi.ch/project/EssentialMed/Images/' \
-                   '06-Elphel-800erScreen/1347623915.00_200ms.jpg'
+options.Filename = '/afs/psi.ch/project/EssentialMed/Images/Camera ' \
+                   'Tests/Elphel 800 Screen/1347623915.00_200ms.jpg'
 
 # print
 # print 'Temporarily setting ROI'
@@ -61,12 +67,13 @@ if options.Filename is None:
 print 'Reading', options.Filename
 try:
     Image = plt.imread(options.Filename)
-    Image = sum(Image, axis=2)  # sum RGB channels, i.e. convert to grayscale
+    Image = numpy.sum(Image, axis=2)  # sum RGB channels, i.e. convert to
+    # grayscale
     # Flip the image upsidedown, since Matplotlib has the origin at a different
     # place. If not, we'd have to use "origin='lower'" in every imshow and
     # calculate too much with all the coordinates...
-    Image = flipud(Image)
-except:
+    Image = numpy.flipud(Image)
+except IOError:
     print 'I was not able to read the file, did you specify the correct ' \
           'path with "-f"?'
     exit(1)
@@ -76,7 +83,7 @@ print 'The image', os.path.basename(options.Filename), 'is', Image.shape[1],\
 
 # Do ROI if desired
 plt.figure(1)
-plt.imshow(Image, cmap=cm.gray, interpolation='nearest')
+plt.imshow(Image)
 plt.title('Original')
 if options.ROI:
     # make the ROI-Coordinates into a double tuple, so we can use less code
@@ -87,7 +94,7 @@ if options.ROI:
                     int(options.ROI.split(',')[3])))
 else:
     plt.title('Please select two corners of the ROI. Top left, bottom right')
-    options.ROI = ginput(2)
+    options.ROI = plt.ginput(2)
     # swap ROI coordinates if necessary (if user clicked right/left instead of
     # left/right)
     if options.ROI[0][0] > options.ROI[1][0]:
@@ -99,7 +106,7 @@ else:
 
 if options.ROI[0][0] > 0:
     plt.subplot(211)
-    plt.imshow(Image, cmap=cm.gray, interpolation='nearest')
+    plt.imshow(Image)
     plt.title('Original')
     plt.hlines(options.ROI[0][1], options.ROI[0][0], options.ROI[1][0], 'r',
                linewidth=3)
@@ -112,30 +119,30 @@ if options.ROI[0][0] > 0:
     Image = Image[options.ROI[0][1]:options.ROI[1][1],
             options.ROI[0][0]:options.ROI[1][0]]
     plt.subplot(212)
-    plt.imshow(Image, cmap=cm.gray, interpolation='nearest')
+    plt.imshow(Image)
     plt.title('ROI: ' +
-              str(int(np.round(options.ROI[0][0]))) + ':' +
-              str(int(np.round(options.ROI[0][1]))) + ' to ' +
-              str(int(np.round(options.ROI[1][0]))) + ':' +
-              str(int(np.round(options.ROI[1][1]))))
+              str(int(numpy.round(options.ROI[0][0]))) + ':' +
+              str(int(numpy.round(options.ROI[0][1]))) + ' to ' +
+              str(int(numpy.round(options.ROI[1][0]))) + ':' +
+              str(int(numpy.round(options.ROI[1][1]))))
 plt.draw()
 
 # Plot horizontal line
 SmoothingStep = 50
 plt.figure(2)
-plt.imshow(Image, cmap=cm.gray, interpolation='nearest')
+plt.imshow(Image)
 plt.title('Select line to plot')
-HorizontalLine = int(round(ginput(1)[0][1]))
+HorizontalLine = int(round(plt.ginput(1)[0][1]))
 plt.hlines(HorizontalLine, 0, Image.shape[1], 'r', linewidth=3)
 
 plt.subplot(211)
-plt.imshow(Image, cmap=cm.gray, interpolation='nearest')
+plt.imshow(Image)
 plt.hlines(HorizontalLine, 0, Image.shape[1], 'r', linewidth=3)
 plt.title('Original')
 plt.subplot(212)
 plt.plot(Image[HorizontalLine, :], label='Line ' + str(HorizontalLine))
-window = np.blackman(SmoothingStep)
-smoothed = np.convolve(window / window.sum(), Image[HorizontalLine, :],
+window = numpy.blackman(SmoothingStep)
+smoothed = numpy.convolve(window / window.sum(), Image[HorizontalLine, :],
                        mode='same')
 plt.plot(range(SmoothingStep, len(smoothed) - SmoothingStep),
          smoothed[SmoothingStep:-SmoothingStep], 'r--', linewidth=5,
@@ -160,9 +167,9 @@ if options.SNR:
     #  value of (mean/stdev) along axis, or 0 when stdev=0
 
     # Output
-    # scipy.stats.signaltonoise(i) = np.mean(i) / np.std(i)
-    SNR = scipy.stats.signaltonoise(Image[HorizontalLine, :])
-    print 'The SNR is', round(SNR, 3), 'or', round(10 * np.log10(SNR), 3), 'dB'
+    # stats.signaltonoise(i) = numpy.mean(i) / numpy.std(i)
+    SNR = stats.signaltonoise(Image[HorizontalLine, :])
+    print 'The SNR is', round(SNR, 3), 'or', round(10 * numpy.log10(SNR), 3), 'dB'
 
 if options.CNR:
     print 'pick two points on the upper image:'
@@ -207,25 +214,25 @@ if options.CNR:
                linewidth=3)
 
     print 'calculating CNR of', os.path.basename(options.Filename)
-    S1 = np.mean(Image[options.CNRCoordinates[0][1] -
+    S1 = numpy.mean(Image[options.CNRCoordinates[0][1] -
                        options.CNRRegionWidth:options.CNRCoordinates[0][1] +
                                               options.CNRRegionWidth,
                  options.CNRCoordinates[0][0] -
                  options.CNRRegionWidth:options.CNRCoordinates[0][0] +
                                         options.CNRRegionWidth])
-    S2 = np.mean(Image[options.CNRCoordinates[1][1] -
+    S2 = numpy.mean(Image[options.CNRCoordinates[1][1] -
                        options.CNRRegionWidth:options.CNRCoordinates[1][1] +
                                               options.CNRRegionWidth,
                  options.CNRCoordinates[1][0] -
                  options.CNRRegionWidth:options.CNRCoordinates[1][0] +
                                         options.CNRRegionWidth])
-    Sigma1 = np.std(Image[options.CNRCoordinates[0][1] -
+    Sigma1 = numpy.std(Image[options.CNRCoordinates[0][1] -
                           options.CNRRegionWidth:options.CNRCoordinates[0][1] +
                                                  options.CNRRegionWidth,
                     options.CNRCoordinates[0][0] -
                     options.CNRRegionWidth:options.CNRCoordinates[0][0] +
                                            options.CNRRegionWidth])
-    Sigma2 = np.std(Image[options.CNRCoordinates[1][1] -
+    Sigma2 = numpy.std(Image[options.CNRCoordinates[1][1] -
                           options.CNRRegionWidth:options.CNRCoordinates[1][1] +
                                                  options.CNRRegionWidth,
                     options.CNRCoordinates[1][0] -
@@ -238,7 +245,7 @@ if options.CNR:
         (2 * options.CNRRegionWidth) ** 2, 'pixels (±width of', \
         options.CNRRegionWidth, 'pixels).'
 
-    CNR = np.abs(S1 - S2) / (Sigma1 + Sigma2)
+    CNR = numpy.abs(S1 - S2) / (Sigma1 + Sigma2)
     print 'The CNR between the two points is:', CNR
     title = 'CNR: ' + str(round(CNR, 4))
     plt.title(title)
