@@ -30,6 +30,7 @@ def my_display_image(image):
                vmax=numpy.mean(image) + 3 * numpy.std(image))
     plt.axis('off')
 
+
 def my_draw_lineprofile_location(coordinates):
     """
     Draws a line profile over the image, with a yellow starting and a black
@@ -157,7 +158,7 @@ for counter in range(len(RadiographyNames)):
 
     plt.subplot(Grid[3, counter])
     my_display_image(ZoomedImages[counter])
-    my_draw_lineprofile_location(CoordinatesLeadPhantom )
+    my_draw_lineprofile_location(CoordinatesLeadPhantom)
 
 plt.savefig('Gainseries.png', bbox_inches='tight')
 
@@ -171,7 +172,7 @@ CoordinatesHorizontal = [(80, 47), (1200, 47)]
 LineProfileDiagonal = [lineprofiler.lineprofile(i, CoordinatesDiagonal)
                        for i in CorrectedImages]
 LineProfileHorizontal = [lineprofiler.lineprofile(i, CoordinatesHorizontal)
-                       for i in CorrectedImages]
+                         for i in CorrectedImages]
 
 plt.figure(2, figsize=(16, 9))
 Grid = gridspec.GridSpec(3, len(RadiographyNames))

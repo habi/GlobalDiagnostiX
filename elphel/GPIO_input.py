@@ -32,7 +32,7 @@ GPIO.setmode(GPIO.BOARD)
 
 print 'set up GPIO input channel'
 Pin = 26  # BOARD
-#~ Pin = 007  # BMC
+# Pin = 007  # BMC
 GPIO.setup(Pin, GPIO.IN)
 
 print

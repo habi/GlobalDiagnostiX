@@ -129,7 +129,7 @@ if PatternSize[1] % 2 == 0:
     print PatternSize[1]
 
 # Generate random image
-#~ ImageRandom = numpy.floor(numpy.random.random(PatternSize) + .5) * 256
+# ImageRandom = numpy.floor(numpy.random.random(PatternSize) + .5) * 256
 ImageRandom = numpy.random.randint(2, size=PatternSize) * 256
 ImageRandom = padImage(ImageRandom)
 scipy.misc.imsave('MTF_random.png', ImageRandom)
@@ -158,7 +158,7 @@ ImageReal = plt.imread('/scratch/tmp/DevWareX/AR0130/'
                        '1393346142_AR0130_0.16_2.0f_030ms_0mm_to200mm/'
                        'AR0130_0.16_2.0f_030ms_0mm_to200mm_036mm.png')
 
-#~ ImageReal = padImage(ImageReal,5,-1)
+# ImageReal = padImage(ImageReal,5,-1)
 scipy.misc.imsave('MTF_real.png', ImageComb)
 
 # Set up figure using gridspec (http://matplotlib.org/users/gridspec.html)
@@ -176,7 +176,7 @@ showImage(ImageEdge)
 plt.subplot(gs[6:8, 0:2])
 showImage(ImageReal)
 
-#~ # Show them gaussfiltered
+# Show them gaussfiltered
 plt.subplot(gs[0:2, 2:4])
 plt.title('Gaussfiltered\nsigma=0.8')
 showImage(gaussfilter(ImageRandom), color=Hues[1])

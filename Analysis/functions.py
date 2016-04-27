@@ -90,11 +90,11 @@ def get_experiment_list(StartingFolder):
         if (len(os.path.basename(root)) == 7
             or len(os.path.basename(root)) == 8) \
                 and not os.path.basename(root).startswith('2014') \
-                and not 'RECYCLE' in os.path.basename(root) \
-                and not 'Pingseng' in os.path.basename(root) \
-                and not 'Toshiba' in os.path.basename(root) \
-                and not 'MT9' in os.path.basename(root) \
-                and not 'AR0' in os.path.basename(root):
+                and 'RECYCLE' not in os.path.basename(root) \
+                and 'Pingseng' not in os.path.basename(root) \
+                and 'Toshiba' not in os.path.basename(root) \
+                and 'MT9' not in os.path.basename(root) \
+                and 'AR0' not in os.path.basename(root):
             Experiment.append(root)
             ExperimentID.append(os.path.basename(root))
         if platform.node() != 'slslc06' and platform.node() != 'x02da-cons-2':

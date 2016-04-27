@@ -137,26 +137,26 @@ def subset_seletor(selector, label=False):
     plt.title(' '.join([str(len(maskedx)), 'images for', selector]))
     return selector
 
-## Prepare the plot
+# Prepare the plot
 fig = plt.figure(figsize=(16, 9))
 # Plot figure
-## Setup plot
-#~ plt.xkcd()
+# Setup plot
+# plt.xkcd()
 textalpha = 0.618
 
-## Subplot Hamamatsu
+# Subplot Hamamatsu
 ax1 = fig.add_subplot(221, projection='3d')
 subset_seletor('Hamamatsu', label=False)
 
-## Subplot Pingseng
+# Subplot Pingseng
 ax2 = fig.add_subplot(222, projection='3d')
 subset_seletor('Pingseng', label=False)
 
-## Subplot Toshiba
+# Subplot Toshiba
 ax3 = fig.add_subplot(223, projection='3d')
 subset_seletor('Toshiba', label=False)
 
-## Subplot AppScinTech
+# Subplot AppScinTech
 ax4 = fig.add_subplot(224, projection='3d')
 subset_seletor('AppScinTech', label=False)
 

@@ -41,7 +41,7 @@ GPIO.setmode(GPIO.BOARD)
 
 print 'set up GPIO output channel'
 # Pin = 26 # BOARD
-#~ Pin = 007 # BMC
+# Pin = 007 # BMC
 GPIO.setup(Pin, GPIO.OUT)
 
 # set RPi board pin selected above to high for a certain time, wait, set it low

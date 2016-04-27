@@ -185,8 +185,9 @@ plt.axhline(color='k', linestyle='--')
 
 # X-rays
 x = numpy.arange(0, XRaySourcePosition - Thickness - SupportThickness, 0.1)
-for yshift in numpy.arange(-options.FOV / 2, options.FOV / 2,
-                            options.FOV / 10.0):
+for yshift in numpy.arange(-options.FOV / 2,
+                           options.FOV / 2,
+                           options.FOV / 10.0):
     plt.plot(-x - Thickness - SupportThickness, numpy.sin(x) + yshift, 'k')
 
 # Scintillator
@@ -453,11 +454,12 @@ print ' '.join(sys.argv)
 
 if options.Output:
     print
-    print 'use the command below to open all the generated .png iamges with ' \
+    print 'use the command below to open all the generated .png images with ' \
           'Fiji.'
-    viewcommand = '/home/scratch/Apps/Fiji.app/fiji-linux -eval' + \
-            'run("Image Sequence...", "open=' + os.getcwd() + \
-            ' starting=1 increment=1 scale=100 file=png or=[] sort");\' &'
+    viewcommand = '/home/scratch/Apps/Fiji.app/fiji-linux -eval run("Image ' \
+                  'Sequence...", "open=' + os.getcwd() + \
+                  ' starting=1 increment=1 scale=100 file=png or=[] ' \
+                  'sort");\' &'
     print viewcommand
     print 80 * '_'
 

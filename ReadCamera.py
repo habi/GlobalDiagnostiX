@@ -111,11 +111,11 @@ elif options.camera == 'awaiba':
 print "We are using a", CMOSwidth, "x", CMOSheight, "px detector size to",\
     "proceed."
 
-#~ Set exposure time
-#~ According to http://goo.gl/D8MHsW and http://is.gd/zaxWn7, the exposure time
-#~ is set in "100 µs units, where the value 1 stands for 1/10000th of a second,
-#~ 10000 for 1 second [...]". The user sets the exposure time in ms (1000 µs)
-#~ 1 s = 10⁶ µs = 10⁴ units -> 1000 ms = 10⁴ units. From ms to units -> * 10
+# Set exposure time
+# According to http://goo.gl/D8MHsW and http://is.gd/zaxWn7, the exposure time
+# is set in "100 µs units, where the value 1 stands for 1/10000th of a second,
+# 10000 for 1 second [...]". The user sets the exposure time in ms (1000 µs)
+# 1 s = 10⁶ µs = 10⁴ units -> 1000 ms = 10⁴ units. From ms to units -> * 10
 if options.verbose:
     print 'The desired exposure time is', options.exposuretime, 'ms',
 else:
@@ -134,7 +134,7 @@ if options.verbose:
             print "The camera was set from a preset exposure time of",\
                 line.split("=")[-1], "units",
 
-#~ Use 'v4l2-ctl -c exposure_absolute=time' to set exposure time
+# Use 'v4l2-ctl -c exposure_absolute=time' to set exposure time
 process = subprocess.Popen(["v4l2-ctl", '--device=' + CameraPath,
                             "-c", "exposure_absolute=" +
                             str(options.exposuretime)], stdout=subprocess.PIPE)

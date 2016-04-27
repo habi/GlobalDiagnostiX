@@ -4,6 +4,7 @@
 Line profile function used in several scripts.
 """
 
+
 def lineprofile(inputimage, coordinates=False, showimage=False, debug=False):
     """
     Function to draw a line profile from a selection in the image.
@@ -41,7 +42,7 @@ def lineprofile(inputimage, coordinates=False, showimage=False, debug=False):
         if debug:
             plt.ion()
         plt.imshow(inputimage, cmap='bone', vmin=numpy.min(inputimage),
-                vmax=numpy.mean(inputimage) + 3 * numpy.std(inputimage))
+                   vmax=numpy.mean(inputimage) + 3 * numpy.std(inputimage))
         plt.title('Please select the end-points for the line-profile')
 
     if coordinates:
@@ -76,7 +77,7 @@ def lineprofile(inputimage, coordinates=False, showimage=False, debug=False):
         # Draw the image and line profile again
         plt.subplot(211)
         plt.imshow(inputimage, cmap='bone', vmin=numpy.min(inputimage),
-                vmax=numpy.mean(inputimage) + 3 * numpy.std(inputimage))
+                   vmax=numpy.mean(inputimage) + 3 * numpy.std(inputimage))
         plt.plot((x0, x1), (y0, y1), 'r')
         plt.plot(x0, y0, 'yo')
         plt.plot(x1, y1, 'ko')
@@ -84,11 +85,11 @@ def lineprofile(inputimage, coordinates=False, showimage=False, debug=False):
         plt.draw()
 
         plt.subplot(212)
-        plt.plot(profileinterpolated, 'red',  label='interpolated')
+        plt.plot(profileinterpolated, 'red', label='interpolated')
         plt.plot(profilenn, 'orange', label='nearest neighbour')
         plt.plot(0, profilenn[0], 'yo', markersize=25, alpha=0.309)
         plt.plot(len(profilenn) - 1, profilenn[-1], 'ko', markersize=25,
-                alpha=0.309)
+                 alpha=0.309)
         plt.xlim([0, len(profilenn) - 1])
         plt.legend(loc='best')
         plt.draw()

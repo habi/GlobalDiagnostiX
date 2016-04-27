@@ -61,8 +61,8 @@ if options.Distance is None or options.FOV is None:
     sys.exit(1)
 print ''
 
-#~ tan(\alpha/2) = (FOV/2) / Distance
-#~ Distance = (FOV/2)/tan(\alpha/2)
+# tan(\alpha/2) = (FOV/2) / Distance
+# Distance = (FOV/2)/tan(\alpha/2)
 
 print 'We calculate with a CMOS-Scintillator distance of', options.Distance, \
     'mm.'
@@ -100,23 +100,26 @@ for Displacement in (0, - options.FOV / (1 + options.Overlap / 100),
 
     # Opening angle, based on CMOS
     wedge = Wedge((0, Displacement), options.Distance * 0.309,
-        -OpeningAngle / 2, OpeningAngle / 2, fill=True, color='r', alpha=0.125)
+                  -OpeningAngle / 2, OpeningAngle / 2, fill=True, color='r',
+                  alpha=0.125)
     plt.gca().add_patch(wedge)
-    plt.plot((0, options.Distance), (Displacement, Displacement + options.FOV
-                                     / 2), color='k', linestyle='--',
-             alpha=0.25)
-    plt.plot((0, options.Distance), (Displacement, Displacement - options.FOV
-                                     / 2), color='k', linestyle='--',
-             alpha=0.25)
+    plt.plot((0, options.Distance),
+             (Displacement, Displacement + options.FOV / 2), color='k',
+             linestyle='--', alpha=0.25)
+    plt.plot((0, options.Distance),
+             (Displacement, Displacement - options.FOV / 2), color='k',
+             linestyle='--', alpha=0.25)
 
     # Scintillator FOV
     screencolor = 'k'
-    plt.plot([options.Distance, options.Distance], [Displacement + (
-        options.FOV / 2), Displacement - (options.FOV / 2)],  linewidth='6',
+    plt.plot([options.Distance, options.Distance],
+             [Displacement + (options.FOV / 2),
+              Displacement - (options.FOV / 2)], linewidth='6',
              color=screencolor)
     screencolor = 'g'
-    plt.plot([options.Distance, options.Distance], [Displacement + (
-        options.FOV / 2), Displacement - (options.FOV / 2)], linewidth='4',
+    plt.plot([options.Distance, options.Distance],
+             [Displacement + (options.FOV / 2),
+              Displacement - (options.FOV / 2)], linewidth='4',
              color=screencolor)
 
     # FOV drawn from center of lens
@@ -130,18 +133,17 @@ for Displacement in (0, - options.FOV / (1 + options.Overlap / 100),
 
     # Paravents. Position calculated back from overlap
     paraventcolor = 'k'
-    plt.plot(
-        [0, options.ParaventLength],
-        [Displacement - (options.FOV / (1 + options.Overlap / 100) / 2),
-        Displacement - (options.FOV / (1 + options.Overlap / 100) / 2)],
-        linewidth='5', color=paraventcolor)
+    plt.plot([0, options.ParaventLength],
+             [Displacement - (options.FOV / (1 + options.Overlap / 100) / 2),
+              Displacement - (options.FOV / (1 + options.Overlap / 100) / 2)],
+             linewidth='5', color=paraventcolor)
 
     # Paravent blocking,
     beamcolor = 'g'
     plt.plot([options.BackFocalLength + options.LensLength, options.Distance],
-        [Displacement, Displacement + options.FOV / 2], beamcolor)
+             [Displacement, Displacement + options.FOV / 2], beamcolor)
     plt.plot([options.BackFocalLength + options.LensLength, options.Distance],
-        [Displacement, Displacement - options.FOV / 2], beamcolor)
+             [Displacement, Displacement - options.FOV / 2], beamcolor)
 
 # Nice plotting
 

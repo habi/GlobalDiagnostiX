@@ -55,7 +55,7 @@ K = 0.1
 BSF = 1.35
 # BSF as found in BAG2012. "Der ueber verschiedene Anlagen gemittelte
 # Korrekturfaktor betrug 1.15"
-#BSF = 1.15
+# BSF = 1.15
 
 # calculating while converting Focusdistance from m to cm
 SED = K * (options.kV / 100) ** 2 * options.mAs *\

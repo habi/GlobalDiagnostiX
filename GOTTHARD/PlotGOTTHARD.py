@@ -53,8 +53,8 @@ plt.savefig('1_Si_Transmission.pdf', transparent=True)
 
 # Plot transmission
 plt.figure(figsize=FigureSize)
-plt.loglog(SiliconAttenuation[:, 0], SiliconAttenuation[:, 1],
-         'r', label='Si Transmission')
+plt.loglog(SiliconAttenuation[:, 0], SiliconAttenuation[:, 1], 'r',
+           label='Si Transmission')
 plt.xlabel('Photon Energy [keV]')
 plt.ylabel('Tranmission')
 plt.savefig('1_Si_Transmission.pdf', transparent=True)
@@ -63,9 +63,8 @@ plt.savefig('1_Si_Transmission.pdf', transparent=True)
 plt.figure(figsize=FigureSize)
 for i in reversed(range(5000, 20250, 500)):
     plt.plot(SiliconAttenuation[:, 0] * 1000,
-            (np.exp(- (SiliconAttenuation[:, 1] * SiliconDensity *
-                       SiliconThickness / 10000))), 'ro',
-            label='Si Transmission')
+             (np.exp(- (SiliconAttenuation[:, 1] * SiliconDensity * SiliconThickness / 10000))),
+             'ro', label='Si Transmission')
     plt.xlabel('Photon Energy [keV]')
     plt.ylabel('Tranmission')
     plt.ylim([0, 1])
@@ -77,9 +76,8 @@ for i in reversed(range(5000, 20250, 500)):
 
 for i in reversed(range(1000, 5000, 200)):
     plt.plot(SiliconAttenuation[:, 0] * 1000,
-            (np.exp(- (SiliconAttenuation[:, 1] * SiliconDensity *
-                       SiliconThickness / 10000))), 'ro',
-            label='Si Transmission')
+             (np.exp(- (SiliconAttenuation[:, 1] * SiliconDensity * SiliconThickness / 10000))),
+             'ro', label='Si Transmission')
     plt.xlabel('Photon Energy [keV]')
     plt.ylabel('Tranmission')
     plt.ylim([0, 1])
@@ -91,9 +89,8 @@ for i in reversed(range(1000, 5000, 200)):
 
 for i in reversed(range(120, 1000, 50)):
     plt.plot(SiliconAttenuation[:, 0] * 1000,
-            (np.exp(- (SiliconAttenuation[:, 1] * SiliconDensity *
-                       SiliconThickness / 10000))), 'ro',
-            label='Si Transmission')
+             (np.exp(- (SiliconAttenuation[:, 1] * SiliconDensity * SiliconThickness / 10000))),
+             'ro', label='Si Transmission')
     plt.xlabel('Photon Energy [keV]')
     plt.ylabel('Tranmission')
     plt.ylim([0, 1])
@@ -206,7 +203,7 @@ for i in range(int(len(Spectra) / 2)):
                              str(mAs[i]) + 'mAs']))
     plt.plot(Data[k][:, 0], Data[k][:, 1], color='g',
              label=' '.join([Modality[k][:2] + ' ' + Modality[k][13:] + ',',
-             str(Energy[k]) + 'kV,', str(mAs[k]) + 'mAs']))
+                             str(Energy[k]) + 'kV,', str(mAs[k]) + 'mAs']))
     plt.plot(Data[i][:, 0], (Data[i] - Data[k])[:, 1],
              label='Difference', color='r')
     plt.legend(loc='center', bbox_to_anchor=(0.5, 0.1))
@@ -236,15 +233,13 @@ for i in range(int(len(Spectra) / 2)):
     k = i + int(len(Spectra) / 2)
     print '    * ' + DataName[i] + '/' + DataName[k]
     plt.plot(Data[i][:, 0], Data[i][:, 1], color='k',
-                 label=' '.join([Modality[i] + ',',
-                                 str(Energy[i]) + 'kV,',
-                                 str(mAs[i]) + 'mAs,',
-                                 str(ExposureTime[i]) + 'ms']))
+             label=' '.join([Modality[i] + ',', str(Energy[i]) + 'kV,',
+                             str(mAs[i]) + 'mAs,',
+                             str(ExposureTime[i]) + 'ms']))
     plt.plot(Data[k][:, 0], Data[k][:, 1], color='g',
-                 label=' '.join([Modality[k] + ',',
-                                 str(Energy[k]) + 'kV,',
-                                 str(mAs[k]) + 'mAs,',
-                                 str(ExposureTime[k]) + 'ms']))
+             label=' '.join([Modality[k] + ',', str(Energy[k]) + 'kV,',
+                             str(mAs[k]) + 'mAs,',
+                             str(ExposureTime[k]) + 'ms']))
     plt.plot(Data[i][:, 0], (Data[i] - Data[k])[:, 1],
              label='Difference', color='r')
     plt.legend(loc='best')
@@ -254,7 +249,7 @@ for i in range(int(len(Spectra) / 2)):
                 transparent=True)
     plt.savefig(os.path.join('img', 'Photons_' + DataName[i] + '.pdf'),
                 transparent=True)
-    #~ plt.show()
+    # plt.show()
 
 print
 print 'Plotting Logplot for every modality'
@@ -281,4 +276,4 @@ for i in range(int(len(Spectra) / 2)):
                 transparent=True)
     plt.savefig(os.path.join('img', 'Log_Photons_' + DataName[i] + '.pdf'),
                 transparent=True)
-    #~ plt.show()
+    # plt.show()

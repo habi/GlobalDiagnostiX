@@ -133,8 +133,7 @@ K = 0.1  # mGy m^2 mAs^-1
 BSF = 1.35
 
 # calculating while converting Focusdistance from m to cm
-SED = K * (options.kV / 100) ** 2 * options.mAs * \
-      (100 / options.Distance) ** 2 * BSF
+SED = K * (options.kV / 100) ** 2 * options.mAs * (100 / options.Distance) ** 2 * BSF
 print 'The surface entrance dose for an x-ray pulse with'
 print '\t* U =', options.kV, 'kV'
 print '\t* Q =', options.mAs, 'mAs'
@@ -157,10 +156,7 @@ print 'A SED of', '%.3e' % (SED / 1000), 'Gy (mJ/kg) corresponds to', \
 # 3.1.5
 eta = 1.1e-9 * 74 * options.kV * 1000
 
-N0 = (options.kV * 1000 * \
-    ((options.mAs / 1000) / (options.Exposuretime / 1000)) / (PhotonEnergy)) *\
-    eta * \
-    ((options.Length / 100) ** 2 / (4 * np.pi * (options.Distance / 100) ** 2))
+N0 = (options.kV * 1000 * ((options.mAs / 1000) / (options.Exposuretime / 1000)) / (PhotonEnergy)) * eta * ((options.Length / 100) ** 2 / (4 * np.pi * (options.Distance / 100) ** 2))
 
 print 'The source emits %.3e' % N0, 'photons with a mean energy of', \
     '%.3e' % PhotonEnergy, 'each'
@@ -247,19 +243,18 @@ Weight = 10  # kg
 
 # Calculate the number of photons from the tube to the sample
 # ~ N0 = (VI/E)*eta*(A/4*Pi*r^2)
-N0 = (Voltage * Current) / (Voltage * eV) *  eta * Z * Voltage * \
-    Area / (4 * np.pi * r ** 2)
+N0 = (Voltage * Current) / (Voltage * eV) * eta * Z * Voltage * Area / (4 * np.pi * r ** 2)
 print '    - the tube emitts %.4e' % N0, 'photons per second'
 
 # Absorbed radiation dose per second
-#~ Da = Eneregy / Weight  # J/kg per second
+# Da = Eneregy / Weight  # J/kg per second
 Da = N * MeanEnergy * 1000 * eV / Weight
 
 print '    -', round(Da * 1000, 4), 'mGy/s are absorbed by the sample,', \
     ' if we assume it is', Weight, 'kg'
 
 # Effective dose per second
-#~ De = Da * Wr, WR = Q * N
+# De = Da * Wr, WR = Q * N
 De = Da * QFactor * WeightingFactor
 
 print '    -', round(De * 1000, 4), 'mSv/s is the effective dose'

@@ -117,7 +117,7 @@ if options.ROI[0][0] > 0:
     plt.vlines(options.ROI[1][0], options.ROI[0][1], options.ROI[1][1], 'r',
                linewidth=3)
     Image = Image[options.ROI[0][1]:options.ROI[1][1],
-            options.ROI[0][0]:options.ROI[1][0]]
+                  options.ROI[0][0]:options.ROI[1][0]]
     plt.subplot(212)
     plt.imshow(Image)
     plt.title('ROI: ' +
@@ -143,7 +143,7 @@ plt.subplot(212)
 plt.plot(Image[HorizontalLine, :], label='Line ' + str(HorizontalLine))
 window = numpy.blackman(SmoothingStep)
 smoothed = numpy.convolve(window / window.sum(), Image[HorizontalLine, :],
-                       mode='same')
+                          mode='same')
 plt.plot(range(SmoothingStep, len(smoothed) - SmoothingStep),
          smoothed[SmoothingStep:-SmoothingStep], 'r--', linewidth=5,
          label='smoothed (by ' + str(SmoothingStep) + ')')
@@ -178,7 +178,7 @@ if options.CNR:
     plt.subplot(211)  # plot on first plot
 
     # draw CNR ROI around them
-    ## Point 1
+    # Point 1
     plt.hlines(options.CNRCoordinates[0][1] - options.CNRRegionWidth,
                options.CNRCoordinates[0][0] - options.CNRRegionWidth,
                options.CNRCoordinates[0][0] + options.CNRRegionWidth, 'y',
@@ -195,7 +195,7 @@ if options.CNR:
                options.CNRCoordinates[0][1] - options.CNRRegionWidth,
                options.CNRCoordinates[0][1] + options.CNRRegionWidth, 'y',
                linewidth=3)
-    ## Point 2
+    # Point 2
     plt.hlines(options.CNRCoordinates[1][1] - options.CNRRegionWidth,
                options.CNRCoordinates[1][0] - options.CNRRegionWidth,
                options.CNRCoordinates[1][0] + options.CNRRegionWidth, 'y',
@@ -215,29 +215,21 @@ if options.CNR:
 
     print 'calculating CNR of', os.path.basename(options.Filename)
     S1 = numpy.mean(Image[options.CNRCoordinates[0][1] -
-                       options.CNRRegionWidth:options.CNRCoordinates[0][1] +
-                                              options.CNRRegionWidth,
-                 options.CNRCoordinates[0][0] -
-                 options.CNRRegionWidth:options.CNRCoordinates[0][0] +
-                                        options.CNRRegionWidth])
-    S2 = numpy.mean(Image[options.CNRCoordinates[1][1] -
-                       options.CNRRegionWidth:options.CNRCoordinates[1][1] +
-                                              options.CNRRegionWidth,
-                 options.CNRCoordinates[1][0] -
-                 options.CNRRegionWidth:options.CNRCoordinates[1][0] +
-                                        options.CNRRegionWidth])
-    Sigma1 = numpy.std(Image[options.CNRCoordinates[0][1] -
-                          options.CNRRegionWidth:options.CNRCoordinates[0][1] +
-                                                 options.CNRRegionWidth,
+                          options.CNRRegionWidth:options.CNRCoordinates[0][1] + options.CNRRegionWidth,
                     options.CNRCoordinates[0][0] -
-                    options.CNRRegionWidth:options.CNRCoordinates[0][0] +
-                                           options.CNRRegionWidth])
-    Sigma2 = numpy.std(Image[options.CNRCoordinates[1][1] -
-                          options.CNRRegionWidth:options.CNRCoordinates[1][1] +
-                                                 options.CNRRegionWidth,
+                    options.CNRRegionWidth:options.CNRCoordinates[0][0] + options.CNRRegionWidth])
+    S2 = numpy.mean(Image[options.CNRCoordinates[1][1] -
+                          options.CNRRegionWidth:options.CNRCoordinates[1][1] + options.CNRRegionWidth,
                     options.CNRCoordinates[1][0] -
-                    options.CNRRegionWidth:options.CNRCoordinates[1][0] +
-                                           options.CNRRegionWidth])
+                    options.CNRRegionWidth:options.CNRCoordinates[1][0] + options.CNRRegionWidth])
+    Sigma1 = numpy.std(Image[options.CNRCoordinates[0][1] -
+                             options.CNRRegionWidth:options.CNRCoordinates[0][1] + options.CNRRegionWidth,
+                       options.CNRCoordinates[0][0] -
+                       options.CNRRegionWidth:options.CNRCoordinates[0][0] + options.CNRRegionWidth])
+    Sigma2 = numpy.std(Image[options.CNRCoordinates[1][1] -
+                             options.CNRRegionWidth:options.CNRCoordinates[1][1] + options.CNRRegionWidth,
+                       options.CNRCoordinates[1][0] -
+                       options.CNRRegionWidth:options.CNRCoordinates[1][0] + options.CNRRegionWidth])
 
     # Output
     print 'CNR between the two selected points:'

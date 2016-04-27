@@ -85,15 +85,15 @@ else:
 
 # Now we---finally---gan get a list of images to work with, yay!
 Images = [i for i in sorted(glob.glob(os.path.join(FolderList[Folder],
-                                                      '*.raw')))]
-print 'I will work with the', len(Images), '.raw files found in',\
+                                                   '*.raw')))]
+print 'I will work with the', len(Images), '.raw files found in', \
     FolderList[Folder]
 print
 
 # Get necessary parameters from the file names
 ImageHeight = int(os.path.basename(Images[1]).split('_')[1].split('x')[1])
 ImageWidth = int(os.path.basename(Images[1]).split('_')[1].split('x')[0])
-#~ Probably get some more parameters, but for now it's enough...
+# Probably get some more parameters, but for now it's enough...
 
 # Iterate through the files, calculate the mean (exposure) and standard
 # deviation of each image and plot these values.
@@ -122,15 +122,14 @@ plt.subplot(311)
 plt.title(' '.join([str(len(Images)), 'Images from', SensorList[Sensor],
                     'with', LensList[Lens]]))
 plt.plot(MeanExposure, color='r', alpha=0.5,
-    label='Exposure with Max @ Img. ' + \
-    str(MeanExposure.index(max(MeanExposure))))
+         label='Exposure with Max @ Img. ' + str(MeanExposure.index(max(MeanExposure))))
 plt.plot(STD, color='b', alpha=0.5,
-    label='STD with Max @ Img. ' + str(STD.index(max(STD))))
+         label='STD with Max @ Img. ' + str(STD.index(max(STD))))
 
 # Print details and plot positions of 'Details' chosen images
 Details = 7
 DetailImages = [i for i in range(1, len(Images),
-                                   int(round(len(Images) / Details)))]
+                                 int(round(len(Images) / Details)))]
 for i in DetailImages:
     print str(i).zfill(2), '|',
     if normalize:
@@ -167,9 +166,9 @@ for i, item in enumerate(DisplayImages):
     plt.subplot(3, Details, i + 1 + Details)
     plt.imshow(numpy.memmap(item, dtype=numpy.uint16,
                             shape=(ImageHeight, ImageWidth)), cmap='gray',
-                            interpolation='nearest')
-    plt.title('Img ' + str(DetailImages[i]) + '@' + \
-        os.path.basename(item.split('_')[-1].split('.')[0]))
+               interpolation='nearest')
+    plt.title('Img ' + str(DetailImages[i]) + '@' +
+              os.path.basename(item.split('_')[-1].split('.')[0]))
     # Display without ticks:
     plt.axis('off')
 
@@ -178,16 +177,14 @@ plt.subplot(3, 2, 5)
 plt.imshow(numpy.memmap(Images[STD.index(min(STD))], dtype=numpy.uint16,
            shape=(ImageHeight, ImageWidth)), cmap='gray',
            interpolation='nearest')
-plt.title('worst STD@' +
-    os.path.basename(Images[STD.index(min(STD))]).split('_')[-1].split('.')[0])
-#~ plt.axis('off')
+plt.title('worst STD@' + os.path.basename(Images[STD.index(min(STD))]).split('_')[-1].split('.')[0])
+# plt.axis('off')
 plt.subplot(3, 2, 6)
 plt.imshow(numpy.memmap(Images[STD.index(max(STD))], dtype=numpy.uint16,
-           shape=(ImageHeight, ImageWidth)), cmap='gray',
+                        shape=(ImageHeight, ImageWidth)), cmap='gray',
            interpolation='nearest')
-plt.title('best STD@' +
-    os.path.basename(Images[STD.index(max(STD))]).split('_')[-1].split('.')[0])
-#~ plt.axis('off')
+plt.title('best STD@' + os.path.basename(Images[STD.index(max(STD))]).split('_')[-1].split('.')[0])
+# plt.axis('off')
 
 # Save this figure
 plt.savefig('MTF_Focus_' + SensorList[Sensor] + '_' + LensList[Lens] + '_' +
@@ -212,7 +209,7 @@ def NormalizeImage(Image):
 # Seed the random function, so that we always get the same random image
 numpy.random.seed(seed=1796)
 RandomImage = numpy.random.randint(2, size=[ImageHeight, ImageWidth]) * 4096
-#~ RandomImage = plt.imread('random_target_for_MTF_8f79cf8.png')
+# RandomImage = plt.imread('random_target_for_MTF_8f79cf8.png')
 RandomImage = NormalizeImage(RandomImage)
 
 # Load the image with best focus
@@ -261,10 +258,9 @@ plt.title('2D FFT')
 plt.subplot(245)
 plt.imshow(CameraImage, interpolation='none', cmap='gray')
 Title = ' '.join(['Best focus@' +
-                   os.path.basename(Images[STD.index(max(STD))]).split('_')
-                   [-1].split('.')[0] + '\nmin/max=' +
-                   str(numpy.min(CameraImage)) + '/' +
-                   str(numpy.max(CameraImage))])
+                  os.path.basename(Images[STD.index(max(STD))]).split('_')[-1].split('.')[0] +
+                  '\nmin/max=' + str(numpy.min(CameraImage)) + '/' +
+                  str(numpy.max(CameraImage))])
 plt.title(Title)
 plt.subplot(246)
 plt.imshow(FFT2D(CameraImage, 0.1), interpolation='none', cmap='gray')
@@ -289,7 +285,7 @@ def MTF(ImageBeforeTransformation, ImageAfterTransformation):
     PSD_B = numpy.mean(PSD_B, axis=0)
     ImgWidth = ImageBeforeTransformation.shape[1]
     return numpy.sqrt(PSD_B / PSD_A)[:ImgWidth / 2]
-    #~ return numpy.sqrt(PSD_B)[:ImgWidth / 2]
+    # return numpy.sqrt(PSD_B)[:ImgWidth / 2]
 
 plt.subplot(144)
 plt.plot(MTF(RandomImage, CameraImage))

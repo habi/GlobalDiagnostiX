@@ -71,7 +71,7 @@ for y in range(Size[1]):
             if CheckerBoard[x, y]:
                 CheckerBoard[x, y] = 0
             else:
-                CheckerBoard[x,y] = 1
+                CheckerBoard[x, y] = 1
 CheckerBoard[:StripeSize, :] = 1
 CheckerBoard[-StripeSize:, :] = 1
 CheckerBoard[:, :StripeSize] = 1

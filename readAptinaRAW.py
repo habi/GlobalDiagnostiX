@@ -19,10 +19,10 @@ Size = [int(File.split('_')[1].split('x')[1]),
 FileToLoad = os.path.join(Directory, Folder, File)
 
 FromFile = numpy.fromfile(FileToLoad, dtype=numpy.uint16).reshape(Size)
-#~ FromFile -= numpy.mean(FromFile)
+# FromFile -= numpy.mean(FromFile)
 
 MemMap = numpy.memmap(FileToLoad, dtype=numpy.uint16, shape=(Size[0], Size[1]))
-#~ MemMap -= numpy.mean(MemMap)
+# MemMap -= numpy.mean(MemMap)
 
 plt.figure(File)
 plt.subplot(121)

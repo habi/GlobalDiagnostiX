@@ -15,9 +15,9 @@ import numpy
 
 # Setup
 Root = '/afs/psi.ch/project/EssentialMed/Images/13-Aptina_Focus_Test/'
-#~ Root = '/Volumes/WINDOWS'
-#~ Root = '/scratch/tmp/DevWareX/AR0130'
-#~ Root = '/scratch/tmp/DevWareX/A-1300'
+# Root = '/Volumes/WINDOWS'
+# Root = '/scratch/tmp/DevWareX/AR0130'
+# Root = '/scratch/tmp/DevWareX/A-1300'
 
 Directories = sorted([x[0] for x in os.walk(Root)][1:])
 
@@ -78,7 +78,7 @@ plt.plot(MeanExposure, color='r', alpha=0.5,
          label='Exposure with Max @ Img. ' +
                str(MeanExposure.index(max(MeanExposure))))
 plt.plot(STD, color='b', alpha=0.5,
-    label='STD with Max @ Img. ' + str(STD.index(max(STD))))
+         label='STD with Max @ Img. ' + str(STD.index(max(STD))))
 # Print details and plot positions of 'Details' chosen images
 Details = 10
 for i in range(1, len(Images), int(round(len(Images) / Details))):
@@ -96,16 +96,16 @@ for i in range(1, len(Images), int(round(len(Images) / Details))):
 # Plot and mark worst and best image: http://stackoverflow.com/a/5147430/323100
 plt.plot(STD.index(min(STD)), min(STD), color='b', marker='v')
 plt.annotate(os.path.basename(Images[STD.index(min(STD))]),
-    xy=(STD.index(min(STD)), min(STD)), xytext=(0, 30),
-    textcoords='offset points', ha='center', va='bottom',
-    bbox=dict(boxstyle='round,pad=0.5', fc='b', alpha=0.125),
-    arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.79'))
+             xy=(STD.index(min(STD)), min(STD)), xytext=(0, 30),
+             textcoords='offset points', ha='center', va='bottom',
+             bbox=dict(boxstyle='round,pad=0.5', fc='b', alpha=0.125),
+             arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.79'))
 plt.plot(STD.index(max(STD)), max(STD), color='b', marker='^')
 plt.annotate(os.path.basename(Images[STD.index(max(STD))]),
-    xy=(STD.index(max(STD)), max(STD)), xytext=(0, 30),
-    textcoords='offset points', ha='center', va='bottom',
-    bbox=dict(boxstyle='round,pad=0.5', fc='b', alpha=0.125),
-    arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.79'))
+             xy=(STD.index(max(STD)), max(STD)), xytext=(0, 30),
+             textcoords='offset points', ha='center', va='bottom',
+             bbox=dict(boxstyle='round,pad=0.5', fc='b', alpha=0.125),
+             arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.79'))
 plt.xlim([0, len(Images) - 1])
 plt.legend(loc='best')
 print
@@ -124,7 +124,7 @@ Counter = Details + 1
 for i in range(1, len(Images), int(round(len(Images) / Details))):
     plt.subplot(3, 10, Counter)
     plt.imshow(plt.imread(Images[i]), cmap='gray')
-    #~ plt.title(os.path.basename(Images[i]))
+    # plt.title(os.path.basename(Images[i]))
     plt.title('Img ' + str(i))
     Counter += 1
 # Display worst and best image

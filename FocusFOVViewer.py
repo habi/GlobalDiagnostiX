@@ -19,11 +19,11 @@ import matplotlib.pyplot as plt
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 
 BaseDir = '/afs/psi.ch/project/EssentialMed/Images/Lens_FOV_and_Distance'
-#~ BaseDir = '/scratch/tmp/DevWareX/FocusDistance/'
+# BaseDir = '/scratch/tmp/DevWareX/FocusDistance/'
 
 SensorList = []
 for item in os.listdir(BaseDir):
-    if not 'OldStuff' in item:
+    if 'OldStuff' not in item:
         if not os.path.isfile(os.path.join(BaseDir, item)):
             SensorList.append(item)
 
@@ -33,16 +33,16 @@ for Sensor in SensorList:
     Lens = [os.path.basename(item).split('_')[1] for item in ImageFiles]
     ImageSize = [[int(os.path.basename(item).split('_')[2].split('x')[1]),
                   int(os.path.basename(item).split('_')[2].split('x')[0])]
-                  for item in ImageFiles]
+                 for item in ImageFiles]
     # The RAW files are "16-bit Unsigned" with the "Width" and "Height" in
     # "Little-Endian byte order"
     ImageData = [np.fromfile(item, dtype=np.uint16).reshape(
         ImageSize[ImageFiles.index(item)])
         for item in ImageFiles]
     SDD = [int(os.path.basename(item).split('_')[3].split('mm')[0])
-        for item in ImageFiles]
+           for item in ImageFiles]
     ExposureTime = [int(os.path.basename(item).split('_')[4].split('ms')[0])
-        for item in ImageFiles]
+                    for item in ImageFiles]
     print 'SDD varies from', min(SDD), 'to', max(SDD), 'mm'
     print 'Exposure times vary from', min(ExposureTime), 'to',\
         max(ExposureTime), 'ms'
@@ -58,10 +58,10 @@ for Sensor in SensorList:
         # Show images
         plt.imshow(ImageData[counter], cmap=plt.cm.gray)
         # increase contrast
-        #~ plt.imshow(ImageData[counter], cmap=plt.cm.gray, vmin=512,
-                   #~ vmax=rawimage.max() * 0.9)
+        # plt.imshow(ImageData[counter], cmap=plt.cm.gray, vmin=512,
+        #            vmax=rawimage.max() * 0.9)
         # draw contour
-        #~ plt.contour(ImageData[counter], [rawimage.max() / 2])
+        # plt.contour(ImageData[counter], [rawimage.max() / 2])
         ImageTitle = str(Lens[counter]), '\nExp. time', \
             str(ExposureTime[counter]), 'ms, Dist.', str(SDD[counter]), 'mm'
         plt.title(' '.join(ImageTitle))

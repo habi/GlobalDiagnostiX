@@ -14,9 +14,9 @@ response = urllib2.urlopen(URL)
 html = response.read()
 soup = BeautifulSoup(html)
 
-#~ ascii = soup.find('pre') # extract ASCII formatted table
-#~ for line in ascii:
-    #~ print len(str(line).split())
+# ascii = soup.find('pre') # extract ASCII formatted table
+# for line in ascii:
+#     print len(str(line).split())
 
 Energy = []
 Mu = []
@@ -30,8 +30,8 @@ for row in table.findAll('tr'):
         Muen.append(col[2].find(text=True))
 print col[1]
 
-plt.loglog(Energy,Mu,label='Mu')
-plt.loglog(Energy,Muen,label='Muen')
+plt.loglog(Energy, Mu, label='Mu')
+plt.loglog(Energy, Muen, label='Muen')
 plt.title(soup.title(text=True))
 plt.legend()
 plt.show()

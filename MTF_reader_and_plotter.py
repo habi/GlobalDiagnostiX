@@ -66,7 +66,7 @@ Image = rgb2gray(ImageRGB)
 
 
 plt.imshow(np.fft.fft2(Image))
-#~ plt.imshow(Image)
+# plt.imshow(Image)
 plt.ioff()
 plt.show()
 

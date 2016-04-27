@@ -67,10 +67,10 @@ def add_lens(z, f, diam, lbl):
     # - lbl:  label to identify the lens on the drawing
     ww, tw, rad = diam / 10.0, diam / 3.0, diam / 2.0
     plt.plot([z, z], [-rad, rad], 'k', linewidth=2)
-    # ~ plt.plot([z, z + tw], [-rad, -rad + np.sign(f) * ww], 'y', linewidth=2)
-    #~ plt.plot([z, z - tw], [-rad, -rad + np.sign(f) * ww], 'y', linewidth=2)
-    #~ plt.plot([z, z + tw],  [rad,  rad - np.sign(f) * ww], 'y', linewidth=2)
-    #~ plt.plot([z, z - tw],  [rad,  rad - np.sign(f) * ww], 'y', linewidth=2)
+    # plt.plot([z, z + tw], [-rad, -rad + np.sign(f) * ww], 'y', linewidth=2)
+    # plt.plot([z, z - tw], [-rad, -rad + np.sign(f) * ww], 'y', linewidth=2)
+    # plt.plot([z, z + tw],  [rad,  rad - np.sign(f) * ww], 'y', linewidth=2)
+    # plt.plot([z, z - tw],  [rad,  rad - np.sign(f) * ww], 'y', linewidth=2)
     plt.plot([z + f, z + f], [-ww, ww], 'y', linewidth=2)
     plt.plot([z - f, z - f], [-ww, ww], 'y', linewidth=2)
     lens = patches.Ellipse((z, 0), width=2 * f, height=diam,
@@ -243,9 +243,9 @@ LensPosition = np.array([0])
 # calculated above to a NumPy array, so we can use the drawing code
 FocalLength = np.array([FocalLength])
 
-#~ FNumber = FocalLength / LensDiameter
-#~ FNumber = 1 / ( 2 * NumericalAperture)
-#~ -> 1 / ( 2 * FNumber) = NumericalAperture
+# FNumber = FocalLength / LensDiameter
+# FNumber = 1 / ( 2 * NumericalAperture)
+# -> 1 / ( 2 * FNumber) = NumericalAperture
 FNumber = 1.4
 NumericalAperture = 1 / (2 * FNumber)
 SzintillatorWidth = 5

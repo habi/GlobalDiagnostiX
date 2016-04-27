@@ -88,8 +88,8 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             'TarToArchive.py, then run this script again'
         break
     print 80 * '-'
-    #~ print str(Counter + 1) + '/' + str(len(AnalyisList)) + \
-        #~ ': Deleting darks experiment', ExperimentID[SelectedExperiment]
+    # print str(Counter + 1) + '/' + str(len(AnalyisList)) + \
+    #       ': Deleting darks experiment', ExperimentID[SelectedExperiment]
     logfile = functions.myLogger(
         os.path.dirname(Experiment[SelectedExperiment]),
         ExperimentID[SelectedExperiment] + '.deletion.log')
@@ -123,7 +123,7 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
     Keepers.append(2)
     Keepers = numpy.unique(Keepers)
     print 'We keep', len(Keepers), 'images and delete', \
-        NumberOfRadiographies[SelectedExperiment] - len(Keepers),  'images'
+        NumberOfRadiographies[SelectedExperiment] - len(Keepers), 'images'
     if NumberOfRadiographies[SelectedExperiment] - len(Keepers) > 1:
         # When we have as many files left as we have 'Keepers' we most probably
         # have already done a deletion round, then the 'if' clause above
@@ -133,38 +133,36 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             ExperimentID[SelectedExperiment],
             time.strftime('%d.%m.%Y at %H:%M:%S'))
         logfile.info('\nMade with "%s" at Revision %s',
-            os.path.basename(__file__), functions.get_git_hash())
+                     os.path.basename(__file__), functions.get_git_hash())
         logfile.info(80 * '-')
         logfile.info('Grabbing Information from %s', AnalysisLogFile)
         logfile.info(80 * '-')
         logfile.info('In the folder %s we keep image',
-            Experiment[SelectedExperiment])
+                     Experiment[SelectedExperiment])
         LogFileToRead = open(AnalysisLogFile, 'r')
         for line in LogFileToRead:
             if len(line.split('-->')) == 2:
                 FileNumber = int(line.split('/')[0]) - 1
                 if FileNumber in Keepers:
                     logfile.info('%s/%s | %s | with info "%s"',
-                        str(FileNumber).rjust(2),
-                        NumberOfRadiographies[SelectedExperiment],
-                        os.path.basename(
-                            Radiographies[SelectedExperiment][FileNumber - 1]),
-                        line.strip())
+                                 str(FileNumber).rjust(2),
+                                 NumberOfRadiographies[SelectedExperiment],
+                                 os.path.basename(Radiographies[SelectedExperiment][FileNumber - 1]),
+                                 line.strip())
         LogFileToRead.close()
         logfile.info(80 * '-')
         logfile.info('In the folder %s we delete image',
-            Experiment[SelectedExperiment])
+                     Experiment[SelectedExperiment])
         LogFileToRead = open(AnalysisLogFile, 'r')
         for line in LogFileToRead:
             if len(line.split('-->')) == 2:
                 FileNumber = int(line.split('/')[0])
                 if FileNumber not in Keepers:
                     logfile.info('%s/%s | %s | with info "%s"',
-                        str(FileNumber).rjust(2),
-                        NumberOfRadiographies[SelectedExperiment],
-                        os.path.basename(
-                            Radiographies[SelectedExperiment][FileNumber - 1]),
-                        line.strip())
+                                 str(FileNumber).rjust(2),
+                                 NumberOfRadiographies[SelectedExperiment],
+                                 os.path.basename(Radiographies[SelectedExperiment][FileNumber - 1]),
+                                 line.strip())
                     # Actually delete the image now
                     if ReallyRemove:
                         os.remove(
@@ -181,9 +179,9 @@ for Counter, SelectedExperiment in enumerate(AnalyisList):
             '"TarToArchive.py" first...'
         logfile.info(80 * '-')
         logfile.info('We did not really remove anything')
-        logfile.info(' '.join(['Set "ReallyRemove" on line 22 of the script',
-            'to "True" at the beginnig of the script to really delete the',
-            'superfluous files']))
+        logfile.info('Set "ReallyRemove" on line 22 of the script to "True" '
+                     'at the beginnig of the script to really delete the '
+                     'superfluous files')
 
 if ReallyRemove:
     print

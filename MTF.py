@@ -62,9 +62,9 @@ gauss_2 = scipy.ndimage.gaussian_filter(dirac, sigma=sigma[1])
 gauss_3 = scipy.ndimage.gaussian_filter(dirac, sigma=sigma[2])
 
 SaveFigure = False
-#~ Total = 55
-#~ for iteration in range(Total):
-    #~ print 'Plotting', iteration, 'of', Total
+# Total = 55
+# for iteration in range(Total):
+#     print 'Plotting', iteration, 'of', Total
 
 noise_sigma = 0.001
 gauss_1_noise = gauss_1 + noise_sigma * np.random.randn(len(dirac))
@@ -121,9 +121,9 @@ for name, data in sorted(plots.iteritems()):
 
     plt.subplot(4, len(plots), counter + 3 * len(plots))
     plt.plot(MTF(data), label='orig')
-    #~ for degree in range(10,25):
-        #~ plt.plot(polynomialfit(MTF(data), degree), label=str(degree))
-    #~ plt.legend()
+    # for degree in range(10,25):
+    #     plt.plot(polynomialfit(MTF(data), degree), label=str(degree))
+    # plt.legend()
     degree = 4
     plt.plot(polynomialfit(MTF(data), degree), label=str(degree), color='r')
     plt.plot(np.ones(N) * polynomialfit(MTF(data), degree)[len(dirac) / 2],

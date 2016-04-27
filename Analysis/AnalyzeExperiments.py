@@ -44,19 +44,19 @@ Images = [plt.imread(i) for i in Files]
 Mean = [np.mean(i) * 255 for i in Images]
 STD = [np.std(i) * 255 for i in Images]
 ScintillatorDistance = [distance(i, ) for i in ExperimentFolder]
-# ~ Weed out the ones images we cannot read...
-# ~ for c, i in enumerate(Files):
-#~ print 'rm', os.path.join(Folder[c], '*.png')
-#~ estimate_noise(plt.imread(i))
+# Weed out the ones images we cannot read...
+# for c, i in enumerate(Files):
+#     print 'rm', os.path.join(Folder[c], '*.png')
+# estimate_noise(plt.imread(i))
 Noise = [estimate_image_noise(i) * 255 for i in Images]
 
-#~ # Give out info
-#~ for c, item in enumerate(ExperimentID):
-#~ print str(c).rjust(2), 'of', len(ExperimentID), '| Mean:', \
-#~ str(round(Mean[c], 1)).rjust(5), '| STD:', \
-#~ str(round(STD[c], 1)).rjust(4), '|', \
-#~ os.path.join(Folder[c],
-#~ ExperimentID[c] + '.image.corrected.stretched.png')
+# Give out info
+# for c, item in enumerate(ExperimentID):
+# print str(c).rjust(2), 'of', len(ExperimentID), '| Mean:', \
+# str(round(Mean[c], 1)).rjust(5), '| STD:', \
+# str(round(STD[c], 1)).rjust(4), '|', \
+# os.path.join(Folder[c],
+# ExperimentID[c] + '.image.corrected.stretched.png')
 
 # Sort according to something
 sort = 'noise'

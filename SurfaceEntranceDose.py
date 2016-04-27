@@ -24,7 +24,7 @@ FocusDistance = 1.4
 RSF = 1.35
 # RSF as found in BAG2012. "Der über verschiedene Anlagen gemittelte
 # Korrekturfaktor betrug 1.15"
-#RSF = 1.15
+# RSF = 1.15
 
 Range_kV = range(30, 130)
 Range_mAs = range(0, 60)

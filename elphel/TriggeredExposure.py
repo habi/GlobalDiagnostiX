@@ -94,7 +94,7 @@ CameraCommand += '&EXPOS=' + str(options.ExposureTime * 1000)
 CameraCommand += '&WOI_WIDTH=10000&WOI_HEIGHT=10000'
 # set camera to be UN-triggered, i.e. internally triggered
 CameraCommand += '&TRIG=0"'
-#~ CameraCommand += '&TRIG=4"'  # set camera to be triggered externally
+# CameraCommand += '&TRIG=4"'  # set camera to be triggered externally
 # get rid of the 'wget' output after it is finished.
 CameraCommand += ' --delete-after'
 if options.Test:

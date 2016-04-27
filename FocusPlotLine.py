@@ -18,7 +18,7 @@ import os
 
 # Setup
 # All Apertures, "mixed media" on the intensifying screen
-#~ Series = 2
+# Series = 2
 # Only extreme Apertures, only Siemens-Star
 Series = 3
 
@@ -42,12 +42,13 @@ elif Series == 3:
 for F in Apertures[-4:]:
     # Open tiff file
     tif = libtiff.TIFFfile('/afs/psi.ch/project/EssentialMed/Images/' +
-        str(Series) + '-FocusTest/Series_F' + str('%04.1f' % F) + '.tif')
-    #~ plt.ion()
+                           str(Series) + '-FocusTest/Series_F' +
+                           str('%04.1f' % F) + '.tif')
+    # plt.ion()
     for i in range(0, len(tif.pages)):
         plt.figure(figsize=(16, 8))
         plt.subplots_adjust(left=None, bottom=None, right=None, top=None,
-            wspace=None, hspace=None)
+                            wspace=None, hspace=None)
         # Add first subplot with Original Image and plot the line where we take
         # the lineprofile
         ax1 = plt.subplot(121)
@@ -57,21 +58,18 @@ for F in Apertures[-4:]:
         plt.axis('off')
         if SimpleHorizontalLine == 1:
             ax1.plot([0 + 400, 2048 - 400], [1024 - YSHIFT, 1024 - YSHIFT],
-                'r')
+                     'r')
             # Cheat with 'line', so we have something to write at the end...
             line = 'asdf ' + str(0 + 400) + ' ' + str(1024 - YSHIFT) + ' ' + \
-                str(2048 - 400) + ' ' + str(1024 - YSHIFT)
+                   str(2048 - 400) + ' ' + str(1024 - YSHIFT)
         else:
             # Reads coordinates from a text file which will then be used to
             # plot stuff on images.
             # '+2' since we have two headerlines '+1' since python starts at
             # line 0 :)
-            line = linecache.getline('/afs/psi.ch/project/EssentialMed/' +
-                'Images/Coordinates_UpInStar.txt', i + 3)
-            line = linecache.getline('/afs/psi.ch/project/EssentialMed/' +
-                'Images/Coordinates_Arbitrary.txt', i + 3)
-            line = linecache.getline('/afs/psi.ch/project/EssentialMed/' +
-                'Images/Coordinates_LowerLine.txt', i + 3)
+            line = linecache.getline('/afs/psi.ch/project/EssentialMed/Images/Coordinates_UpInStar.txt', i + 3)
+            line = linecache.getline('/afs/psi.ch/project/EssentialMed/Images/Coordinates_Arbitrary.txt', i + 3)
+            line = linecache.getline('/afs/psi.ch/project/EssentialMed/Images/Coordinates_LowerLine.txt', i + 3)
             ax1.plot([line.split()[1], line.split()[3]],
                      [line.split()[2], line.split()[4]], 'r')
         plt.title('Image ' + str(i))
@@ -81,7 +79,7 @@ for F in Apertures[-4:]:
             ax2.plot(tif.asarray(key=i)[1024 - YSHIFT, 0 + 400:2048 - 400])
         else:
             ax2.plot(tif.asarray(key=i)[str(line.split()[2]),
-                int(line.split()[1]):int(line.split()[3])])
+                     int(line.split()[1]):int(line.split()[3])])
         if ScaleAxis == 0:
             # scale x-axis of lineplot to real length
             ax2.set_xlim([0, (int(line.split()[3]) - int(line.split()[1]))])
@@ -105,8 +103,8 @@ for F in Apertures[-4:]:
                 ax2.set_ylim([0, 75])
             else:
                 ax2.set_ylim([0, 256])
-        plt.title('Line length: ' +
-            str(int(line.split()[3]) - int(line.split()[1])))
+        plt.title('Line length: ' + str(int(line.split()[3]) -
+                                        int(line.split()[1])))
         plt.draw()
         SaveName = '/afs/psi.ch/project/EssentialMed/Images/' + \
             str(Series) + '-FocusTest/F' + str('%04.1f' % F) + '/F' + \
@@ -119,7 +117,7 @@ for F in Apertures[-4:]:
         plt.close()
 
     # View the figures we just saved as stack in Fiji
-    viewcommand = '/scratch/Apps/Fiji.app/fiji-linux ' +\
-            '/afs/psi.ch/project/EssentialMed/Images/' + str(Series) + \
-            '-FocusTest/F' + str('%04.1f' % F) + '/F* &'
+    viewcommand = '/scratch/Apps/Fiji.app/fiji-linux ' + \
+                  '/afs/psi.ch/project/EssentialMed/Images/' + str(Series) +\
+                  '-FocusTest/F' + str('%04.1f' % F) + '/F* &'
     os.system(viewcommand)
