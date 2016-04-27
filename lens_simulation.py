@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-based on code from http://www.frantzmarti$che.com/blog/?p=84
+based on code from http://www.frantzmartinache.com/blog/?p=84
 """
 
 from __future__ import division
@@ -324,4 +324,4 @@ plt.savefig(os.path.join(Savepath, Sensor, 'movie_lens_simulation_view_' +
                              7) + 'mm.png'),
             transparent=True)
 plt.ioff()
-# plt.show()
+plt.show()
