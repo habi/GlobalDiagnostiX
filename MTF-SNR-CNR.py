@@ -99,10 +99,10 @@ else:
     # left/right)
     if options.ROI[0][0] > options.ROI[1][0]:
         plt.title('Select top left, then bottom right!')
-        options.ROI = ginput(2)
+        options.ROI = plt.ginput(2)
         if options.ROI[0][0] > options.ROI[1][0]:
             plt.title('TOP LEFT, BOTTOM RIGHT!')
-            options.ROI = ginput(2)
+            options.ROI = plt.ginput(2)
 
 if options.ROI[0][0] > 0:
     plt.subplot(211)
@@ -173,7 +173,7 @@ if options.SNR:
 
 if options.CNR:
     print 'pick two points on the upper image:'
-    options.CNRCoordinates = ginput(2)
+    options.CNRCoordinates = plt.ginput(2)
     options.CNRRegionWidth = 50
     plt.subplot(211)  # plot on first plot
 

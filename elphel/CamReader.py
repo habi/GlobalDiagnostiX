@@ -112,8 +112,7 @@ def query_yes_no(question, default="yes"):
         elif choice in valid.keys():
             return valid[choice]
         else:
-            sys.stdout.write("Please type 'yes' or 'no' (or 'y' or",
-                             "'n').\n")
+            sys.stdout.write("Please type 'yes' or 'no' (or 'y' or 'n').\n")
 
 
 def set_exposure_time(exposuretime):
