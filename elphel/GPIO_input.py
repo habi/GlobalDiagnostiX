@@ -11,7 +11,7 @@ import time
 # Try to import the GPIO library
 try:
     import RPi.GPIO as GPIO
-except:
+except ImportError:
     print 'I cannot import RPI.GPIO, you have to run the script as root'
     print 'try running it again with'
     print '---'

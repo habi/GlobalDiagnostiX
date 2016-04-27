@@ -17,7 +17,6 @@ See the wiki page linkes above to see how the values are calulated.
 import glob
 import os
 import numpy
-from sympy.mpmath import *
 import matplotlib.pyplot as plt
 
 
@@ -33,7 +32,7 @@ def AskUser(Blurb, Choices):
                                             'want [0-' +
                                             str(len(Choices) - 1) +
                                             ']:'])))
-        except:
+        except SyntaxError:
             print 'You actually have to select *something*'
         if Selection not in range(len(Choices)):
             print 'Try again with a valid choice'

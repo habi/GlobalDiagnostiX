@@ -21,7 +21,7 @@ def AskUser(Blurb, Choices):
                                             'want [0-' +
                                             str(len(Choices) - 1) +
                                             ']:'])))
-        except:
+        except SyntaxError:
             print 'You actually have to select *something*'
         if Selection not in range(len(Choices)):
             print 'Try again with a valid choice'

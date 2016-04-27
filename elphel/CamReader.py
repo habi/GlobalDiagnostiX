@@ -184,16 +184,16 @@ elif options.Trigger:
         print 'Directory', os.path.join(os.getcwd(), SubDirName, 'Triggered'),\
             'already exists.'
 
-'''
-According to http://wiki.elphel.com/index.php?title=Imgsrv#imgsrv_usage one can
-call 'http://<camera-ip>:8081/towp/save' to set the current pointer and save it
-to the global image pointer. For each subsequent image, one can then repeatedly
-call 'http://<camera-ip>:8081/torp/wait/img/next/save' to set the current
-pointer to the global read pointer (torp) and to wait for the image at that
-pointer to be ready (wait). The image is then transferred (img), the pointer
-advanced (next) and saved again (save). This means that the same URL can be
-called again and again and always provides the next image.
-'''
+
+# According to http://wiki.elphel.com/index.php?title=Imgsrv#imgsrv_usage one
+# can call 'http://<camera-ip>:8081/towp/save' to set the current pointer
+# and save it to the global image pointer. For each subsequent image,
+# one can then repeatedly call
+# 'http://<camera-ip>:8081/torp/wait/img/next/save' to set the current
+# pointer to the global read pointer (torp) and to wait for the image at
+# that pointer to be ready (wait). The image is then transferred (img), the
+# pointer advanced (next) and saved again (save). This means that the same
+# URL can be called again and again and always provides the next image.
 
 # The command below sets and saves the current camera pointer.
 urllib.urlopen(StartURL)

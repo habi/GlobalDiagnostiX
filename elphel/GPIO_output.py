@@ -11,7 +11,7 @@ import time
 # Try to import the GPIO library
 try:
     import RPi.GPIO as GPIO
-except:
+except ImportError:
     print 'I cannot import RPI.GPIO, you have to run the script as root'
     print 'try running it again with'
     print '---'
@@ -23,7 +23,7 @@ try:
     Pin = int(sys.argv[1])
     sleepytime = float(sys.argv[2])
     steps = int(sys.argv[3])
-except:
+except IndexError:
     print 'Start the script with three parameters'
     print sys.argv[0], 'Pin Sleeptime Repeats'
     sys.exit(1)
